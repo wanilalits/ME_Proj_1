@@ -84,21 +84,24 @@ function page() {
   const [nendDate, setEndDaten] = useState(new Date());
   const [my, setMy] = useState('null');
   
-const [selectedOption, setSelectedOption] = useState("Food Weast");
+const [selectedOption, setSelectedOption] = useState("Food Waste");
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
-  const [op, setOp] = useState("");
+  const [op, setOp] = useState(0);
  // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
     setInput2(e.target.value);
    
-   if (selectedOption==='Food Weast')
-   {setOp(e.target.value*8.8);}
+   if (selectedOption==='Food Waste')
+   {
+    setOp(e.target.value*8.8);
+  }
 
- if (selectedOption==='Garden Weast')
+ if (selectedOption==='Garden Waste')
    { setOp(e.target.value*1);}
 
-    console.log("Dropdown selected:", selectedOption);
+
+
   };
 
 
@@ -363,8 +366,7 @@ const [selectedOption, setSelectedOption] = useState("Food Weast");
         borderRadius: "16px",
         background: "#fff",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
-        padding: "10px",
-      
+        
 
       }}
     >
@@ -373,15 +375,17 @@ const [selectedOption, setSelectedOption] = useState("Food Weast");
         value={selectedOption}
         onChange={(e) => {setSelectedOption(e.target.value), setInput2(''), setOp('') }}
         style={{
-          width: "100%",
-       
+          width: "80%",
+       height:"35px",
           marginBottom: "10px",
           borderRadius: "8px",
           border: "1px solid #ccc",
+           marginLeft:'14px',
+           marginTop:'20px'
         }}
       >
-        <option value="Food Weast">Food Weast</option>
-        <option value="Garden Weast">Garden Weast</option>
+        <option value="Food Waste">Food Waste</option>
+        <option value="Garden Waste">Garden Waste</option>
       </select>
 
 
@@ -391,21 +395,25 @@ const [selectedOption, setSelectedOption] = useState("Food Weast");
         type="text"
         value={input2}
         onChange={handleInput2Change}
-        placeholder="Input 2"
+        placeholder="Enter Your Value"
         style={{
-          width: "100%",
+          width: "8S0%",
           padding: "8px",
           marginBottom: "10px",
           borderRadius: "8px",
           border: "1px solid #ccc",
+        marginLeft:'14px'
         }}
       />
 
       {/* Just to preview state values */}
-      <div style={{ marginTop: "10px", fontSize: "14px", color: "#333" }}>
+      <div style={{ marginTop: "10px", fontSize: "14px", color: "#333",  marginLeft:'14px' }}>
         <p>Total Emission due to  </p>
       <p>{input2} {selectedOption} is =</p>
-      <p>{op} </p>
+      <p style={{
+        fontWeight: 'bold',     /* makes text bold */
+         fontSize: '20px'
+        }}>{op.toFixed(2)} </p>
     
       </div>
     </div>
