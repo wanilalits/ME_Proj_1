@@ -366,7 +366,8 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
         borderRadius: "16px",
         background: "#fff",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
-        
+        width:'100%',
+        maxWidth:'350px'
 
       }}
     >
