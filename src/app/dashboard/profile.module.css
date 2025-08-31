@@ -1,0 +1,234 @@
+@font-face {
+  font-family: Roboto;
+  src: url(../../../public/Font/static/Roboto-Light.ttf);
+ 
+}
+
+.sensorName {
+  position: absolute;
+  font-size: 12px;
+  font-weight: 100;
+  top:2px;
+  right: 50%;
+transform: translateX(50%);
+font-family: Roboto;
+ 
+}
+
+
+
+
+.bg {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: -0;
+  box-sizing: border-box;
+}
+
+
+
+
+.Rightpanenl {
+  position: relative;
+  background-color: #d1ebc6;
+  flex: 87%;
+}
+
+.UserInfomain
+{
+background-color: #ffffff;
+  border: 1px solid #000000;
+  padding: 0px;
+
+}
+
+.UserInfo {
+
+
+  padding: 0px;
+
+display: flex;
+ flex-direction: row;
+
+}
+
+.UserInfo_1 {
+ -webkit-animation: spin 50s linear infinite;
+  animation: spin 50s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.UserInfo_2 {
+flex-grow: 1;
+text-align: center;
+}
+
+.UserInfo_3 {
+ 
+display: block;
+}
+
+@media (max-width: 800px) {
+  .UserInfos {
+    flex-direction: column;
+  }
+}
+
+
+.Info {
+  margin-top: 5px;
+  background-color: #d1f552;
+  border: 2px solid #000000;
+  padding: 1px;
+  padding-top: 10px;
+  z-index: 4;
+  box-shadow: 0 4px 8px 0 #fdfdfb, 0 1.5px 0 0 #ffffff, 0 8px 16px 0 #b5b500;
+  background: linear-gradient(135deg, #e4e4df 0%, #dbff6c 40%, #b5b500 100%);
+}
+
+
+
+
+.Content {
+
+  margin-top: 5px;
+  border: 1px solid #000000;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-evenly;
+  background-image: linear-gradient(105deg, #61cf1c 30%, #d9f1ba 100%);
+  
+}
+
+
+
+.sensor {
+  position: relative;
+  max-width: 150px;
+  text-align: center;
+  margin: 0px;
+  padding: 0px;
+}
+
+.sensorValue {
+  position: absolute;
+  font-size: 25px;
+  font-family: "HindSMerienda";
+  color: #000000;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px;
+  top:50%;
+  right: 50%;
+transform: translate(50%, 50% );
+overflow: hidden;
+ text-size-adjust: 0.5;
+}
+
+.sensorUnit {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 800;
+  color: #000000;
+  padding: 0px;
+bottom: 15px;
+  left: 5%;
+
+
+}
+
+.sensor1 {
+  background-color: #e9b6dd;
+}
+
+.sensor2 {
+  background-color: #ccbcbc;
+}
+
+.sensor3 {
+  background-color: #a8969f;
+}
+
+.sensor4 {
+  background-color: #88b997;
+}
+
+.sensor5 {
+  background-color: #bebe84;
+}
+
+.sensor6 {
+  background-color: #a0c9a0;
+}
+
+.sensor7 {
+  background-color: #c0acb7;
+}
+
+.sensor1,
+.sensor2,
+.sensor3,
+.sensor4,
+.sensor5,
+.sensor6,
+.sensor7 {
+  position: relative;
+  margin: 5px;
+  flex-grow: 2;
+
+
+  height: 70px;
+  border-radius: 7px;
+  box-sizing: border-box;
+  padding: 0px;
+ 
+}
+
+.sensor1:hover,
+.sensor2:hover,
+.sensor3:hover,
+.sensor4:hover,
+.sensor5:hover,
+.sensor6:hover,
+.sensor7:hover {
+
+
+  box-sizing: border-box;
+  background-color: #f1cde1;
+}
+
+
+
+.logoff {
+  position: relative;
+ top:-31px;
+  height: 28px;
+  width: 70px;
+  border-radius: 5px;
+  float: right;
+  
+
+  text-align: center;
+  transform: translate(-10px, 0%);
+
+
+  border: 1px solid #000000;
+  background-color: #eceaea;
+  color: #000000;
+
+
+
+  padding: 0px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
