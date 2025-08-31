@@ -413,7 +413,7 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
       <p style={{
         fontWeight: 'bold',     /* makes text bold */
          fontSize: '20px'
-        }}>{op.toFixed(2)} </p>
+        }}>{op.toFixed(2)} KG CO<sub>2</sub>E</p>
     
       </div>
     </div>
