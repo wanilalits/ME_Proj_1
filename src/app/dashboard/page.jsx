@@ -85,8 +85,8 @@ function page() {
   const [my, setMy] = useState('null');
   
 const [selectedOption, setSelectedOption] = useState("Food Waste");
-  const [input1, setInput1] = useState("");
-  const [input2, setInput2] = useState("");
+ 
+  const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
  // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
@@ -373,7 +373,7 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
       {/* Dropdown */}
       <select
         value={selectedOption}
-        onChange={(e) => {setSelectedOption(e.target.value), setInput2(''), setOp('') }}
+        onChange={(e) => {setSelectedOption(e.target.value), setInput2(0), setOp(0) }}
         style={{
           width: "80%",
        height:"35px",
