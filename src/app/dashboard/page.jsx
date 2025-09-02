@@ -240,7 +240,7 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
     >
       <h1
         style={{
-          fontSize: "2.5rem",
+          fontSize: "4rem",
           fontWeight: "800",
           letterSpacing: "1px",
           margin: 0,
@@ -251,7 +251,7 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
       <p
         style={{
           marginTop: "1rem",
-          fontSize: "1.25rem",
+          fontSize: "1.5rem",
           fontWeight: "500",
         }}
       >
