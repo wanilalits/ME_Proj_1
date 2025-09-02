@@ -228,20 +228,36 @@ const [selectedOption, setSelectedOption] = useState("Food Waste");
         </div> */}
 
         <div style={{ width: '100%', marginBottom: '30px' }}>
-          <Image
-            src={src}
-            alt="Greya Smart Composer"
-            width={1200}
-            height={300}
-            style={{
-              width: '100%',
-              height: 'auto',
-              borderRadius: '16px',
-              objectFit: 'cover',
-              display: 'block',
-            }}
-            priority
-          />
+        <div
+      style={{
+        background: "linear-gradient(90deg, #2E7D32, #66BB6A)", // green gradient
+        color: "white",
+        padding: "3rem 1rem",
+        textAlign: "center",
+        borderRadius: "16px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+      }}
+    >
+      <h1
+        style={{
+          fontSize: "2.5rem",
+          fontWeight: "800",
+          letterSpacing: "1px",
+          margin: 0,
+        }}
+      >
+        Greya Smart Composter
+      </h1>
+      <p
+        style={{
+          marginTop: "1rem",
+          fontSize: "1.25rem",
+          fontWeight: "500",
+        }}
+      >
+        A Smart IoT-Enabled Device for On-Site Wet Waste Processing
+      </p>
+    </div>
         </div>
 
 
