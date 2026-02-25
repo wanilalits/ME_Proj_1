@@ -45,7 +45,7 @@ all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 } });
 
 
 
-else if (query === "20") {
+else if (query === "15") {
 var data = await Sensor.find().sort({ _id: -1 }).limit(15);
   data = data.reverse();
 //console.log(data)
