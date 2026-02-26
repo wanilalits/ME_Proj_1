@@ -710,16 +710,16 @@ function page() {
               }}
             >
               <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg 3.33 
+                Avg: ----
               </div>
             </div>
-            <div style={{ textAlign: "center" }}>
+            <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
               <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Humidity
               </div>
               <div
                 style={{
-                  fontSize: "24px",
+                  fontSize: "26px",
                   fontWeight: "bold",
                   marginBottom: "5px",
                 }}
@@ -735,7 +735,7 @@ function page() {
                 }}
               >
                 <div
-                  style={{
+                  style={{marginTop:"15px",
                     width: `${Number(data?.Humidity) || 0}%`,
                     height: "100%",
                     backgroundColor: "#73B10F",
@@ -773,19 +773,19 @@ function page() {
               }}
             >
               <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg NaN {data.H2s}
+                Avg: ---
               </div>
             </div>
-            <div style={{ textAlign: "center" }}>
+            <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
               <div style={{ fontWeight: "bold", marginBottom: "5px" }}>H₂S</div>
               <div
                 style={{
-                  fontSize: "24px",
+                  fontSize: "26px",
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
               >
-                --
+                {data.H2s} ppm
               </div>
             </div>
           </div>
@@ -807,21 +807,21 @@ function page() {
               }}
             >
               <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg 2.03 || {data.Temperature}
+                Avg: --- 
               </div>
             </div>
-            <div style={{ textAlign: "center" }}>
+            <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
               <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Temperature
               </div>
               <div
                 style={{
-                  fontSize: "24px",
+                  fontSize: "26px",
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
               >
-                30.4°C
+             {data.Temperature} °C
               </div>
             </div>
           </div>
@@ -843,19 +843,19 @@ function page() {
               }}
             >
               <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg 35.13 || {data.Ph}
+                Avg: ---
               </div>
             </div>
-            <div style={{ textAlign: "center" }}>
+            <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
               <div style={{ fontWeight: "bold", marginBottom: "5px" }}>PH</div>
               <div
                 style={{
-                  fontSize: "24px",
+                  fontSize: "26px",
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
               >
-                5.4
+                {data.Ph} pH
               </div>
             </div>
           </div>
@@ -869,18 +869,29 @@ function page() {
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
           >
-            <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "10px",
+              }}
+            >
+              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
+                Avg: ---
+              </div>
+            </div>
+            <div style={{ textAlign: "center" , marginTop: "-20px",  fontSize: "16px" }}>
               <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Methane
               </div>
               <div
                 style={{
-                  fontSize: "24px",
+                  fontSize: "26px",
                   fontWeight: "bold",
                   marginBottom: "5px",
                 }}
               >
-                435.13 || {data.Methane}
+              {data.Methane} ppm
               </div>
             </div>
           </div>

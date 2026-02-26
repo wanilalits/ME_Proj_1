@@ -1,12 +1,15 @@
-const { createSlice, nanoid, current, createAsyncThunk } = require("@reduxjs/toolkit");
-
+const {
+  createSlice,
+  nanoid,
+  current,
+  createAsyncThunk,
+} = require("@reduxjs/toolkit");
 
 let initialState = {
-  users:[] ,//....if no data initially
+  users: [], //....if no data initially
   userAPIData: [],
   //users: JSON.parse(localStorage.getItem("users")) ? JSON.parse(localStorage.getItem("users")) : [],
- 
-}
+};
 
 export const fetchApiUsers = createAsyncThunk("fetchApiUsers", async () => {
   // console.log("Action called" )
@@ -18,8 +21,7 @@ const Slice = createSlice({
   name: "addUserSlice",
   initialState,
   reducers: {
-   
-    addUser: (state, action) => {
+      addUser: (state, action) => {
       const data = {
         id: nanoid(),
         name: action.payload[0],
@@ -27,46 +29,37 @@ const Slice = createSlice({
       }
       state.users.push(data);
       let userData = JSON.stringify(current(state.users));
-    
-     // localStorage.setItem('users', userData)
-    },
+   
+    }, 
 
-    removeUser: (state, action) => {
+    /*  removeUser: (state, action) => {
       const data = state.users.filter((item) => {
         return item.id !== action.payload
       })
       state.users = data;
       let userdata = JSON.stringify((data));
-      localStorage.setItem('users', userdata)
-      //localStorage.clear();
-    },
+      localStorage.setItem('users', userdata) */
+    //localStorage.clear();
+    // },
 
-updateUser: (state, action) => {
-      const updatedData = { name: action.payload[1]};
+    updateUser: (state, action) => {
+      const updatedData = { name: action.payload[1] };
       state.users = action.payload[1];
     },
 
-
-
-
-    addinitialData: (state, action) => {
-    },
+    addinitialData: (state, action) => {},
 
     getReduxData: (state, action) => {
-   // console.log(initialState.users)
-
+      // console.log(initialState.users)
     },
-
   },
   extraReducers: (builder) => {
     builder.addCase(fetchApiUsers.fulfilled, (state, action) => {
       // console.log("reducer call", action);
-      state.isloading = false,
-        state.userAPIData = action.payload
-      
-    })
-
-  }
+      ((state.isloading = false), (state.userAPIData = action.payload));
+    });
+  },
 });
-export const { addUser, removeUser,updateUser,addinitialData,getReduxData } = Slice.actions;
-export default Slice.reducer
+export const { addUser, removeUser, updateUser, addinitialData, getReduxData } =
+  Slice.actions;
+export default Slice.reducer;
