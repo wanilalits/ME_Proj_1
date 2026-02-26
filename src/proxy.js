@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
-export function middleware(request) {
+export function proxy(request) {
   const path = request.nextUrl.pathname;
 
   var ispublicPath = path === '/login' || path === '/register';
@@ -41,7 +41,6 @@ export const config = {
 }
 
 
-//'/about/:path*'  '/',
 
 
 
