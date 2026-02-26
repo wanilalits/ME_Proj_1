@@ -145,16 +145,13 @@ function page() {
     setLoading(true);
     let a = new Date(nstartDate);
     let b = new Date(nendDate);
-    a.setHours(0, 0, 0, 0);
-    b.setHours(23, 59, 59, 999);
+    console.log(a, b);
+     console.log("........");
+    //a.setHours(0, 0, 0, 0);
+    //b.setHours(23, 59, 59, 999);
+     console.log(a, b);
     try {
-      const res = await fetch(
-        window.location.origin +
-          "/api/users/sensorslog?purp=filterbydate&s=" +
-          a +
-          "&e=" +
-          b,
-      );
+      const res = await fetch( window.location.origin +"/api/users/sensorslog?purp=filterbydate&s=" + a + "&e=" +  b,);
       const exceldata = await res.json();
       const worksheet = XLSX.utils.json_to_sheet(exceldata);
       const workbook = XLSX.utils.book_new();
@@ -739,7 +736,7 @@ function page() {
                   marginBottom: "5px",
                 }}
               >
-                {data.Humidity}%
+                {data.Humidity} %
               </div>
               <div
                 style={{

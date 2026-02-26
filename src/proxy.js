@@ -7,8 +7,6 @@ export function proxy(request) {
 
   var ispublicPath = path === '/login' || path === '/register';
   var token = request.cookies.get('token')?.value || '';
-
-
   //console.log(path)
   //console.log(config.matcher.some( (element) => element === path ))
   // console.log(ispublicPath+'--'+config.matcher[0]+'--'+token )
@@ -40,13 +38,3 @@ export const config = {
   matcher: ['/login', '/new', '/register', '/dashboard', '/', '/([a-zA-Z0-9-_]+)']
 }
 
-
-
-
-
-
-
-
-
-
-// && config1.matcher.some( (element) => element === '/login' )
