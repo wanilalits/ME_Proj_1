@@ -147,7 +147,9 @@ function page() {
     let b = new Date(nendDate);
     console.log(a, b);
      console.log("........");
-    //a.setHours(0, 0, 0, 0);
+    a= new Date(a.getTime() - (5.5 * 60 * 60 * 1000));
+    b= new Date(b.getTime() - (5.5 * 60 * 60 * 1000));
+     //a.setHours(0, 0, 0, 0);
     //b.setHours(23, 59, 59, 999);
      console.log(a, b);
     try {
