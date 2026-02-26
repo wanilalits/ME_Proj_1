@@ -23,7 +23,7 @@ const LineGraph = (props) => {
   const userDispatch = () => {
     var id = props.id;
     var name = reduxData[0].name;
-    name = { ...name, [props.mykey]: "line" };
+    name = { ...name, [props.mykey]: "bar" };
     var nameArr = [{ id, name }];
     dispatch(updateUser([props.id, nameArr]));
   };

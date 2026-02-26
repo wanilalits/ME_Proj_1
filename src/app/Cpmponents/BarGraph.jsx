@@ -77,10 +77,11 @@ const BarGraph = (props) => {
           chartData.labels[index] = new Date(data.time).getMinutes();
         });
         setGraphData(props.priviousData[0]._id);
+       //setChartData({ labels: updatedLabels, datasets: updatedData });
         setRepeat(true);
       }
     }
-  }, []);
+  }, [props.priviousData]);
 
   useEffect(() => {
     if (props.data === "..." || props.time === graphtime) return;

@@ -43,7 +43,7 @@ function page() {
 
   const [graphselect, SetGraphselect] = useState({
     Humidity: "line",
-    Temperature: "bar",
+     Temperature: "bar",
     Ph: "pi",
     H2s: "line",
     Ammonia: "line",
@@ -63,6 +63,7 @@ function page() {
       setRtkid(reduxData[0].id);
       SetGraphselect(reduxData[0].name);
     }
+    console.log("reduxData in useEffect:", reduxData);
   }, [reduxData]);
 
   const [data, setData] = useState({
@@ -119,12 +120,14 @@ function page() {
       );
       const graphData = await response.json();
       setMy(graphData);
+      console.log("Graph data fetched:", graphData);
     } catch (error) {}
   };
 
   useEffect(() => {
     getdata();
     getFirstGraphdata();
+     
     const intervalId = setInterval(getdata, 30000);
     return () => clearInterval(intervalId);
   }, []);
@@ -149,8 +152,7 @@ function page() {
      console.log("........");
     a= new Date(a.getTime() - (5.5 * 60 * 60 * 1000));
     b= new Date(b.getTime() - (5.5 * 60 * 60 * 1000));
-     //a.setHours(0, 0, 0, 0);
-    //b.setHours(23, 59, 59, 999);
+   
      console.log(a, b);
     try {
       const res = await fetch( window.location.origin +"/api/users/sensorslog?purp=filterbydate&s=" + a + "&e=" +  b,);
@@ -303,6 +305,7 @@ function page() {
                 onClick={() => {
                   getdata(); // Refresh latest sensor values
                   getFirstGraphdata(); // Refresh graph data if needed
+                
                 }}
               >
                 ⟳ Last Update
