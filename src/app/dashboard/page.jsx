@@ -66,13 +66,13 @@ function page() {
   }, [reduxData]);
 
   const [data, setData] = useState({
-    Humidity: "...",
-    Temperature: "...",
-    Ph: "...",
-    H2s: "--",
-    Ammonia: "...",
-    Methane: "...",
-    Co2: "..",
+    Humidity: "",
+    Temperature: "",
+    Ph: "",
+    H2s: "",
+    Ammonia: "",
+    Methane: "",
+    Co2: "",
     time: "updating please wait...",
   });
   const [loading, setLoading] = useState(false);
@@ -308,6 +308,21 @@ function page() {
               >
                 ⟳ Last Update
               </button>
+<div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+  {data.time && !isNaN(new Date(data.time))
+    ? `Last Updated: ${new Date(data.time)
+        .toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(",", "")}`
+    : "Updating..."}
+</div>
+           
             </div>
           </div>
 
