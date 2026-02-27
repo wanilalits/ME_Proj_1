@@ -10,7 +10,6 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
-import Earth from "../../../public/Image/Earth.png";
 import { useRouter } from "next/navigation";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
@@ -21,13 +20,9 @@ import PiChart from "../Cpmponents/PiChart";
 import BarGraph from "../Cpmponents/BarGraph";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
-import { removeUser, updateUser, addUser } from "../redux/slice";
-import Link from "next/link";
-
-import PieChart from "../Cpmponents/PiChart";
+import {  addUser } from "../redux/slice";
 
 function page() {
-  const [sensorValue, setSensorValue] = useState(25);
   const [previousData, setPreviousData] = useState([]);
   const someId = "sensor-1";
 
@@ -42,13 +37,21 @@ function page() {
   }, []);
 
   const [graphselect, SetGraphselect] = useState({
-    Humidity: "line",
-     Temperature: "bar",
-    Ph: "pi",
-    H2s: "line",
-    Ammonia: "line",
-    Methane: "line",
-    Co2: "bar",
+    //Humidity: "line",
+    // Temperature: "bar",
+    //Ph: "pi",
+    //H2s: "line",
+   // Ammonia: "line",
+   // Methane: "line",
+   // Co2: "bar",
+
+  Humidity: "bar",
+  Temperature: "bar",
+  Ph: "bar",
+  H2s: "bar",
+  Ammonia: "bar",
+  Methane: "bar",
+  Co2: "bar",
   });
   const [rtkid, setRtkid] = useState(null);
   const dispatch = useDispatch();
@@ -84,6 +87,8 @@ function page() {
   const [selectedOption, setSelectedOption] = useState("Food Waste");
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
+  const [liveAverages, setLiveAverages] = useState({});
+  
   // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
     setInput2(e.target.value);
@@ -99,12 +104,16 @@ function page() {
 
   const router = useRouter();
 
+
+
+
+
+
   const getdata = async () => {
     try {
-      const response = await fetch(
-        window.location.origin + "/api/users/sensorslog",
-      );
+      const response = await fetch(  window.location.origin + "/api/users/sensorslog",);
       const result = await response.json();
+     
       setData(await result[0]).catch((error) => {
         return;
       });
@@ -119,18 +128,61 @@ function page() {
         window.location.origin + "/api/users/sensorslog?purp=15",
       );
       const graphData = await response.json();
+      console.log(graphData)
+      console.log(graphData [graphData.length-1]._id)
       setMy(graphData);
-      console.log("Graph data fetched:", graphData);
+
+   const averages = {
+Ammonia:
+   ( graphData.map(item => Number(item.Ammonia))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
+Co2:
+    (graphData.map(item => Number(item.Co2))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
+H2s:
+    (graphData.map(item => Number(item.H2s))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
+
+  Humidity:
+   ( graphData.map(item => Number(item.Humidity))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
+  Methane:
+    (graphData.map(item => Number(item.Methane))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
+ Ph:
+    (graphData.map(item => Number(item.Ph))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),// 1 digit,
+
+  Temperature:
+    (graphData.map(item => Number(item.Temperature))
+        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1), // 1 digit, 
+_id:(graphData [graphData.length-1]._id)
+
+};
+setLiveAverages(averages);
+
+
     } catch (error) {}
   };
-
+  
   useEffect(() => {
     getdata();
     getFirstGraphdata();
      
-    const intervalId = setInterval(getdata, 30000);
+    const intervalId = setInterval(getdata, 10000);
     return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    getFirstGraphdata();
+     
+    const intervalId = setInterval(getdata, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+
+
+
 
   const onLogoff = () => {
     setLoading1(true);
@@ -200,8 +252,6 @@ function page() {
           padding: "20px",
         }}
       >
-
-
         <div style={{ width: "100%", marginBottom: "30px" }}>
           <div
             style={{
@@ -726,8 +776,8 @@ function page() {
                 marginBottom: "10px",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg: ----
+              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                Avg: {liveAverages.Humidity || 0}%
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
@@ -754,6 +804,7 @@ function page() {
                 <div
                   style={{marginTop:"15px",
                     width: `${Number(data?.Humidity) || 0}%`,
+                    maxWidth: "100%",
                     height: "100%",
                     backgroundColor: "#73B10F",
                     borderRadius: "2px",
@@ -789,8 +840,8 @@ function page() {
                 marginBottom: "10px",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg: ---
+              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                Avg: {liveAverages.H2s|| 0}ppm
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
@@ -823,8 +874,8 @@ function page() {
                 marginBottom: "10px",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg: --- 
+              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                Avg: {liveAverages.Temperature||0}&#176;C 
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
@@ -859,8 +910,8 @@ function page() {
                 marginBottom: "10px",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg: ---
+              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                Avg: {liveAverages.Ph || 0}pH
               </div>
             </div>
             <div style={{ textAlign: "center", marginTop: "-20px",  fontSize: "16px" }}>
@@ -893,8 +944,8 @@ function page() {
                 marginBottom: "10px",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "14px" }}>
-                Avg: ---
+              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                Avg: {liveAverages.Methane || 0}ppm
               </div>
             </div>
             <div style={{ textAlign: "center" , marginTop: "-20px",  fontSize: "16px" }}>
