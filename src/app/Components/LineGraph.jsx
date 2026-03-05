@@ -1,43 +1,39 @@
 'use client';
-
 import React, { useState, useEffect } from "react";
+import { Line } from 'react-chartjs-2';
 import Image from "next/image";
-import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
+  LineElement,
   CategoryScale,
   LinearScale,
-  BarElement,
-  Title,
+  PointElement,
   Tooltip,
   Legend,
 } from 'chart.js';
 import { updateUser } from '../redux/slice';
 import { useDispatch, useSelector } from 'react-redux';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-const BarGraph = (props) => {
+const LineGraph = (props) => {
   const dispatch = useDispatch();
   const reduxData = useSelector((state) => state.userData.users);
-
   const userDispatch = () => {
     var id = props.id;
     var name = reduxData[0].name;
-    name = { ...name, [props.mykey]: "pi" };
+    name = { ...name, [props.mykey]: "bar" };
     var nameArr = [{ id, name }];
     dispatch(updateUser([props.id, nameArr]));
   };
 
-  const [chartData, setChartData] = useState({
+  const [chartData, setChartData] = useState({ 
     labels: Array(15).fill('-'),
     datasets: Array(15).fill(0),
   });
 
-  const [graphtime, setGraphTime] = useState(null);
-  const [repeat, setRepeat] = useState(false);
-  const [graphdata, setGraphData] = useState(1);
-  const [avg, setAvg] = useState(0);
+
+ 
 
   const data = {
     labels: chartData.labels,
@@ -45,18 +41,12 @@ const BarGraph = (props) => {
       {
         label: props.Label,
         data: chartData.datasets,
-        borderColor: props.bg,
-        backgroundColor: [
-          'rgb(89, 153, 36)',
-          'rgb(85, 151, 31)',
-          'rgb(41, 73, 14)',
-          'rgb(88, 168, 22)',
-          'rgb(85, 151, 31)',
-          'rgb(90, 192, 7)',
-          'rgb(130, 201, 72)',
-        ],
-        borderColor: ['rgb(255, 255, 255)'],
-        borderWidth: 1,
+        fill: true,
+        tension: 0.3,
+        borderColor: 'rgb(115, 194, 51)',
+        backgroundColor: 'rgba(115, 194, 51, 0.2)',
+        pointRadius: 2,
+        borderWidth: 2,
       },
     ],
   };
@@ -64,37 +54,49 @@ const BarGraph = (props) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: false,
-      title: { display: false },
+      legend: { display: false },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
     },
   };
 
-  useEffect(() => {
-    if (props.priviousData != null || props.priviousData !== undefined) {
-      if (props.priviousData.length > 5 && !repeat) {
-        props.priviousData.slice(0, 15).forEach((data, index) => {
-          chartData.datasets[index] = data[props.mykey];
-          chartData.labels[index] = new Date(data.time).getMinutes();
-        });
-        setGraphData(props.priviousData[0]._id);
-       //setChartData({ labels: updatedLabels, datasets: updatedData });
-        setRepeat(true);
-      }
-    }
-  }, [props.priviousData]);
 
-  useEffect(() => {
-    if (props.data === "..." || props.time === graphtime) return;
 
-    setGraphTime(props.time);
-    chartData.datasets.shift();
-    chartData.datasets.push(Number(props.data));
-    chartData.labels.shift();
-    chartData.labels.push(new Date(props.time).getMinutes());
 
-    const sum = chartData.datasets.reduce((a, b) => a + Number(b), 0);
-    setAvg(Number((sum / chartData.datasets.length).toFixed(2)));
-  }, [props.data, props.time]);
+
+useEffect(() => {
+  if (!props.liveData || props.liveData.length === 0) return;
+
+  const datasets = props.liveData.map(item =>
+    Number(item[props.mykey] || 0)
+  );
+
+  const labels = props.liveData.map(item =>
+    new Date(item.time).getMinutes()
+  );
+
+  setChartData({
+ labels: labels,
+   datasets: datasets
+ });
+
+}, [props.liveData, props.mykey]);
+
+useEffect(() => {
+  if (props.liveData && props.liveData.length > 0) {
+ console.log("Live data received in LineGraph:", props.liveData.at(-1)[props.mykey]);
+ console.log ("Live averages received in LineGraph:", props.liveAverages);
+  } 
+}, [props.liveData, props.liveAverages]);
+
+
+useEffect(() => {
+ console.log("chartData:", chartData);  
+}, [chartData]);
+
 
   return (
     <div
@@ -119,7 +121,8 @@ const BarGraph = (props) => {
           height={40}
           style={{ position: 'absolute', top: '8px', right: '12px' }}
         />
-        <div style={{ position: 'absolute', top: '50px', left: '10px' }}>
+
+        <div style={{ position: 'absolute', top: '55px', left: '10px' }}>
           <button
             onClick={userDispatch}
             style={{
@@ -135,6 +138,7 @@ const BarGraph = (props) => {
             }}
           ></button>
         </div>
+
         <div
           style={{
             fontSize: '20px',
@@ -162,7 +166,7 @@ const BarGraph = (props) => {
             animation: 'blink 1.2s infinite',
           }}
         >
-          {props.data}
+   {props.liveData?.at(-1)?.[props.mykey] || ""}
         </div>
 
         <div
@@ -191,7 +195,7 @@ const BarGraph = (props) => {
             left: '10px',
           }}
         >
-          {avg}
+          {props.liveAverages}
         </div>
 
         <div
@@ -220,10 +224,10 @@ const BarGraph = (props) => {
           boxSizing: 'border-box',
         }}
       >
-        <Bar data={data} options={options} />
+        <Line data={data} options={options} />
       </div>
     </div>
   );
 };
 
-export default BarGraph;
+export default LineGraph;

@@ -1,29 +1,30 @@
 'use client';
+
 import React, { useState, useEffect } from "react";
-import { Line } from 'react-chartjs-2';
 import Image from "next/image";
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  LineElement,
   CategoryScale,
   LinearScale,
-  PointElement,
+  BarElement,
+  Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 import { updateUser } from '../redux/slice';
 import { useDispatch, useSelector } from 'react-redux';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const LineGraph = (props) => {
+const BarGraph = (props) => {
   const dispatch = useDispatch();
   const reduxData = useSelector((state) => state.userData.users);
 
   const userDispatch = () => {
     var id = props.id;
     var name = reduxData[0].name;
-    name = { ...name, [props.mykey]: "bar" };
+    name = { ...name, [props.mykey]: "pi" };
     var nameArr = [{ id, name }];
     dispatch(updateUser([props.id, nameArr]));
   };
@@ -35,6 +36,7 @@ const LineGraph = (props) => {
 
   const [graphtime, setGraphTime] = useState(null);
   const [repeat, setRepeat] = useState(false);
+  const [graphdata, setGraphData] = useState(1);
   const [avg, setAvg] = useState(0);
 
   const data = {
@@ -43,12 +45,18 @@ const LineGraph = (props) => {
       {
         label: props.Label,
         data: chartData.datasets,
-        fill: true,
-        tension: 0.3,
-        borderColor: 'rgb(115, 194, 51)',
-        backgroundColor: 'rgba(115, 194, 51, 0.2)',
-        pointRadius: 2,
-        borderWidth: 2,
+        borderColor: props.bg,
+        backgroundColor: [
+          'rgb(89, 153, 36)',
+          'rgb(85, 151, 31)',
+          'rgb(41, 73, 14)',
+          'rgb(88, 168, 22)',
+          'rgb(85, 151, 31)',
+          'rgb(90, 192, 7)',
+          'rgb(130, 201, 72)',
+        ],
+        borderColor: ['rgb(255, 255, 255)'],
+        borderWidth: 1,
       },
     ],
   };
@@ -56,25 +64,22 @@ const LineGraph = (props) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
+      legend: false,
+      title: { display: false },
     },
   };
 
   useEffect(() => {
-    if (props.priviousData && props.priviousData.length > 5 && !repeat) {
-      const updatedData = [...chartData.datasets];
-      const updatedLabels = [...chartData.labels];
-      props.priviousData.slice(0, 15).forEach((data, index) => {
-        updatedData[index] = data[props.mykey];
-        updatedLabels[index] = new Date(data.time).getMinutes();
-      });
-      setChartData({ labels: updatedLabels, datasets: updatedData });
-      setRepeat(true);
+    if (props.priviousData != null || props.priviousData !== undefined) {
+      if (props.priviousData.length > 5 && !repeat) {
+        props.priviousData.slice(0, 15).forEach((data, index) => {
+          chartData.datasets[index] = data[props.mykey];
+          chartData.labels[index] = new Date(data.time).getMinutes();
+        });
+        setGraphData(props.priviousData[0]._id);
+       //setChartData({ labels: updatedLabels, datasets: updatedData });
+        setRepeat(true);
+      }
     }
   }, [props.priviousData]);
 
@@ -82,16 +87,13 @@ const LineGraph = (props) => {
     if (props.data === "..." || props.time === graphtime) return;
 
     setGraphTime(props.time);
-    const updatedData = [...chartData.datasets];
-    updatedData.shift();
-    updatedData.push(Number(props.data));
-    const updatedLabels = [...chartData.labels];
-    updatedLabels.shift();
-    updatedLabels.push(new Date(props.time).getMinutes());
-    setChartData({ labels: updatedLabels, datasets: updatedData });
+    chartData.datasets.shift();
+    chartData.datasets.push(Number(props.data));
+    chartData.labels.shift();
+    chartData.labels.push(new Date(props.time).getMinutes());
 
-    const sum = updatedData.reduce((a, b) => a + Number(b), 0);
-    setAvg(Number((sum / updatedData.length).toFixed(2)));
+    const sum = chartData.datasets.reduce((a, b) => a + Number(b), 0);
+    setAvg(Number((sum / chartData.datasets.length).toFixed(2)));
   }, [props.data, props.time]);
 
   return (
@@ -117,7 +119,6 @@ const LineGraph = (props) => {
           height={40}
           style={{ position: 'absolute', top: '8px', right: '12px' }}
         />
-
         <div style={{ position: 'absolute', top: '50px', left: '10px' }}>
           <button
             onClick={userDispatch}
@@ -134,7 +135,6 @@ const LineGraph = (props) => {
             }}
           ></button>
         </div>
-
         <div
           style={{
             fontSize: '20px',
@@ -192,6 +192,7 @@ const LineGraph = (props) => {
           }}
         >
           {avg}
+        
         </div>
 
         <div
@@ -220,10 +221,10 @@ const LineGraph = (props) => {
           boxSizing: 'border-box',
         }}
       >
-        <Line data={data} options={options} />
+        <Bar data={data} options={options} />
       </div>
     </div>
   );
 };
 
-export default LineGraph;
+export default BarGraph;
