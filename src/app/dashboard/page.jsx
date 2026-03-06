@@ -196,7 +196,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
 
   useEffect(() => {
     getFirstGraphdata();
-    const intervalId = setInterval(getdata, 10000);
+    const intervalId = setInterval(getdata, 30000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -224,15 +224,8 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
     }
     // console.log("reduxData in useEffect:", reduxData);
   }, [reduxData]);
-  useEffect(() => {
-    //  console.log("Updated liveAverages:", liveAverages);
-  }, [liveAverages]);
 
-  useEffect(() => {
-    if (Graphdata.length > 0) {
-      console.log("Graphdata:", Graphdata);
-    }
-  }, [Graphdata]);
+
 
   return (
     <>
