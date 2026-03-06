@@ -31,16 +31,6 @@ function page() {
      Co2: "bar",
     
   });
-  const [data, setData] = useState({
-    Humidity: "",
-    Temperature: "",
-    Ph: "",
-    H2s: "",
-    Ammonia: "",
-    Methane: "",
-    Co2: "",
-    time: "updating please wait...",
-  });
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
   const [nstartDate, setStartDaten] = useState(new Date());
@@ -99,7 +89,6 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
         window.location.origin + "/api/users/sensorslog",
       );
       const result = await response.json();
-      setData(result[0] || {});
       setGraphData((prev) => {
         if (
           result?.length > 0 &&
@@ -116,7 +105,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
             Ph: Number( (updated.map((item) => Number(item.Ph || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
             Temperature: Number( (updated .map((item) => Number(item.Temperature || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
           };
-          console.log("Averages calculated:", averages);
+          //console.log("Averages calculated:", averages);
 
           setLiveAverages((prev) => ({ ...prev, ...averages }));
           return updated;
@@ -226,16 +215,16 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   }, [reduxData]);
 
 
-
   return (
     <>
-      {liveAverages._id}
       <div
         style={{
           fontFamily: "Arial, sans-serif",
           maxWidth: "1200px",
           margin: "0 auto",
           padding: "20px",
+      
+       boxSizing: "border-box"
         }}
       >
         <div style={{ width: "100%", marginBottom: "30px" }}>
@@ -249,21 +238,28 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
           >
-            <h1
-              style={{
-                fontSize: "4rem",
-                fontWeight: "800",
-                letterSpacing: "1px",
-                margin: 0,
-              }}
-            >
-              Greya Smart Composter
-            </h1>
+          
+<h1
+  style={{
+    fontSize: "clamp(3rem, 6vw, 4rem)",
+    fontWeight: "800",
+    letterSpacing: "1px",
+    margin: 0,
+    textAlign: "center",
+    wordBreak: "break-word"
+  }}
+>
+  Greya Smart Composter
+</h1>
+
+
             <p
               style={{
                 marginTop: "1rem",
-                fontSize: "1.5rem",
-                fontWeight: "500",
+fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
+    fontWeight: "500",
+    textAlign: "center",
+    wordBreak: "break-word"
               }}
             >
               A Smart IoT-Enabled Device for On-Site Wet Waste Processing
@@ -279,6 +275,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
+         
           }}
         >
           <div
@@ -393,7 +390,11 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
-          }}
+      gap: "10px"   // ✅ spacing between cards
+        
+    
+    
+    }}
         >
           {graphselect.Humidity == "line" ? (
             <LineGraph
@@ -470,7 +471,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={<>&#176;C</>}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Ph == "line" ? (
@@ -510,7 +511,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={"pH"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.H2s == "line" ? (
@@ -547,7 +548,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Ammonia == "line" ? (
@@ -585,7 +586,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Methane == "line" ? (
@@ -623,7 +624,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Co2 == "line" ? (
@@ -661,13 +662,13 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           <div
             style={{
               backgroundColor: "white",
-              margin: "10px",
+              marginLeft: "10px",
               position: "relative",
               height: "340px",
               border: "3px solid #000",
@@ -675,7 +676,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
               background: "#fff",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
               width: "100%",
-              maxWidth: "350px",
+              maxWidth: "360px",
             }}
           >
             {/* Dropdown */}
@@ -785,10 +786,8 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                   marginBottom: "5px",
                 }}
               >
-                {data?.Humidity
-                  ? data.Humidity
-                  : (Graphdata?.at(-1)?.Humidity ?? "--")}{" "}
-                %
+                
+                 {Graphdata?.at(-1)?.Humidity?? "--"}%
               </div>
               <div
                 style={{
@@ -801,7 +800,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                 <div
                   style={{
                     marginTop: "15px",
-                    width: `${Number(data?.Humidity) || 0}%`,
+                    width: `${Number(Graphdata?.at(-1)?.Humidity) || 0}%`,
                     maxWidth: "100%",
                     height: "100%",
                     backgroundColor: "#73B10F",
@@ -857,7 +856,8 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                   marginBottom: "20px",
                 }}
               >
-                {data?.H2s ? data.H2s : (Graphdata?.at(-1)?.H2s ?? "--")} ppm
+               
+                {Graphdata?.at(-1)?.H2s?? "--"}ppm
               </div>
             </div>
           </div>
@@ -898,11 +898,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
-              >
-                {data?.Temperature
-                  ? data.Temperature
-                  : (Graphdata?.at(-1)?.Temperature ?? "--")}{" "}
-                °C
+              >{Graphdata?.at(-1)?.Temperature?? "--"}°C
               </div>
             </div>
           </div>
@@ -942,7 +938,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                   marginBottom: "20px",
                 }}
               >
-                {data?.Ph ? data.Ph : (Graphdata?.at(-1)?.Ph ?? "--")}pH
+                 {Graphdata?.at(-1)?.Ph?? "--"}pH
               </div>
             </div>
           </div>
@@ -984,9 +980,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
                   marginBottom: "5px",
                 }}
               >
-                {data?.Methane
-                  ? data.Methane
-                  : (Graphdata?.at(-1)?.Methane ?? "--")}{" "}
+                {Graphdata?.at(-1)?.Methane?? "--"}
                 ppm
               </div>
             </div>

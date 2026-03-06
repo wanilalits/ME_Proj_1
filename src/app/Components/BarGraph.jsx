@@ -95,7 +95,9 @@ const BarGraph = (props) => {
     <div
       style={{
         backgroundColor: props.bg,
-        margin: "10px",
+      
+      
+          
         position: "relative",
         height: "340px",
         border: "3px solid #000",
@@ -103,6 +105,10 @@ const BarGraph = (props) => {
         background: "#fff",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
         padding: "10px",
+    width: "100%",
+    maxWidth: "360px",
+    boxSizing: "border-box"
+        
       }}
     >
       {/* Header */}

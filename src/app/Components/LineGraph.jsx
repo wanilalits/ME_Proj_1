@@ -10,11 +10,12 @@ import {
   PointElement,
   Tooltip,
   Legend,
+    Filler
 } from 'chart.js';
 import { updateUser } from '../redux/slice';
 import { useDispatch, useSelector } from 'react-redux';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend,   Filler);
 
 const LineGraph = (props) => {
   const dispatch = useDispatch();
@@ -87,14 +88,14 @@ useEffect(() => {
 
 useEffect(() => {
   if (props.liveData && props.liveData.length > 0) {
- console.log("Live data received in LineGraph:", props.liveData.at(-1)[props.mykey]);
- console.log ("Live averages received in LineGraph:", props.liveAverages);
+ //console.log("Live data received in LineGraph:", props.liveData.at(-1)[props.mykey]);
+ //console.log ("Live averages received in LineGraph:", props.liveAverages);
   } 
 }, [props.liveData, props.liveAverages]);
 
 
 useEffect(() => {
- console.log("chartData:", chartData);  
+ //console.log("chartData:", chartData);  
 }, [chartData]);
 
 
@@ -102,14 +103,21 @@ useEffect(() => {
     <div
       style={{
         backgroundColor: props.bg,
-        margin: '10px',
+ 
+     
+  
+         
         position: 'relative',
         height: '340px',
         border: '3px solid #000',
         borderRadius: '16px',
-        background: '#fff',
+      
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
         padding: '10px',
+    width: "100%",
+    maxWidth: "360px",
+    boxSizing: "border-box"
+
       }}
     >
       {/* Header */}
@@ -135,6 +143,7 @@ useEffect(() => {
               color: 'white',
               fontSize: '16px',
               cursor: 'pointer',
+            
             }}
           ></button>
         </div>
@@ -220,7 +229,7 @@ useEffect(() => {
           backgroundColor: '#fff',
           border: '2px solid black',
           height: '180px',
-          width: '100%',
+          width: 'auto',
           boxSizing: 'border-box',
         }}
       >

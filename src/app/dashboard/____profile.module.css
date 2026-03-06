@@ -135,17 +135,7 @@ overflow: hidden;
  text-size-adjust: 0.5;
 }
 
-.sensorUnit {
-  position: absolute;
-  font-size: 10px;
-  font-weight: 800;
-  color: #000000;
-  padding: 0px;
-bottom: 15px;
-  left: 5%;
 
-
-}
 
 .sensor1 {
   background-color: #e9b6dd;
