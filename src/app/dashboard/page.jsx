@@ -45,7 +45,6 @@ function page() {
   const dispatch = useDispatch();
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
-
   // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
     setInput2(e.target.value);
@@ -58,7 +57,6 @@ function page() {
       setOp(e.target.value * 1);
     }
   };
-
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {

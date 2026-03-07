@@ -1,11 +1,8 @@
 "use client";
-
 import { useParams, useRouter } from "next/navigation";
-
 import React, { useState, useEffect } from "react";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
-import Image from "next/image";
 import humidity from "../../../../public/Image/humidity.png";
 import temperature from "../../../../public/Image/temperature.png";
 import ph from "../../../../public/Image/ph.png";
@@ -23,239 +20,184 @@ import BarGraph from "../../Components/BarGraph";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import {  addUser } from "../../redux/slice";
-
-export default function Page() {
-  const params = useParams();
+function page() {
+  const [graphselect, SetGraphselect] = useState({
+    Humidity: "line",
+    Temperature: "bar",
+    Ph: "pi",
+    H2s: "line",
+     Ammonia: "line",
+     Methane: "line",
+     Co2: "bar",
+  });
+  const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
+  const [nstartDate, setStartDaten] = useState(new Date());
+  const [nendDate, setEndDaten] = useState(new Date());
+  const [Graphdata, setGraphData] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("Food Waste");
+  const [input2, setInput2] = useState(0);
+  const [op, setOp] = useState(0);
+  const [liveAverages, setLiveAverages] = useState({});
+  const [src, setSrc] = useState("/Image/homee.png");
+  const [rtkid, setRtkid] = useState(null);
+  const dispatch = useDispatch();
   const router = useRouter();
-   if (!params?.deviceid) return null; // prevent undefined error
- const [previousData, setPreviousData] = useState([]);
-   const someId = "sensor-1";
- 
-   useEffect(() => {
-     // simulate fetching previous 15 values
-     const simulatedData = Array.from({ length: 15 }, (_, i) => ({
-       _id: someId,
-       temperature: 20 + i,
-       time: new Date(Date.now() - (15 - i) * 60000).toISOString(),
-     }));
-     setPreviousData(simulatedData);
-   }, []);
- 
-   const [graphselect, SetGraphselect] = useState({
-    
-   Humidity: "bar",
-   Temperature: "bar",
-   Ph: "bar",
-   H2s: "bar",
-   Ammonia: "bar",
-   Methane: "bar",
-   Co2: "bar",
-   });
-   const [rtkid, setRtkid] = useState(null);
-   const dispatch = useDispatch();
- 
-   useEffect(() => {
-     dispatch(addUser([graphselect]));
-   }, []);
- 
-   const reduxData = useSelector((state) => state.userData.users);
-   useEffect(() => {
-     if (reduxData.length > 0) {
-       setRtkid(reduxData[0].id);
-       SetGraphselect(reduxData[0].name);
-     }
-     console.log("reduxData in useEffect:", reduxData);
-   }, [reduxData]);
- 
-   const [data, setData] = useState({
-     Humidity: "",
-     Temperature: "",
-     Ph: "",
-     H2s: "",
-     Ammonia: "",
-     Methane: "",
-     Co2: "",
-     time: "updating please wait...",
-   });
-   const [loading, setLoading] = useState(false);
-   const [loading1, setLoading1] = useState(false);
-   const [nstartDate, setStartDaten] = useState(new Date());
-   const [nendDate, setEndDaten] = useState(new Date());
-   const [my, setMy] = useState("null");
-   const [selectedOption, setSelectedOption] = useState("Food Waste");
-   const [input2, setInput2] = useState(0);
-   const [op, setOp] = useState(0);
-   const [liveAverages, setLiveAverages] = useState({});
-   const deviceid = params.deviceid;
-   // 🔹 Arrow function for Input2 onChange
-   const handleInput2Change = (e) => {
-     setInput2(e.target.value);
- 
-     if (selectedOption === "Food Waste") {
-       setOp(e.target.value * 8.8);
-     }
- 
-     if (selectedOption === "Garden Waste") {
-       setOp(e.target.value * 1);
-     }
-   };
- 
- // 🔹 Arrow function to get last 15samples data
+  const reduxData = useSelector((state) => state.userData.users);
+  // 🔹 Arrow function for Input2 onChange
+  const handleInput2Change = (e) => {
+    setInput2(e.target.value);
+
+    if (selectedOption === "Food Waste") {
+      setOp(e.target.value * 8.8);
+    }
+
+    if (selectedOption === "Garden Waste") {
+      setOp(e.target.value * 1);
+    }
+  };
+  const params = useParams();
+const deviceid = params.deviceid;
+  if (!params?.deviceid) return null; // prevent undefined error
+
+
+  // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
+     // console.log("Averages calculated:..................");
       const response = await fetch(
-        window.location.origin + "/api/users/sensorslog?purp=15&deviceid=Device_0",
-      );
-      const graphData = await response.json();
-      console.log("Graph API called", graphData);
-      setMy(graphData);
-   const averages = {
-Ammonia:
-   ( graphData.map(item => Number(item.Ammonia))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
-Co2:
-    (graphData.map(item => Number(item.Co2))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
-H2s:
-    (graphData.map(item => Number(item.H2s))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
-
-  Humidity:
-   ( graphData.map(item => Number(item.Humidity))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
-  Methane:
-    (graphData.map(item => Number(item.Methane))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
- Ph:
-    (graphData.map(item => Number(item.Ph))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1),
-
-  Temperature:
-    (graphData.map(item => Number(item.Temperature))
-        .reduce((a, b) => a + b, 0) / graphData.length).toFixed(1), 
-        
-_id:graphData [graphData.length-1]._id
-      
+        window.location.origin +"/api/users/sensorslog?purp=15&deviceid="+ params.deviceid);
+        const updated = await response.json();
+setGraphData(updated);
+const averages = {
+  Ammonia: Number( (updated.map(item => Number(item.Ammonia || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
+  Co2: Number((updated.map(item => Number(item.Co2 || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
+  H2s: Number((updated.map(item => Number(item.H2s || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2) ),
+  Humidity: Number((updated.map(item => Number(item.Humidity || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
+  Methane: Number((updated.map(item => Number(item.Methane || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
+  Ph: Number((updated.map(item => Number(item.Ph || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
+  Temperature: Number((updated.map(item => Number(item.Temperature || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
 };
-console.log("Averages calculated:", averages);
-setLiveAverages(averages);
-
+//console.log("Averages calculated:", averages);
+setLiveAverages((prev) => ({ ...prev, ...averages }));
+     
     } catch (error) {}
   };
-  
-// 🔹 Arrow function to get new data 
+
+  // 🔹 Arrow function to get new data
   const getdata = async () => {
-  try {
-    const response = await fetch(window.location.origin + "/api/users/sensorslog");
+    try {
+      const response = await fetch(
+        window.location.origin +"/api/users/sensorslog?purp=1&deviceid="+ params.deviceid);
+      
+      const result = await response.json();
+      setGraphData((prev) => {
+        if (
+          result?.length > 0 &&
+          result[0]._id?.toString() !== prev?.at(-1)?._id?.toString()
+        ) {
+          const updated = [...prev.slice(-14), result[0]];
 
-    const result = await response.json();
- console.log("API called");
-    if (result?.length > 0) {
-      setLiveAverages(prev => {
-        if (result[0]._id !== prev?._id) { 
-         setData(result[0]);
-           console.log("data", result[0]);
-        
-return { ...prev, _id: result[0]._id, Humidity: Number(
-  ((Number(prev.Humidity) + Number(result[0].Humidity)) / 2).toFixed(1)
-),
+          const averages = {
+            Ammonia: Number((updated .map((item) => Number(item.Ammonia || 0)) .reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
+            Co2: Number((  updated .map((item) => Number(item.Co2 || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2), ),
+            H2s: Number( ( updated.map((item) => Number(item.H2s || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2), ),
+            Humidity: Number((updated.map((item) => Number(item.Humidity || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2),),
+            Methane: Number((updated.map((item) => Number(item.Methane || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2),),
+            Ph: Number( (updated.map((item) => Number(item.Ph || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
+            Temperature: Number( (updated .map((item) => Number(item.Temperature || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
+          };
+          //console.log("Averages calculated:", averages);
 
-Temperature: Number(
-  ((Number(prev.Temperature) + Number(result[0].Temperature)) / 2).toFixed(1)
-),
+          setLiveAverages((prev) => ({ ...prev, ...averages }));
+          return updated;
+        }
 
-Ph: Number(
-  ((Number(prev.Ph) + Number(result[0].Ph)) / 2).toFixed(1)
-),
+        return prev;
+      });
+    } catch (error) {
+      //   console.error(error);
+    }
+  };
 
-H2s: Number(
-  ((Number(prev.H2s) + Number(result[0].H2s)) / 2).toFixed(1)
-),
+  // fetch data and create excel
+  const fetchDataAndCreateExcel = async () => {
+    setLoading(true);
+    let a = new Date(nstartDate);
+    let b = new Date(nendDate);
+    a = new Date(a.getTime() - 5.5 * 60 * 60 * 1000);
+    b = new Date(b.getTime() - 5.5 * 60 * 60 * 1000);
+    try {
+      const res = await fetch(
+        window.location.origin +
+          "/api/users/sensorslog?purp=filterbydate&s=" +
+          a +
+          "&e=" +
+          b + "&deviceid=" + params.deviceid,
+      );
+      const exceldata = await res.json();
+      const worksheet = XLSX.utils.json_to_sheet(exceldata);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+      saveAs(blob, "Sensors_Data.xlsx");
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
-Ammonia: Number(
-  ((Number(prev.Ammonia) + Number(result[0].Ammonia)) / 2).toFixed(1)
-),
+  //Log Off
+  const onLogoff = () => {
+    setLoading1(true);
+    try {
+      fetch(window.location.origin + "/api/users/logoff")
+        .then((response) => response.json())
+        .then(() => router.push("./login"))
+        .catch((error) => {});
+    } catch {
+      setLoading1(false);
+    }
+  };
 
-Methane: Number(
-  ((Number(prev.Methane) + Number(result[0].Methane)) / 2).toFixed(1)
-),
+  useEffect(() => {
+    getFirstGraphdata();
+    const intervalId = setInterval(getdata, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
 
-Co2: Number(
-  ((Number(prev.Co2) + Number(result[0].Co2)) / 2).toFixed(1)
-), };    
-}return prev;
-   }); }
-  } catch (error) {
-    console.error(error);}
-};
+  useEffect(() => {
+    const updateImage = () => {
+      if (window.innerWidth < 1024) {
+        setSrc("/Image/homee.png"); // For mobile/tablet
+      } else {
+        setSrc("/Image/homee.png"); // For laptop/dgiesktop
+      }
+    };
 
-   useEffect(() => {
-     getFirstGraphdata();
-     const intervalId = setInterval(getdata, 10000);
-     return () => clearInterval(intervalId);
- 
-   }, []);
- 
+    updateImage(); // Initial check
+    window.addEventListener("resize", updateImage);
+    return () => window.removeEventListener("resize", updateImage);
+  }, []);
 
- 
- /*   const fetchDataAndCreateExcel = async () => {
-     setLoading(true);
-     let a = new Date(nstartDate);
-     let b = new Date(nendDate);
-     
-    
-     a= new Date(a.getTime() - (5.5 * 60 * 60 * 1000));
-     b= new Date(b.getTime() - (5.5 * 60 * 60 * 1000));
-    
-   
-     try {
-       const res = await fetch( window.location.origin +"/api/users/sensorslog?purp=filterbydate&s=" + a + "&e=" +  b,);
-       const exceldata = await res.json();
-       const worksheet = XLSX.utils.json_to_sheet(exceldata);
-       const workbook = XLSX.utils.book_new();
-       XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
-       const excelBuffer = XLSX.write(workbook, {
-         bookType: "xlsx",
-         type: "array",
-       });
-       const blob = new Blob([excelBuffer], {
-         type: "application/octet-stream",
-       });
-       saveAs(blob, "Sensors_Data.xlsx");
-     } catch (error) {
-     } finally {
-       setLoading(false);
-     }
-   }; */
- 
-   const [src, setSrc] = useState("/Image/homee.png");
- 
-   useEffect(() => {
-     const updateImage = () => {
-       if (window.innerWidth < 1024) {
-         setSrc("/Image/homee.png"); // For mobile/tablet
-       } else {
-         setSrc("/Image/homee.png"); // For laptop/dgiesktop
-       }
-     };
- 
-     updateImage(); // Initial check
-     window.addEventListener("resize", updateImage);
-     return () => window.removeEventListener("resize", updateImage);
-   }, []);
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+  useEffect(() => {
+    dispatch(addUser([graphselect]));
+  }, []);
+
+  useEffect(() => {
+    if (reduxData.length > 0) {
+      setRtkid(reduxData[0].id);
+      SetGraphselect(reduxData[0].name);
+    }
+    // console.log("reduxData in useEffect:", reduxData);
+  }, [reduxData]);
+
   return (
     <>
       <div
@@ -264,6 +206,8 @@ Co2: Number(
           maxWidth: "1200px",
           margin: "0 auto",
           padding: "20px",
+      
+       boxSizing: "border-box"
         }}
       >
         <div style={{ width: "100%", marginBottom: "30px" }}>
@@ -277,21 +221,28 @@ Co2: Number(
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
           >
-            <h1
-              style={{
-                fontSize: "4rem",
-                fontWeight: "800",
-                letterSpacing: "1px",
-                margin: 0,
-              }}
-            >
-              Greya Smart Composter
-            </h1>
+          
+<h1
+  style={{
+    fontSize: "clamp(3rem, 6vw, 4rem)",
+    fontWeight: "800",
+    letterSpacing: "1px",
+    margin: 0,
+    textAlign: "center",
+    wordBreak: "break-word"
+  }}
+>
+  Greya Smart Composter
+</h1>
+
+
             <p
               style={{
                 marginTop: "1rem",
-                fontSize: "1.5rem",
-                fontWeight: "500",
+fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
+    fontWeight: "500",
+    textAlign: "center",
+    wordBreak: "break-word"
               }}
             >
               A Smart IoT-Enabled Device for On-Site Wet Waste Processing
@@ -299,34 +250,15 @@ Co2: Number(
           </div>
         </div>
 
-
-        {/* Dropdown */}
-        <select
-         value={params.deviceid}   // 👈 Default selection
-          onChange={(e) => {
-            ( router.push("/dashboard/" + e.target.value)
-           
-          );
-
-          }}
-         
-        >
-          <option value="Device_1">Device_1</option>
-          <option value="Device_2">Device_2</option>
-          <option value="Device_3">Device_3</option>
-          <option value="Device_4">Device_4</option>
-          <option value="Device_5">Device_5</option>
-          <option value="Device_6">Device_6</option>
-        </select>
-               <h1>Dashboard {params.deviceid}</h1>
         {/* Date Pickers and Generate Report */}
-        {/*  <div
+        <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
+         
           }}
         >
           <div
@@ -389,26 +321,30 @@ Co2: Number(
                 onClick={() => {
                   getdata(); // Refresh latest sensor values
                   getFirstGraphdata(); // Refresh graph data if needed
-                
                 }}
               >
                 ⟳ Last Update
               </button>
-<div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
-  {data.time && !isNaN(new Date(data.time))
-    ? `Last Updated: ${new Date(data.time)
-        .toLocaleString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        })
-        .replace(",", "")}`
-    : "Updating..."}
-</div>
-           
+              <div
+                style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
+              >
+
+
+
+
+ {Graphdata.at(-1)?.time && !isNaN(new Date(Graphdata.at(-1).time))
+                  ? `Last Updated: ${new Date(Graphdata.at(-1).time)
+                      .toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                      .replace(",", "")}`
+                  : "Updating..."}
+              </div>
             </div>
           </div>
 
@@ -427,7 +363,28 @@ Co2: Number(
           >
             {loading ? "Generating..." : "Generate Report"}
           </button>
-        </div> */}
+        </div>
+
+
+        {/* Dropdown */}
+        <select
+         value={params.deviceid}   // 👈 Default selection
+          onChange={(e) => {
+            ( router.push("/dashboard/" + e.target.value)
+           
+          );
+
+          }}
+         
+        >
+          <option value="Device_1">Device_1</option>
+          <option value="Device_2">Device_2</option>
+          <option value="Device_3">Device_3</option>
+          <option value="Device_4">Device_4</option>
+          <option value="Device_5">Device_5</option>
+          <option value="Device_6">Device_6</option>
+        </select>
+               <h1>Dashboard {params.deviceid}</h1>
 
         {/* Graph Section */}
         <div
@@ -437,174 +394,172 @@ Co2: Number(
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
-          }}
+      gap: "10px"   // ✅ spacing between cards
+        
+    
+    
+    }}
         >
           {graphselect.Humidity == "line" ? (
             <LineGraph
-              data={data.Humidity}
-              time={data.time}
-              Label={"Humidity"}
-              priviousData={my}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Humidity}
+            Label={"Humidity"}
               mykey={"Humidity"}
-              id={rtkid}
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
             />
           ) : graphselect.Humidity == "bar" ? (
             <BarGraph
-              data={data.Humidity}
-              time={data.time}
+              liveData={Graphdata}
+             liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
-              priviousData={my}
+             
               mykey={"Humidity"}
-              id={rtkid}
+              
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
             />
           ) : graphselect.Humidity == "pi" ? (
             <PiChart
-              data={data.Humidity}
-              time={data.time}
+             liveData={Graphdata}
+             liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
-              priviousData={my}
+             
               mykey={"Humidity"}
-              id={rtkid}
+             
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Temperature == "line" ? (
             <LineGraph
-              data={data.Temperature}
-              time={data.time}
-              Label={"Temperature"}
-              priviousData={my}
+             liveData={Graphdata}
+             liveAverages={liveAverages.Temperature}
+            Label={"Temperature"}
               mykey={"Temperature"}
-              id={rtkid}
               image={temperature}
               bg={"rgb(255, 255, 255)"}
               unit={<>&#176;C</>}
             />
           ) : graphselect.Temperature == "bar" ? (
             <BarGraph
-              data={data.Temperature}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Temperature}
+            
               Label={"Temperature"}
-              priviousData={my}
+              
               mykey={"Temperature"}
-              id={rtkid}
+              
               image={temperature}
               bg={"rgb(255, 255, 255)"}
               unit={<>&#176;C</>}
             />
           ) : graphselect.Temperature == "pi" ? (
             <PiChart
-              data={data.Temperature}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Temperature}
+              
               Label={"Temperature"}
-              priviousData={my}
+             
               mykey={"Temperature"}
-              id={rtkid}
+             
               image={temperature}
               bg={"rgb(255, 255, 255)"}
               unit={<>&#176;C</>}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Ph == "line" ? (
             <LineGraph
-              data={data.Ph}
-              time={data.time}
-              Label={"pH"}
-              priviousData={my}
+            liveData={Graphdata}
+            liveAverages={liveAverages.Ph}
+            Label={"pH"}
               mykey={"Ph"}
-              id={rtkid}
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
             />
           ) : graphselect.Ph == "bar" ? (
             <BarGraph
-              data={data.Ph}
-              time={data.time}
+               liveData={Graphdata}
+            liveAverages={liveAverages.Ph}
+           
               Label={"pH"}
-              priviousData={my}
+              
               mykey={"Ph"}
-              id={rtkid}
+            
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
             />
           ) : graphselect.Ph == "pi" ? (
             <PiChart
-              data={data.Ph}
-              time={data.time}
+             liveData={Graphdata}
+            liveAverages={liveAverages.Ph}
+             
               Label={"pH"}
-              priviousData={my}
+            
               mykey={"Ph"}
-              id={rtkid}
+            
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.H2s == "line" ? (
             <LineGraph
-              data={data.H2s}
-              time={data.time}
+             liveData={Graphdata}
+             liveAverages={liveAverages.H2s}
               Label={"H2S"}
-              priviousData={my}
               mykey={"H2s"}
-              id={rtkid}
               image={H2S}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : graphselect.H2s == "bar" ? (
             <BarGraph
-              data={data.H2s}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.H2s}
               Label={"H2S"}
-              priviousData={my}
               mykey={"H2s"}
-              id={rtkid}
               image={H2S}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : graphselect.H2s == "pi" ? (
             <PiChart
-              data={data.H2s}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.H2s}
+          
               Label={"H2S"}
-              priviousData={my}
+             
               mykey={"H2s"}
-              id={rtkid}
+             
               image={H2S}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Ammonia == "line" ? (
             <LineGraph
-              data={data.Ammonia}
-              time={data.time}
+               liveData={Graphdata}
+             liveAverages={liveAverages.Ammonia}
               Label={"Ammonia"}
-              priviousData={my}
               mykey={"Ammonia"}
               image={NH3}
               bg={"rgb(255, 255, 255)"}
@@ -612,10 +567,11 @@ Co2: Number(
             />
           ) : graphselect.Ammonia == "bar" ? (
             <BarGraph
-              data={data.Ammonia}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Ammonia}
+            
               Label={"Ammonia"}
-              priviousData={my}
+             
               mykey={"Ammonia"}
               image={NH3}
               bg={"rgb(255, 255, 255)"}
@@ -623,25 +579,25 @@ Co2: Number(
             />
           ) : graphselect.Ammonia == "pi" ? (
             <PiChart
-              data={data.Ammonia}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Ammonia}
+             
               Label={"Ammonia"}
-              priviousData={my}
+            
               mykey={"Ammonia"}
               image={NH3}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Methane == "line" ? (
             <LineGraph
-              data={data.Methane}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Methane}
               Label={"Methane"}
-              priviousData={my}
               mykey={"Methane"}
               image={CH4}
               bg={"rgb(255, 255, 255)"}
@@ -649,10 +605,11 @@ Co2: Number(
             />
           ) : graphselect.Methane == "bar" ? (
             <BarGraph
-              data={data.Methane}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Methane}
+              
               Label={"Methane"}
-              priviousData={my}
+             
               mykey={"Methane"}
               image={CH4}
               bg={"rgb(255, 255, 255)"}
@@ -660,25 +617,25 @@ Co2: Number(
             />
           ) : graphselect.Methane == "pi" ? (
             <PiChart
-              data={data.Methane}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Methane}
+              
               Label={"Methane"}
-              priviousData={my}
+            
               mykey={"Methane"}
               image={CH4}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           {graphselect.Co2 == "line" ? (
             <LineGraph
-              data={data.Co2}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Co2}
               Label={"CO2"}
-              priviousData={my}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -686,10 +643,11 @@ Co2: Number(
             />
           ) : graphselect.Co2 == "bar" ? (
             <BarGraph
-              data={data.Co2}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Co2}
+             
               Label={"CO2"}
-              priviousData={my}
+           
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -697,23 +655,24 @@ Co2: Number(
             />
           ) : graphselect.Co2 == "pi" ? (
             <PiChart
-              data={data.Co2}
-              time={data.time}
+            liveData={Graphdata}
+             liveAverages={liveAverages.Co2}
+              
               Label={"CO2"}
-              priviousData={my}
+            
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
           ) : (
-            <>nfnfn</>
+            <>{null}</>
           )}
 
           <div
             style={{
               backgroundColor: "white",
-              margin: "10px",
+              marginLeft: "10px",
               position: "relative",
               height: "340px",
               border: "3px solid #000",
@@ -721,7 +680,7 @@ Co2: Number(
               background: "#fff",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
               width: "100%",
-              maxWidth: "350px",
+              maxWidth: "360px",
             }}
           >
             {/* Dropdown */}
@@ -831,7 +790,8 @@ Co2: Number(
                   marginBottom: "5px",
                 }}
               >
-                {data.Humidity} %
+                
+                 {Graphdata?.at(-1)?.Humidity?? "--"}%
               </div>
               <div
                 style={{
@@ -844,7 +804,7 @@ Co2: Number(
                 <div
                   style={{
                     marginTop: "15px",
-                    width: `${Number(data?.Humidity) || 0}%`,
+                    width: `${Number(Graphdata?.at(-1)?.Humidity) || 0}%`,
                     maxWidth: "100%",
                     height: "100%",
                     backgroundColor: "#73B10F",
@@ -882,7 +842,7 @@ Co2: Number(
               }}
             >
               <div style={{ fontWeight: "bold", fontSize: "12px" }}>
-                Avg: {liveAverages.H2s || 0}ppm
+                Avg: {liveAverages.H2s || 0} ppm
               </div>
             </div>
             <div
@@ -900,7 +860,8 @@ Co2: Number(
                   marginBottom: "20px",
                 }}
               >
-                {data.H2s} ppm
+               
+                {Graphdata?.at(-1)?.H2s?? "--"}ppm
               </div>
             </div>
           </div>
@@ -941,8 +902,7 @@ Co2: Number(
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
-              >
-                {data.Temperature} °C
+              >{Graphdata?.at(-1)?.Temperature?? "--"}°C
               </div>
             </div>
           </div>
@@ -982,7 +942,7 @@ Co2: Number(
                   marginBottom: "20px",
                 }}
               >
-                {data.Ph} pH
+                 {Graphdata?.at(-1)?.Ph?? "--"}pH
               </div>
             </div>
           </div>
@@ -1024,7 +984,8 @@ Co2: Number(
                   marginBottom: "5px",
                 }}
               >
-                {data.Methane} ppm
+                {Graphdata?.at(-1)?.Methane?? "--"}
+                ppm
               </div>
             </div>
           </div>
@@ -1038,3 +999,5 @@ Co2: Number(
     </>
   );
 }
+
+export default page;

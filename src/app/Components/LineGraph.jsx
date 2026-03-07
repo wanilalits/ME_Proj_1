@@ -103,10 +103,6 @@ useEffect(() => {
     <div
       style={{
         backgroundColor: props.bg,
- 
-     
-  
-         
         position: 'relative',
         height: '340px',
         border: '3px solid #000',
