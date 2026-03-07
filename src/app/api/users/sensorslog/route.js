@@ -20,18 +20,14 @@ export const GET = async (reqest) => {
   const deviceid = await reqest.nextUrl.searchParams.get("deviceid");
   await mongoose.connect(connectionStr);
 
-  if (query === null) {
-    //var data = await Sensor.find().skip(0).limit(1).sort({ _id: -1 });
-      var data = await Sensor.findOne().sort({ _id: -1 });
-    return NextResponse.json(data);
-  } else if (query === "all") {
+ if (query === "all") {
     var data = await Sensor.find();
     return NextResponse.json(data);
   } else if (query === "filterbydate") {
     var query1 = await reqest.nextUrl.searchParams.get("s");
     var query2 = await reqest.nextUrl.searchParams.get("e");
     var mydeviceid = await reqest.nextUrl.searchParams.get("deviceid");
-    console.log("payload", query1, query2, mydeviceid);
+   // console.log("payload", query1, query2, mydeviceid);
     query1 = new Date(query1);
     query2 = new Date(query2);
     console.log(query1, "............... ", query2, "............... ", mydeviceid);
@@ -66,7 +62,7 @@ export const GET = async (reqest) => {
     return NextResponse.json(all);
   } else if ((query === "15") || (query === "1")) {
     if (deviceid === "Device_0") {
-      var data = await Sensor.find().sort({ _id: -1 }).limit(15);
+      var data = await Sensor.find().sort({ _id: -1 }).limit(+query);
     } else if (deviceid === "Device_1") {
       var data = await Sensor_1.find().sort({ _id: -1 }).limit(+query);
     
@@ -86,7 +82,9 @@ export const GET = async (reqest) => {
       var data = await Sensor_6.find().sort({ _id: -1 }).limit(+query);
    
     }
+    //console.log("data", data);
     data = data.reverse();
+    // console.log("data", data);
     return NextResponse.json(data);
   }
 };
@@ -94,7 +92,7 @@ export const GET = async (reqest) => {
 export const POST = async (reqest) => {
   let payload = await reqest.json();
   if (payload.tkn) {
-    console.log("payload", payload);
+   // console.log("payload", payload);
     payload.time = new Date();
     let status = await mongoose.connect(connectionStr);
     if (payload.tkn === "Sensor_0" || payload.tkn === "user") {

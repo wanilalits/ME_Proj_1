@@ -84,7 +84,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   const getdata = async () => {
     try {
       const response = await fetch(
-        window.location.origin + "/api/users/sensorslog",
+        window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",
       );
       const result = await response.json();
       setGraphData((prev) => {
