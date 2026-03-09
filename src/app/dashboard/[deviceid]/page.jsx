@@ -683,7 +683,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           <div
             style={{
               backgroundColor: "white",
-              marginLeft: "10px",
+              marginLeft: "5px",
               position: "relative",
               height: "340px",
               border: "3px solid #000",
