@@ -485,6 +485,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <>{null}</>
           )}
 
+ 
           {graphselect.Ph == "line" ? (
             <LineGraph
             liveData={Graphdata}
@@ -524,7 +525,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           ) : (
             <>{null}</>
           )}
-
+{/* 
           {graphselect.H2s == "line" ? (
             <LineGraph
              liveData={Graphdata}
@@ -676,6 +677,9 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <>{null}</>
           )}
 
+  */}
+
+
           <div
             style={{
               backgroundColor: "white",
@@ -691,10 +695,13 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             }}
           >
             {/* Dropdown */}
+            {/*  */}
             <select
               value={selectedOption}
               onChange={(e) => {
-                (setSelectedOption(e.target.value), setInput2(0), setOp(0));
+                setSelectedOption(e.target.value);
+                 setInput2(0);
+                  setOp(0);
               }}
               style={{
                 width: "80%",
@@ -717,7 +724,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               onChange={handleInput2Change}
               placeholder="Enter Your Value"
               style={{
-                width: "8S0%",
+                width: "80%",
                 padding: "8px",
                 marginBottom: "10px",
                 borderRadius: "8px",
@@ -749,9 +756,11 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               </p>
             </div>
           </div>
+        
         </div>
 
         {/* Dashboard Metrics */}
+       
         <div
           style={{
             display: "grid",
