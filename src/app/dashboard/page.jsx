@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import {  useRouter, useParams } from "next/navigation";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import humidity from "../../../public/Image/humidity.png";
@@ -9,10 +10,10 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
-import { useRouter } from "next/navigation";
 import DateTimePicker from "react-datetime-picker";
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
+
 import BarGraph from "../Components/BarGraph";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../redux/slice";
@@ -40,11 +41,15 @@ function page() {
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
+  const [device, setDevice] = useState("Device_0");
   const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
+const params = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
+
+  
   // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
     setInput2(e.target.value);
@@ -340,12 +345,9 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               >
                 ⟳ Last Update
               </button>
-              <div
+            <div
                 style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
-              >
-
-
-
+              >   
 
  {Graphdata.at(-1)?.time && !isNaN(new Date(Graphdata.at(-1).time))
                   ? `Last Updated: ${new Date(Graphdata.at(-1).time)
@@ -378,7 +380,34 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           >
             {loading ? "Generating..." : "Generate Report"}
           </button>
-        </div>
+      
+        
+        
+  {/* Dropdown */}
+        <select
+         value={"Device_0"}   // 👈 Default selection
+          onChange={(e) => {
+              if (e.target.value === "Device_0") {          
+ //setDevice(e.target.value);
+              }
+             
+            else {
+             //  setDevice(e.target.value);
+              router.push("/dashboard/" + e.target.value)}
+
+          }}
+         
+        >
+          <option value="Device_0">Device_0</option>
+          <option value="Device_1">Device_1</option>
+          <option value="Device_2">Device_2</option>
+          <option value="Device_3">Device_3</option>
+          <option value="Device_4">Device_4</option>
+          <option value="Device_5">Device_5</option>
+          <option value="Device_6">Device_6</option>
+        </select>
+{device}
+</div>
 
         {/* Graph Section */}
         <div
@@ -389,11 +418,10 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             marginBottom: "30px",
             flexWrap: "wrap",
       gap: "10px"   // ✅ spacing between cards
-        
-    
-    
     }}
         >
+
+
           {graphselect.Humidity == "line" ? (
             <LineGraph
                liveData={Graphdata}

@@ -40,6 +40,7 @@ function page() {
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
   const [src, setSrc] = useState("/Image/homee.png");
+ 
   const [rtkid, setRtkid] = useState(null);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -57,7 +58,8 @@ function page() {
     }
   };
   const params = useParams();
-const deviceid = params.deviceid;
+  const [device, setDevice] = useState(params?.deviceid || "Device_0");
+//const deviceid = params.deviceid;
   if (!params?.deviceid) return null; // prevent undefined error
 
 
@@ -363,20 +365,22 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           >
             {loading ? "Generating..." : "Generate Report"}
           </button>
-        </div>
+        
 
 
         {/* Dropdown */}
         <select
          value={params.deviceid}   // 👈 Default selection
           onChange={(e) => {
-            ( router.push("/dashboard/" + e.target.value)
+             if (e.target.value === "Device_0" )
+            {router.push("/dashboard")}
            
-          );
+        else {router.push("/dashboard/" + e.target.value)}
 
           }}
          
         >
+          <option value="Device_0">Device_0</option>
           <option value="Device_1">Device_1</option>
           <option value="Device_2">Device_2</option>
           <option value="Device_3">Device_3</option>
@@ -384,7 +388,10 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           <option value="Device_5">Device_5</option>
           <option value="Device_6">Device_6</option>
         </select>
-               <h1>Dashboard {params.deviceid}</h1>
+{device}
+</div>
+
+
 
         {/* Graph Section */}
         <div
