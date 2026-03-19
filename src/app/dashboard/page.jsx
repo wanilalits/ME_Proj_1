@@ -44,6 +44,7 @@ function page() {
   const [device, setDevice] = useState("Device_0");
   const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
+  const [curredate, setCurredate] = useState(null);
 const params = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
@@ -67,7 +68,8 @@ const params = useParams();
     try {
      // console.log("Averages calculated:..................");
       const response = await fetch(
-        window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
+       // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
+         window.location.origin +"/api/users/sensorslog?purp=15&deviceid="+ device);
         const updated = await response.json();
 setGraphData(updated);
 const averages = {
@@ -89,8 +91,8 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   const getdata = async () => {
     try {
       const response = await fetch(
-        window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",
-      );
+       // window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",);
+ window.location.origin +"/api/users/sensorslog?purp=1&deviceid="+ device);
       const result = await response.json();
       setGraphData((prev) => {
         if (
@@ -188,9 +190,14 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
 
   useEffect(() => {
     getFirstGraphdata();
-    const intervalId = setInterval(getdata, 30000);
-    return () => clearInterval(intervalId);
-  }, []);
+   setCurredate(new Date()); // Set current date and time on component mount
+ const intervalId = setInterval(() => {
+  getdata();
+  setCurredate(new Date()); // Set current date and time on component mount
+  }, 30000);
+
+
+  }, [device]);
 
   useEffect(() => {
     const updateImage = () => {
@@ -357,11 +364,33 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                         year: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
+                        second: "2-digit",
                         hour12: true,
                       })
                       .replace(",", "")}`
                   : "Updating..."}
               </div>
+
+  <div
+  style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
+>
+ {curredate
+    ? `Last checked: ${curredate
+        .toLocaleString("en-GB", {
+          timeZone: "Asia/Kolkata",
+          day: "2-digit",
+          month: "short",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        })
+        .replace(",", "")}`
+    : "Updating..."}
+</div>
+
+
             </div>
           </div>
 
@@ -385,15 +414,14 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
         
   {/* Dropdown */}
         <select
-         value={"Device_0"}   // 👈 Default selection
+         value={device}   // 👈 Default selection
           onChange={(e) => {
-              if (e.target.value === "Device_0") {          
- //setDevice(e.target.value);
+             setDevice(e.target.value);
+
+/*               if (e.target.value === "Device_0") {          
               }
-             
             else {
-             //  setDevice(e.target.value);
-              router.push("/dashboard/" + e.target.value)}
+              router.push("/dashboard/" + e.target.value)} */
 
           }}
          
@@ -540,7 +568,8 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <>{null}</>
           )}
 
-          {graphselect.H2s == "line" ? (
+          { device === "Device_0" &&
+        (  graphselect.H2s == "line" ? (
             <LineGraph
              liveData={Graphdata}
              liveAverages={liveAverages.H2s}
@@ -573,11 +602,11 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
-          ) : (
-            <>{null}</>
-          )}
+          ) : (<>{null}</>))
+            }
 
-          {graphselect.Ammonia == "line" ? (
+          { (device === "Device_0" &&
+          graphselect.Ammonia == "line" ? (
             <LineGraph
                liveData={Graphdata}
              liveAverages={liveAverages.Ammonia}
@@ -611,11 +640,11 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
-          ) : (
-            <>{null}</>
-          )}
+          ) : (<>{null}</>
+          ))}
 
-          {graphselect.Methane == "line" ? (
+          { device === "Device_0" &&
+          (graphselect.Methane == "line" ? (
             <LineGraph
             liveData={Graphdata}
              liveAverages={liveAverages.Methane}
@@ -650,14 +679,14 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               unit={"ppm"}
             />
           ) : (
-            <>{null}</>
-          )}
+            <>{null}</>))}
 
-          {graphselect.Co2 == "line" ? (
+          { device === "Device_0" &&
+          (graphselect.Co2 == "line" ? (
             <LineGraph
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-              Label={"CO2"}
+              Label={"Co2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -689,12 +718,12 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             />
           ) : (
             <>{null}</>
-          )}
+          ))}
 
           <div
             style={{
-              backgroundColor: "white",
-              marginLeft: "10px",
+                backgroundColor: "white",
+              marginLeft: "0px",
               position: "relative",
               height: "340px",
               border: "3px solid #000",

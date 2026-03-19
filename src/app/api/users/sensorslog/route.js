@@ -10,6 +10,7 @@ import {
   Sensor_6,
 } from "../../../../database/userSchema";
 import { NextResponse } from "next/server";
+import { time } from "console";
 const connectionStr =
   "mongodb+srv://lalilswani:KrGXqcaDbahGMmaL@cluster0.ygf21f6.mongodb.net/projectOne?retryWrites=true&w=majority&appName=Cluster0";
 let all = "mg";
@@ -48,17 +49,6 @@ export const GET = async (reqest) => {
     } else if (mydeviceid === "Device_6") {
       all = await Sensor_6.find({ createdAt: { $gte: query1, $lte: query2 }  });
     } 
-
-
-
-
-
-
-
-
-
-
-
     return NextResponse.json(all);
   } else if ((query === "15") || (query === "1")) {
     if (deviceid === "Device_0") {
@@ -111,7 +101,16 @@ export const POST = async (reqest) => {
       status = new Sensor_6(payload);
     }
     await status.save();
-    return NextResponse.json({ sucess: true }, { status: 202 });
+    return NextResponse.json({ sucess: true, time: new Date(payload.time).toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+}) }, { status: 202 });
   } else {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
