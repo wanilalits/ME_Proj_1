@@ -41,7 +41,7 @@ function page() {
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
-const [device, setDevice] = useState("Device_1"); // default value
+const [device, setDevice] = useState("Device_0"); // default value
  const [highlight, setHighlight] = useState(false);
 const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
