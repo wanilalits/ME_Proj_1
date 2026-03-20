@@ -190,16 +190,37 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   }, []); 
   */
 
+ const runCycle = () => {
+    // 🟢 Active state (5 sec)
+    document.title = "🟢 Greya Smart Composter";
+
+    setTimeout(() => {
+      // ⚪ Idle/faint state (remaining 25 sec)
+      document.title = "⚪ Greya Smart Composter";
+    }, 5000);
+  };
+
+
+  
+
   useEffect(() => {
+    runCycle()
     getFirstGraphdata();
    setCurredate(new Date()); // Set current date and time on component mount
  
    const intervalId = setInterval(() => {
   getdata();
   setCurredate(new Date()); // Set current date and time on component mount
-  }, 30000);
+ runCycle(); // repeat cycle every 30 sec
+}, 30000);
     return () => clearInterval(intervalId); // ✅ cleanup old interval
   }, [device]);
+
+
+
+
+
+
 
 useEffect(() => {
   if (!curredate) return;
@@ -360,6 +381,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                   transition: "background-color 0.3s ease",
                 }}
                 onClick={() => {
+                  runCycle(); // trigger title animation immediately
                       getFirstGraphdata(); // Refresh graph data if needed
                   getdata(); // Refresh latest sensor values
                     setCurredate(new Date()); // Update current date and time
@@ -582,7 +604,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           )}
 
           { device === "Device_0" &&
-        (  graphselect.H2s == "line" ? (
+          (graphselect.H2s == "line" ? (
             <LineGraph
              liveData={Graphdata}
              liveAverages={liveAverages.H2s}
@@ -596,7 +618,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <BarGraph
             liveData={Graphdata}
              liveAverages={liveAverages.H2s}
-              Label={"H2S"}
+      Label={"H2S"}
               mykey={"H2s"}
               image={H2S}
               bg={"rgb(255, 255, 255)"}
@@ -606,20 +628,17 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <PiChart
             liveData={Graphdata}
              liveAverages={liveAverages.H2s}
-          
               Label={"H2S"}
-             
               mykey={"H2s"}
-             
               image={H2S}
               bg={"rgb(255, 255, 255)"}
               unit={"ppm"}
             />
-          ) : (<>{null}</>))
-            }
+          ) : (<>{null}</>
+          ))}
 
-          { (device === "Device_0" &&
-          graphselect.Ammonia == "line" ? (
+          { device === "Device_0" &&
+          (graphselect.Ammonia == "line" ? (
             <LineGraph
                liveData={Graphdata}
              liveAverages={liveAverages.Ammonia}
@@ -699,7 +718,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <LineGraph
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-              Label={"Co2"}
+              Label={"CO2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -709,7 +728,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <BarGraph
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-              Label={"Co2"}
+            Label={"CO2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -719,7 +738,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <PiChart
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-              Label={"Co2"}
+             Label={"CO2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
