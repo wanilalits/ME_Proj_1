@@ -41,8 +41,9 @@ function page() {
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
-  const [device, setDevice] = useState("Device_0");
-  const [src, setSrc] = useState("/Image/homee.png");
+const [device, setDevice] = useState("Device_1"); // default value
+ const [highlight, setHighlight] = useState(false);
+const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
   const [curredate, setCurredate] = useState(null);
 const params = useParams();
@@ -66,7 +67,7 @@ const params = useParams();
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
-     // console.log("Averages calculated:..................");
+      console.log("Averages calculated:..................");
       const response = await fetch(
        // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
          window.location.origin +"/api/users/sensorslog?purp=15&deviceid="+ device);
@@ -89,6 +90,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
 
   // 🔹 Arrow function to get new data
   const getdata = async () => {
+    console.log("Fetching latest data for device:", device);  
     try {
       const response = await fetch(
        // window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",);
@@ -191,13 +193,25 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   useEffect(() => {
     getFirstGraphdata();
    setCurredate(new Date()); // Set current date and time on component mount
- const intervalId = setInterval(() => {
+ 
+   const intervalId = setInterval(() => {
   getdata();
   setCurredate(new Date()); // Set current date and time on component mount
   }, 30000);
-
-
+    return () => clearInterval(intervalId); // ✅ cleanup old interval
   }, [device]);
+
+useEffect(() => {
+  if (!curredate) return;
+
+  setHighlight(true); // turn ON highlight
+
+  const timer = setTimeout(() => {
+    setHighlight(false); // turn OFF after 2 sec
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, [curredate]);
 
   useEffect(() => {
     const updateImage = () => {
@@ -346,8 +360,9 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                   transition: "background-color 0.3s ease",
                 }}
                 onClick={() => {
+                      getFirstGraphdata(); // Refresh graph data if needed
                   getdata(); // Refresh latest sensor values
-                  getFirstGraphdata(); // Refresh graph data if needed
+                    setCurredate(new Date()); // Update current date and time
                 }}
               >
                 ⟳ Last Update
@@ -367,14 +382,21 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                         second: "2-digit",
                         hour12: true,
                       })
-                      .replace(",", "")}`
+                     .replace(",", " - ")
+                    }`
                   : "Updating..."}
               </div>
 
-  <div
-  style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
+ <div
+  style={{
+    fontSize: "12px",
+    color: highlight ? "#000" : "#666", // 👈 change color
+    fontWeight: highlight ? "bold" : "normal", // 👈 bold effect
+    marginTop: "5px",
+    transition: "all 1s ease", // 👈 smooth effect
+  }}
 >
- {curredate
+  {curredate
     ? `Last checked: ${curredate
         .toLocaleString("en-GB", {
           timeZone: "Asia/Kolkata",
@@ -386,7 +408,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           second: "2-digit",
           hour12: true,
         })
-        .replace(",", "")}`
+        .replace(",", " - ")}`
     : "Updating..."}
 </div>
 
@@ -412,28 +434,19 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
       
         
         
-  {/* Dropdown */}
-        <select
-         value={device}   // 👈 Default selection
-          onChange={(e) => {
-             setDevice(e.target.value);
-
-/*               if (e.target.value === "Device_0") {          
-              }
-            else {
-              router.push("/dashboard/" + e.target.value)} */
-
-          }}
-         
-        >
-          <option value="Device_0">Device_0</option>
-          <option value="Device_1">Device_1</option>
-          <option value="Device_2">Device_2</option>
-          <option value="Device_3">Device_3</option>
-          <option value="Device_4">Device_4</option>
-          <option value="Device_5">Device_5</option>
-          <option value="Device_6">Device_6</option>
-        </select>
+{/* Dropdown */}
+<select
+  value={device}   // 👈 bind state here
+  onChange={(e) => setDevice(e.target.value)} // 👈 update state
+>
+  <option value="Device_0">Device_0</option>
+  <option value="Device_1">Device_1</option>
+  <option value="Device_2">Device_2</option>
+  <option value="Device_3">Device_3</option>
+  <option value="Device_4">Device_4</option>
+  <option value="Device_5">Device_5</option>
+  <option value="Device_6">Device_6</option>
+</select>
 {device}
 </div>
 
