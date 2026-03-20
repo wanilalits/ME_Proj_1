@@ -34,7 +34,7 @@ export default function RootLayout({
 
 
 
-<meta name="theme-color" content="#561b57" />
+<meta name="theme-color" content="#318035" />
 
 
 </head>

@@ -190,14 +190,28 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   }, []); 
   */
 
+const setThemeColor = (color) => {
+  let meta = document.querySelector("meta[name='theme-color']");
+  
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    document.head.appendChild(meta);
+  }
+
+  meta.setAttribute("content", color);
+};
+
  const runCycle = () => {
     // 🟢 Active state (5 sec)
     document.title = "🟢 Greya Smart Composter";
-
-    setTimeout(() => {
+ setThemeColor("#13A10E"); // green
+   
+ setTimeout(() => {
       // ⚪ Idle/faint state (remaining 25 sec)
       document.title = "⚪ Greya Smart Composter";
-    }, 5000);
+      setThemeColor("#318035"); // gray
+    }, 500);
   };
 
 
