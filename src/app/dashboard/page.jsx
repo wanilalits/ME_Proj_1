@@ -709,9 +709,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <BarGraph
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-             
-              Label={"CO2"}
-           
+              Label={"Co2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
@@ -721,9 +719,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <PiChart
             liveData={Graphdata}
              liveAverages={liveAverages.Co2}
-              
-              Label={"CO2"}
-            
+              Label={"Co2"}
               mykey={"Co2"}
               image={CO2}
               bg={"rgb(255, 255, 255)"}
