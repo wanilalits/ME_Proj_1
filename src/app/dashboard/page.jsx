@@ -67,7 +67,7 @@ const params = useParams();
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
-      console.log("Averages calculated:..................");
+     // console.log("Averages calculated:..................");
       const response = await fetch(
        // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
          window.location.origin +"/api/users/sensorslog?purp=15&deviceid="+ device);
@@ -90,7 +90,7 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
 
   // 🔹 Arrow function to get new data
   const getdata = async () => {
-    console.log("Fetching latest data for device:", device);  
+   // console.log("Fetching latest data for device:", device);  
     try {
       const response = await fetch(
        // window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",);
@@ -890,6 +890,8 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           </div>
 
           {/* H2S Card */}
+        {device === "Device_0" ? 
+         
           <div
             style={{
               backgroundColor: "#f5f5f5",
@@ -929,7 +931,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               </div>
             </div>
           </div>
-
+ : <></>} 
           {/* Temperature Card */}
           <div
             style={{
@@ -1012,6 +1014,8 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           </div>
 
           {/* Methane Card */}
+
+{device === "Device_0" ? 
           <div
             style={{
               backgroundColor: "#f5f5f5",
@@ -1053,6 +1057,8 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               </div>
             </div>
           </div>
+: <></>}
+
         </div>
 
         {/* Version Info */}
