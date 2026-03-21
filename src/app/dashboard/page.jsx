@@ -205,13 +205,13 @@ const setThemeColor = (color) => {
  const runCycle = () => {
     // 🟢 Active state (5 sec)
     document.title = "🟢 Greya Smart Composter";
- setThemeColor("#13A10E"); // green
+ setThemeColor("#8de38a"); // green
    
  setTimeout(() => {
       // ⚪ Idle/faint state (remaining 25 sec)
       document.title = "⚪ Greya Smart Composter";
       setThemeColor("#318035"); // gray
-    }, 500);
+    }, 2000);
   };
 
 
@@ -386,6 +386,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                 style={{
                   backgroundColor: "#13A10E", // Updated to green
                   color: "#fff",
+                  
                   border: "none",
                   padding: "8px 20px",
                   borderRadius: "6px",
