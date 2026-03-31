@@ -17,60 +17,62 @@ let all = "mg";
 
 export const GET = async (reqest) => {
   // console.log("request", reqest.nextUrl.searchParams);
+ 
   const query = await reqest.nextUrl.searchParams.get("purp");
   const deviceid = await reqest.nextUrl.searchParams.get("deviceid");
   await mongoose.connect(connectionStr);
 
- if (query === "all") {
+  if (query === "all") {
     var data = await Sensor.find();
     return NextResponse.json(data);
   } else if (query === "filterbydate") {
     var query1 = await reqest.nextUrl.searchParams.get("s");
     var query2 = await reqest.nextUrl.searchParams.get("e");
     var mydeviceid = await reqest.nextUrl.searchParams.get("deviceid");
-   // console.log("payload", query1, query2, mydeviceid);
+    // console.log("payload", query1, query2, mydeviceid);
     query1 = new Date(query1);
     query2 = new Date(query2);
-    console.log(query1, "............... ", query2, "............... ", mydeviceid);
-     if ((mydeviceid === "Device_0") || (mydeviceid === null)) {
-    all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 }  });
-    //console.log("all", all);
-  }
-    else if (mydeviceid === "Device_1") {
-      all = await Sensor_1.find({ createdAt: { $gte: query1, $lte: query2 }  });
+    console.log(
+      query1,
+      "............... ",
+      query2,
+      "............... ",
+      mydeviceid,
+    );
+    if (mydeviceid === "Device_0" || mydeviceid === null) {
+      all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 } });
+      //console.log("all", all);
+    } else if (mydeviceid === "Device_1") {
+      all = await Sensor_1.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_2") {
-      all = await Sensor_2.find({ createdAt: { $gte: query1, $lte: query2 }  });
+      all = await Sensor_2.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_3") {
-      all = await Sensor_3.find({ createdAt: { $gte: query1, $lte: query2 }  });
+      all = await Sensor_3.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_4") {
-      all = await Sensor_4.find({ createdAt: { $gte: query1, $lte: query2 }  });
+      all = await Sensor_4.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_5") {
-      all = await Sensor_5.find({ createdAt: { $gte: query1, $lte: query2 }  });
+      all = await Sensor_5.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_6") {
-      all = await Sensor_6.find({ createdAt: { $gte: query1, $lte: query2 }  });
-    } 
+      all = await Sensor_6.find({ createdAt: { $gte: query1, $lte: query2 } });
+    }
     return NextResponse.json(all);
-  } else if ((query === "15") || (query === "1")) {
+  } 
+  
+  else if (query === "15" || query === "1") {
     if (deviceid === "Device_0") {
       var data = await Sensor.find().sort({ _id: -1 }).limit(+query);
     } else if (deviceid === "Device_1") {
       var data = await Sensor_1.find().sort({ _id: -1 }).limit(+query);
-    
     } else if (deviceid === "Device_2") {
       var data = await Sensor_2.find().sort({ _id: -1 }).limit(+query);
-  
     } else if (deviceid === "Device_3") {
       var data = await Sensor_3.find().sort({ _id: -1 }).limit(+query);
-
     } else if (deviceid === "Device_4") {
       var data = await Sensor_4.find().sort({ _id: -1 }).limit(+query);
-     
     } else if (deviceid === "Device_5") {
       var data = await Sensor_5.find().sort({ _id: -1 }).limit(+query);
-  
     } else if (deviceid === "Device_6") {
       var data = await Sensor_6.find().sort({ _id: -1 }).limit(+query);
-   
     }
     //console.log("data", data);
     data = data.reverse();
@@ -82,7 +84,7 @@ export const GET = async (reqest) => {
 export const POST = async (reqest) => {
   let payload = await reqest.json();
   if (payload.tkn) {
-   // console.log("payload", payload);
+    // console.log("payload", payload);
     payload.time = new Date();
     let status = await mongoose.connect(connectionStr);
     if (payload.tkn === "Sensor_0" || payload.tkn === "user") {
@@ -101,16 +103,22 @@ export const POST = async (reqest) => {
       status = new Sensor_6(payload);
     }
     await status.save();
-    return NextResponse.json({ sucess: true, time: new Date(payload.time).toLocaleString("en-IN", {
-  timeZone: "Asia/Kolkata",
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hour12: true
-}) }, { status: 202 });
+    return NextResponse.json(
+      {
+        sucess: true,
+        time: new Date(payload.time).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }),
+      },
+      { status: 202 },
+    );
   } else {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }

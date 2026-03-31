@@ -138,7 +138,9 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
           "/api/users/sensorslog?purp=filterbydate&s=" +
           a +
           "&e=" +
-          b,
+          b +
+          "&deviceid=" +
+          device,
       );
       const exceldata = await res.json();
       const worksheet = XLSX.utils.json_to_sheet(exceldata);
