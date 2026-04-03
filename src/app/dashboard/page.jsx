@@ -886,7 +886,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
                   fontSize: "20px",
                 }}
               >
-                {op.toFixed(2)} KG CO<sub>2</sub>e
+                {op.toFixed(1)} KG CO<sub>2</sub>e
               </p>
             </div>
           </div>
