@@ -10,6 +10,7 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
+import Logo from "../../../public/Image/Logo.jpeg";
 import DateTimePicker from "react-datetime-picker";
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
@@ -366,42 +367,55 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
           boxSizing: "border-box",
         }}
       >
-        <div style={{ width: "100%", marginBottom: "30px" }}>
-          <div
-            style={{
-              background: "linear-gradient(90deg, #2E7D32, #66BB6A)", // green gradient
-              color: "white",
-              padding: "3rem 1rem",
-              textAlign: "center",
-              borderRadius: "16px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            }}
-          >
-            <h1
-              style={{
-                fontSize: "clamp(3rem, 6vw, 4rem)",
-                fontWeight: "800",
-                letterSpacing: "1px",
-                margin: 0,
-                textAlign: "center",
-                wordBreak: "break-word",
-              }}
-            >
-              Greya Smart Composter
-            </h1>
-            <p
-              style={{
-                marginTop: "1rem",
-                fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
-                fontWeight: "500",
-                textAlign: "center",
-                wordBreak: "break-word",
-              }}
-            >
-              A Smart IoT-Enabled Device for On-Site Wet Waste Processing
-            </p>
-          </div>
-        </div>
+       <div
+  style={{
+    background: "linear-gradient(90deg, #2E7D32, #66BB6A)",
+    color: "white",
+    padding: "1.5rem 1rem",
+    textAlign: "center",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+    position: "relative", // 🔥 important
+    marginBottom: "30px",
+  }}
+>
+  {/* Logo */}
+ <img
+  src={Logo.src}
+  alt="logo"
+  style={{
+    position: "absolute",
+    left: "10px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    height: "130px",
+
+  }}
+/>
+
+  {/* Center text (unchanged) */}
+  <h1
+    style={{
+      fontSize: "clamp(3rem, 6vw, 4rem)",
+      fontWeight: "800",
+      letterSpacing: "1px",
+      margin: 0,
+     
+    }}
+  >
+    Greya Smart Composter
+  </h1>
+
+  <p
+    style={{
+      marginTop: "1rem",
+      fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
+      fontWeight: "500",
+    }}
+  >
+    A Smart IoT-Enabled Device for On-Site Wet Waste Processing
+  </p>
+</div>
 
         {/* Date Pickers and Generate Report */}
         <div
