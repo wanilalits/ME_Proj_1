@@ -14,7 +14,7 @@ import Logo from "../../../public/Image/Logo.png";
 import DateTimePicker from "react-datetime-picker";
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
-
+import HeaderBanner from "../Components/HeaderBanner";
 import BarGraph from "../Components/BarGraph";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../redux/slice";
@@ -367,55 +367,10 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
           boxSizing: "border-box",
         }}
       >
-       <div
-  style={{
-    background: "linear-gradient(90deg, #2E7D32, #66BB6A)",
-    color: "white",
-    padding: "1.5rem 1rem",
-    textAlign: "center",
-    borderRadius: "16px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-    position: "relative", // 🔥 important
-    marginBottom: "30px",
-  }}
->
-  {/* Logo */}
- <img
-  src={Logo.src}
-  alt="logo"
-  style={{
-    position: "absolute",
-    left: "10px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    height: "130px",
 
-  }}
-/>
 
-  {/* Center text (unchanged) */}
-  <h1
-    style={{
-      fontSize: "clamp(3rem, 6vw, 4rem)",
-      fontWeight: "800",
-      letterSpacing: "1px",
-      margin: 0,
-     
-    }}
-  >
-    Greya Smart Composter
-  </h1>
+<HeaderBanner/>
 
-  <p
-    style={{
-      marginTop: "1rem",
-      fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
-      fontWeight: "500",
-    }}
-  >
-    A Smart IoT-Enabled Device for On-Site Wet Waste Processing
-  </p>
-</div>
 
         {/* Date Pickers and Generate Report */}
         <div
@@ -517,7 +472,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
                 style={{
                   fontSize: "12px",
                   color: highlight ? "#000" : "#666", // 👈 change color
-                  fontWeight: highlight ? "bold" : "normal", // 👈 bold effect
+                  fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
                   marginTop: "5px",
                   transition: "all 1s ease", // 👈 smooth effect
                 }}
