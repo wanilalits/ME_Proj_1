@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {  useRouter, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import humidity from "../../../public/Image/humidity.png";
@@ -27,34 +27,35 @@ function page() {
     Temperature: "bar",
     Ph: "pi",
     H2s: "line",
-     Ammonia: "line",
-     Methane: "line",
-     Co2: "bar",
-    
+    Ammonia: "line",
+    Methane: "line",
+    Co2: "bar",
   });
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
   const [nstartDate, setStartDaten] = useState(new Date());
   const [nendDate, setEndDaten] = useState(new Date());
   const [Graphdata, setGraphData] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("Food Waste");
+  const [selectedOption, setSelectedOption] = useState("Wet Waste (Mixed Organic Waste)");
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
-const [device, setDevice] = useState("Device_0"); // default value
- const [highlight, setHighlight] = useState(false);
-const [src, setSrc] = useState("/Image/homee.png");
+  const [device, setDevice] = useState("Device_0"); // default value
+  const [highlight, setHighlight] = useState(false);
+  const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
   const [curredate, setCurredate] = useState(null);
-const params = useParams();
+  const params = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
 
-  
   // 🔹 Arrow function for Input2 onChange
   const handleInput2Change = (e) => {
     setInput2(e.target.value);
+if (selectedOption === "Wet Waste (Mixed Organic Waste)") 
+  {setOp(e.target.value * 0.2); }
+
 
     if (selectedOption === "Food Waste") {
       setOp(e.target.value * 8.8);
@@ -67,34 +68,79 @@ const params = useParams();
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
-     // console.log("Averages calculated:..................");
+      // console.log("Averages calculated:..................");
       const response = await fetch(
-       // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
-         window.location.origin +"/api/users/sensorslog?purp=15&deviceid="+ device);
-        const updated = await response.json();
-setGraphData(updated);
-const averages = {
-  Ammonia: Number( (updated.map(item => Number(item.Ammonia || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-  Co2: Number((updated.map(item => Number(item.Co2 || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-  H2s: Number((updated.map(item => Number(item.H2s || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2) ),
-  Humidity: Number((updated.map(item => Number(item.Humidity || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-  Methane: Number((updated.map(item => Number(item.Methane || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-  Ph: Number((updated.map(item => Number(item.Ph || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-  Temperature: Number((updated.map(item => Number(item.Temperature || 0)).reduce((a,b)=>a+b,0) / updated.length).toFixed(2)),
-};
-//console.log("Averages calculated:", averages);
-setLiveAverages((prev) => ({ ...prev, ...averages }));
-     
+        // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
+        window.location.origin +
+          "/api/users/sensorslog?purp=15&deviceid=" +
+          device,
+      );
+      const updated = await response.json();
+      setGraphData(updated);
+      const averages = {
+        Ammonia: Number(
+          (
+            updated
+              .map((item) => Number(item.Ammonia || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        Co2: Number(
+          (
+            updated
+              .map((item) => Number(item.Co2 || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        H2s: Number(
+          (
+            updated
+              .map((item) => Number(item.H2s || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        Humidity: Number(
+          (
+            updated
+              .map((item) => Number(item.Humidity || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        Methane: Number(
+          (
+            updated
+              .map((item) => Number(item.Methane || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        Ph: Number(
+          (
+            updated
+              .map((item) => Number(item.Ph || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+        Temperature: Number(
+          (
+            updated
+              .map((item) => Number(item.Temperature || 0))
+              .reduce((a, b) => a + b, 0) / updated.length
+          ).toFixed(2),
+        ),
+      };
+      //console.log("Averages calculated:", averages);
+      setLiveAverages((prev) => ({ ...prev, ...averages }));
     } catch (error) {}
   };
 
   // 🔹 Arrow function to get new data
   const getdata = async () => {
-   // console.log("Fetching latest data for device:", device);  
     try {
       const response = await fetch(
-       // window.location.origin + "/api/users/sensorslog?purp=1&deviceid=Device_0",);
- window.location.origin +"/api/users/sensorslog?purp=1&deviceid="+ device);
+        window.location.origin +
+          "/api/users/sensorslog?purp=1&deviceid=" +
+          device,
+      );
       const result = await response.json();
       setGraphData((prev) => {
         if (
@@ -104,13 +150,55 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
           const updated = [...prev.slice(-14), result[0]];
 
           const averages = {
-            Ammonia: Number((updated .map((item) => Number(item.Ammonia || 0)) .reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
-            Co2: Number((  updated .map((item) => Number(item.Co2 || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2), ),
-            H2s: Number( ( updated.map((item) => Number(item.H2s || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2), ),
-            Humidity: Number((updated.map((item) => Number(item.Humidity || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2),),
-            Methane: Number((updated.map((item) => Number(item.Methane || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2),),
-            Ph: Number( (updated.map((item) => Number(item.Ph || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
-            Temperature: Number( (updated .map((item) => Number(item.Temperature || 0)).reduce((a, b) => a + b, 0) / updated.length ).toFixed(2), ),
+            Ammonia: Number(
+              (
+                updated
+                  .map((item) => Number(item.Ammonia || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            Co2: Number(
+              (
+                updated
+                  .map((item) => Number(item.Co2 || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            H2s: Number(
+              (
+                updated
+                  .map((item) => Number(item.H2s || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            Humidity: Number(
+              (
+                updated
+                  .map((item) => Number(item.Humidity || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            Methane: Number(
+              (
+                updated
+                  .map((item) => Number(item.Methane || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            Ph: Number(
+              (
+                updated
+                  .map((item) => Number(item.Ph || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
+            Temperature: Number(
+              (
+                updated
+                  .map((item) => Number(item.Temperature || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
           };
           //console.log("Averages calculated:", averages);
 
@@ -192,63 +280,54 @@ setLiveAverages((prev) => ({ ...prev, ...averages }));
   }, []); 
   */
 
-const setThemeColor = (color) => {
-  let meta = document.querySelector("meta[name='theme-color']");
-  
-  if (!meta) {
-    meta = document.createElement("meta");
-    meta.name = "theme-color";
-    document.head.appendChild(meta);
-  }
+  const setThemeColor = (color) => {
+    let meta = document.querySelector("meta[name='theme-color']");
 
-  meta.setAttribute("content", color);
-};
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "theme-color";
+      document.head.appendChild(meta);
+    }
 
- const runCycle = () => {
+    meta.setAttribute("content", color);
+  };
+
+  const runCycle = () => {
     // 🟢 Active state (5 sec)
     document.title = "🟢 Greya Smart Composter";
- setThemeColor("#8de38a"); // green
-   
- setTimeout(() => {
+    setThemeColor("#8de38a"); // green
+
+    setTimeout(() => {
       // ⚪ Idle/faint state (remaining 25 sec)
       document.title = "⚪ Greya Smart Composter";
       setThemeColor("#318035"); // gray
     }, 2000);
   };
 
-
-  
-
   useEffect(() => {
-    runCycle()
+    runCycle();
     getFirstGraphdata();
-   setCurredate(new Date()); // Set current date and time on component mount
- 
-   const intervalId = setInterval(() => {
-  getdata();
-  setCurredate(new Date()); // Set current date and time on component mount
- runCycle(); // repeat cycle every 30 sec
-}, 30000);
+    setCurredate(new Date()); // Set current date and time on component mount
+
+    const intervalId = setInterval(() => {
+      getdata();
+      setCurredate(new Date()); // Set current date and time on component mount
+      runCycle(); // repeat cycle every 30 sec
+    }, 30000);
     return () => clearInterval(intervalId); // ✅ cleanup old interval
   }, [device]);
 
+  useEffect(() => {
+    if (!curredate) return;
 
+    setHighlight(true); // turn ON highlight
 
+    const timer = setTimeout(() => {
+      setHighlight(false); // turn OFF after 2 sec
+    }, 1000);
 
-
-
-
-useEffect(() => {
-  if (!curredate) return;
-
-  setHighlight(true); // turn ON highlight
-
-  const timer = setTimeout(() => {
-    setHighlight(false); // turn OFF after 2 sec
-  }, 1000);
-
-  return () => clearTimeout(timer);
-}, [curredate]);
+    return () => clearTimeout(timer);
+  }, [curredate]);
 
   useEffect(() => {
     const updateImage = () => {
@@ -275,7 +354,6 @@ useEffect(() => {
     // console.log("reduxData in useEffect:", reduxData);
   }, [reduxData]);
 
-
   return (
     <>
       <div
@@ -284,8 +362,8 @@ useEffect(() => {
           maxWidth: "1200px",
           margin: "0 auto",
           padding: "20px",
-      
-       boxSizing: "border-box"
+
+          boxSizing: "border-box",
         }}
       >
         <div style={{ width: "100%", marginBottom: "30px" }}>
@@ -299,28 +377,25 @@ useEffect(() => {
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
           >
-          
-<h1
-  style={{
-    fontSize: "clamp(3rem, 6vw, 4rem)",
-    fontWeight: "800",
-    letterSpacing: "1px",
-    margin: 0,
-    textAlign: "center",
-    wordBreak: "break-word"
-  }}
->
-  Greya Smart Composter
-</h1>
-
-
+            <h1
+              style={{
+                fontSize: "clamp(3rem, 6vw, 4rem)",
+                fontWeight: "800",
+                letterSpacing: "1px",
+                margin: 0,
+                textAlign: "center",
+                wordBreak: "break-word",
+              }}
+            >
+              Greya Smart Composter
+            </h1>
             <p
               style={{
                 marginTop: "1rem",
-fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
-    fontWeight: "500",
-    textAlign: "center",
-    wordBreak: "break-word"
+                fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
+                fontWeight: "500",
+                textAlign: "center",
+                wordBreak: "break-word",
               }}
             >
               A Smart IoT-Enabled Device for On-Site Wet Waste Processing
@@ -336,7 +411,6 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
-         
           }}
         >
           <div
@@ -388,7 +462,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                 style={{
                   backgroundColor: "#13A10E", // Updated to green
                   color: "#fff",
-                  
+
                   border: "none",
                   padding: "8px 20px",
                   borderRadius: "6px",
@@ -399,18 +473,18 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                 }}
                 onClick={() => {
                   runCycle(); // trigger title animation immediately
-                      getFirstGraphdata(); // Refresh graph data if needed
+                  getFirstGraphdata(); // Refresh graph data if needed
                   getdata(); // Refresh latest sensor values
-                    setCurredate(new Date()); // Update current date and time
+                  setCurredate(new Date()); // Update current date and time
                 }}
               >
                 ⟳ Last Update
               </button>
-            <div
+              <div
                 style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
-              >   
-
- {Graphdata.at(-1)?.time && !isNaN(new Date(Graphdata.at(-1).time))
+              >
+                {Graphdata.at(-1)?.time &&
+                !isNaN(new Date(Graphdata.at(-1).time))
                   ? `Last Updated: ${new Date(Graphdata.at(-1).time)
                       .toLocaleString("en-GB", {
                         day: "2-digit",
@@ -421,37 +495,34 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                         second: "2-digit",
                         hour12: true,
                       })
-                     .replace(",", " - ")
-                    }`
+                      .replace(",", " - ")}`
                   : "Updating..."}
               </div>
 
- <div
-  style={{
-    fontSize: "12px",
-    color: highlight ? "#000" : "#666", // 👈 change color
-    fontWeight: highlight ? "bold" : "normal", // 👈 bold effect
-    marginTop: "5px",
-    transition: "all 1s ease", // 👈 smooth effect
-  }}
->
-  {curredate
-    ? `Last checked: ${curredate
-        .toLocaleString("en-GB", {
-          timeZone: "Asia/Kolkata",
-          day: "2-digit",
-          month: "short",
-          year: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        })
-        .replace(",", " - ")}`
-    : "Updating..."}
-</div>
-
-
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: highlight ? "#000" : "#666", // 👈 change color
+                  fontWeight: highlight ? "bold" : "normal", // 👈 bold effect
+                  marginTop: "5px",
+                  transition: "all 1s ease", // 👈 smooth effect
+                }}
+              >
+                {curredate
+                  ? `Last checked: ${curredate
+                      .toLocaleString("en-GB", {
+                        timeZone: "Asia/Kolkata",
+                        day: "2-digit",
+                        month: "short",
+                        year: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true,
+                      })
+                      .replace(",", " - ")}`
+                  : "Updating..."}
+              </div>
             </div>
           </div>
 
@@ -470,24 +541,22 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           >
             {loading ? "Generating..." : "Generate Report"}
           </button>
-      
-        
-        
-{/* Dropdown */}
-<select
-  value={device}   // 👈 bind state here
-  onChange={(e) => setDevice(e.target.value)} // 👈 update state
->
-  <option value="Device_0">Device_0</option>
-  <option value="Device_1">Device_1</option>
-  <option value="Device_2">Device_2</option>
-  <option value="Device_3">Device_3</option>
-  <option value="Device_4">Device_4</option>
-  <option value="Device_5">Device_5</option>
-  <option value="Device_6">Device_6</option>
-</select>
-{device}
-</div>
+
+          {/* Dropdown */}
+          <select
+            value={device} // 👈 bind state here
+            onChange={(e) => setDevice(e.target.value)} // 👈 update state
+          >
+            <option value="Device_0">Device_0</option>
+            <option value="Device_1">Device_1</option>
+            <option value="Device_2">Device_2</option>
+            <option value="Device_3">Device_3</option>
+            <option value="Device_4">Device_4</option>
+            <option value="Device_5">Device_5</option>
+            <option value="Device_6">Device_6</option>
+          </select>
+          {device}
+        </div>
 
         {/* Graph Section */}
         <div
@@ -497,15 +566,13 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             alignItems: "center",
             marginBottom: "30px",
             flexWrap: "wrap",
-      gap: "10px"   // ✅ spacing between cards
-    }}
+            gap: "10px", // ✅ spacing between cards
+          }}
         >
-
-
           {graphselect.Humidity == "line" ? (
             <LineGraph
-               liveData={Graphdata}
-             liveAverages={liveAverages.Humidity}
+              liveData={Graphdata}
+              liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
               mykey={"Humidity"}
               image={humidity}
@@ -515,23 +582,19 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           ) : graphselect.Humidity == "bar" ? (
             <BarGraph
               liveData={Graphdata}
-             liveAverages={liveAverages.Humidity}
+              liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
-             
               mykey={"Humidity"}
-              
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
             />
           ) : graphselect.Humidity == "pi" ? (
             <PiChart
-             liveData={Graphdata}
-             liveAverages={liveAverages.Humidity}
+              liveData={Graphdata}
+              liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
-             
               mykey={"Humidity"}
-             
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
@@ -542,9 +605,9 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
 
           {graphselect.Temperature == "line" ? (
             <LineGraph
-             liveData={Graphdata}
-             liveAverages={liveAverages.Temperature}
-            Label={"Temperature"}
+              liveData={Graphdata}
+              liveAverages={liveAverages.Temperature}
+              Label={"Temperature"}
               mykey={"Temperature"}
               image={temperature}
               bg={"rgb(255, 255, 255)"}
@@ -552,26 +615,20 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             />
           ) : graphselect.Temperature == "bar" ? (
             <BarGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Temperature}
-            
+              liveData={Graphdata}
+              liveAverages={liveAverages.Temperature}
               Label={"Temperature"}
-              
               mykey={"Temperature"}
-              
               image={temperature}
               bg={"rgb(255, 255, 255)"}
               unit={<>&#176;C</>}
             />
           ) : graphselect.Temperature == "pi" ? (
             <PiChart
-            liveData={Graphdata}
-             liveAverages={liveAverages.Temperature}
-              
+              liveData={Graphdata}
+              liveAverages={liveAverages.Temperature}
               Label={"Temperature"}
-             
               mykey={"Temperature"}
-             
               image={temperature}
               bg={"rgb(255, 255, 255)"}
               unit={<>&#176;C</>}
@@ -582,9 +639,9 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
 
           {graphselect.Ph == "line" ? (
             <LineGraph
-            liveData={Graphdata}
-            liveAverages={liveAverages.Ph}
-            Label={"pH"}
+              liveData={Graphdata}
+              liveAverages={liveAverages.Ph}
+              Label={"pH"}
               mykey={"Ph"}
               image={ph}
               bg={"rgb(255, 255, 255)"}
@@ -592,26 +649,20 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             />
           ) : graphselect.Ph == "bar" ? (
             <BarGraph
-               liveData={Graphdata}
-            liveAverages={liveAverages.Ph}
-           
+              liveData={Graphdata}
+              liveAverages={liveAverages.Ph}
               Label={"pH"}
-              
               mykey={"Ph"}
-            
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
             />
           ) : graphselect.Ph == "pi" ? (
             <PiChart
-             liveData={Graphdata}
-            liveAverages={liveAverages.Ph}
-             
+              liveData={Graphdata}
+              liveAverages={liveAverages.Ph}
               Label={"pH"}
-            
               mykey={"Ph"}
-            
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
@@ -620,154 +671,149 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
             <>{null}</>
           )}
 
-          { device === "Device_0" &&
-          (graphselect.H2s == "line" ? (
-            <LineGraph
-             liveData={Graphdata}
-             liveAverages={liveAverages.H2s}
-              Label={"H2S"}
-              mykey={"H2s"}
-              image={H2S}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.H2s == "bar" ? (
-            <BarGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.H2s}
-      Label={"H2S"}
-              mykey={"H2s"}
-              image={H2S}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.H2s == "pi" ? (
-            <PiChart
-            liveData={Graphdata}
-             liveAverages={liveAverages.H2s}
-              Label={"H2S"}
-              mykey={"H2s"}
-              image={H2S}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : (<>{null}</>
-          ))}
+          {device === "Device_0" &&
+            (graphselect.H2s == "line" ? (
+              <LineGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.H2s}
+                Label={"H2S"}
+                mykey={"H2s"}
+                image={H2S}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.H2s == "bar" ? (
+              <BarGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.H2s}
+                Label={"H2S"}
+                mykey={"H2s"}
+                image={H2S}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.H2s == "pi" ? (
+              <PiChart
+                liveData={Graphdata}
+                liveAverages={liveAverages.H2s}
+                Label={"H2S"}
+                mykey={"H2s"}
+                image={H2S}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : (
+              <>{null}</>
+            ))}
 
-          { device === "Device_0" &&
-          (graphselect.Ammonia == "line" ? (
-            <LineGraph
-               liveData={Graphdata}
-             liveAverages={liveAverages.Ammonia}
-              Label={"Ammonia"}
-              mykey={"Ammonia"}
-              image={NH3}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Ammonia == "bar" ? (
-            <BarGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Ammonia}
-            
-              Label={"Ammonia"}
-             
-              mykey={"Ammonia"}
-              image={NH3}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Ammonia == "pi" ? (
-            <PiChart
-            liveData={Graphdata}
-             liveAverages={liveAverages.Ammonia}
-             
-              Label={"Ammonia"}
-            
-              mykey={"Ammonia"}
-              image={NH3}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : (<>{null}</>
-          ))}
+          {device === "Device_0" &&
+            (graphselect.Ammonia == "line" ? (
+              <LineGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Ammonia}
+                Label={"Ammonia"}
+                mykey={"Ammonia"}
+                image={NH3}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Ammonia == "bar" ? (
+              <BarGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Ammonia}
+                Label={"Ammonia"}
+                mykey={"Ammonia"}
+                image={NH3}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Ammonia == "pi" ? (
+              <PiChart
+                liveData={Graphdata}
+                liveAverages={liveAverages.Ammonia}
+                Label={"Ammonia"}
+                mykey={"Ammonia"}
+                image={NH3}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : (
+              <>{null}</>
+            ))}
 
-          { device === "Device_0" &&
-          (graphselect.Methane == "line" ? (
-            <LineGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Methane}
-              Label={"Methane"}
-              mykey={"Methane"}
-              image={CH4}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Methane == "bar" ? (
-            <BarGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Methane}
-              
-              Label={"Methane"}
-             
-              mykey={"Methane"}
-              image={CH4}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Methane == "pi" ? (
-            <PiChart
-            liveData={Graphdata}
-             liveAverages={liveAverages.Methane}
-              
-              Label={"Methane"}
-            
-              mykey={"Methane"}
-              image={CH4}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : (
-            <>{null}</>))}
+          {device === "Device_0" &&
+            (graphselect.Methane == "line" ? (
+              <LineGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Methane}
+                Label={"Methane"}
+                mykey={"Methane"}
+                image={CH4}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Methane == "bar" ? (
+              <BarGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Methane}
+                Label={"Methane"}
+                mykey={"Methane"}
+                image={CH4}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Methane == "pi" ? (
+              <PiChart
+                liveData={Graphdata}
+                liveAverages={liveAverages.Methane}
+                Label={"Methane"}
+                mykey={"Methane"}
+                image={CH4}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : (
+              <>{null}</>
+            ))}
 
-          { device === "Device_0" &&
-          (graphselect.Co2 == "line" ? (
-            <LineGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Co2}
-              Label={"CO2"}
-              mykey={"Co2"}
-              image={CO2}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Co2 == "bar" ? (
-            <BarGraph
-            liveData={Graphdata}
-             liveAverages={liveAverages.Co2}
-            Label={"CO2"}
-              mykey={"Co2"}
-              image={CO2}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : graphselect.Co2 == "pi" ? (
-            <PiChart
-            liveData={Graphdata}
-             liveAverages={liveAverages.Co2}
-             Label={"CO2"}
-              mykey={"Co2"}
-              image={CO2}
-              bg={"rgb(255, 255, 255)"}
-              unit={"ppm"}
-            />
-          ) : (
-            <>{null}</>
-          ))}
+          {device === "Device_0" &&
+            (graphselect.Co2 == "line" ? (
+              <LineGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Co2}
+                Label={"CO2"}
+                mykey={"Co2"}
+                image={CO2}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Co2 == "bar" ? (
+              <BarGraph
+                liveData={Graphdata}
+                liveAverages={liveAverages.Co2}
+                Label={"CO2"}
+                mykey={"Co2"}
+                image={CO2}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : graphselect.Co2 == "pi" ? (
+              <PiChart
+                liveData={Graphdata}
+                liveAverages={liveAverages.Co2}
+                Label={"CO2"}
+                mykey={"Co2"}
+                image={CO2}
+                bg={"rgb(255, 255, 255)"}
+                unit={"ppm"}
+              />
+            ) : (
+              <>{null}</>
+            ))}
 
           <div
             style={{
-                backgroundColor: "white",
+              backgroundColor: "white",
               marginLeft: "0px",
               position: "relative",
               height: "340px",
@@ -795,8 +841,11 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                 marginTop: "20px",
               }}
             >
-              <option value="Food Waste">Food Waste</option>
-              <option value="Garden Waste">Garden Waste</option>
+        
+       <option value="">Select</option>
+              <option value="Wet Waste (Mixed Organic Waste)">Wet Waste (Mixed Organic Waste)</option> 
+              {/*  <option value="Food Waste">Food Waste</option> */}
+              {/*  <option value="Garden Waste">Garden Waste</option> */}
             </select>
 
             {/* Input 2 */}
@@ -825,16 +874,19 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
               }}
             >
               <p>Total Emission due to </p>
-              <p>
-                {input2} {selectedOption} is =
-              </p>
+ {selectedOption &&  (
+  <p>
+    {input2} {selectedOption} is =
+  </p>
+)}
+
               <p
                 style={{
                   fontWeight: "bold" /* makes text bold */,
                   fontSize: "20px",
                 }}
               >
-                {op.toFixed(2)} KG CO<sub>2</sub>E
+                {op.toFixed(2)} KG CO<sub>2</sub>e
               </p>
             </div>
           </div>
@@ -886,8 +938,7 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                   marginBottom: "5px",
                 }}
               >
-                
-                 {Graphdata?.at(-1)?.Humidity?? "--"}%
+                {Graphdata?.at(-1)?.Humidity ?? "--"}%
               </div>
               <div
                 style={{
@@ -922,48 +973,50 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
           </div>
 
           {/* H2S Card */}
-        {device === "Device_0" ? 
-         
-          <div
-            style={{
-              backgroundColor: "#f5f5f5",
-              borderRadius: "8px",
-              padding: "15px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
+          {device === "Device_0" ? (
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "10px",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+                padding: "15px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
-                Avg: {liveAverages.H2s || 0} ppm
-              </div>
-            </div>
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: "-20px",
-                fontSize: "16px",
-              }}
-            >
-              <div style={{ fontWeight: "bold", marginBottom: "5px" }}>H₂S</div>
               <div
                 style={{
-                  fontSize: "26px",
-                  fontWeight: "bold",
-                  marginBottom: "20px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "10px",
                 }}
               >
-               
-                {Graphdata?.at(-1)?.H2s?? "--"}ppm
+                <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Avg: {liveAverages.H2s || 0} ppm
+                </div>
+              </div>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "-20px",
+                  fontSize: "16px",
+                }}
+              >
+                <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                  H₂S
+                </div>
+                <div
+                  style={{
+                    fontSize: "26px",
+                    fontWeight: "bold",
+                    marginBottom: "20px",
+                  }}
+                >
+                  {Graphdata?.at(-1)?.H2s ?? "--"}ppm
+                </div>
               </div>
             </div>
-          </div>
- : <></>} 
+          ) : (
+            <></>
+          )}
           {/* Temperature Card */}
           <div
             style={{
@@ -1000,7 +1053,8 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                   fontWeight: "bold",
                   marginBottom: "20px",
                 }}
-              >{Graphdata?.at(-1)?.Temperature?? "--"}°C
+              >
+                {Graphdata?.at(-1)?.Temperature ?? "--"}°C
               </div>
             </div>
           </div>
@@ -1040,57 +1094,58 @@ fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
                   marginBottom: "20px",
                 }}
               >
-                 {Graphdata?.at(-1)?.Ph?? "--"}pH
+                {Graphdata?.at(-1)?.Ph ?? "--"}pH
               </div>
             </div>
           </div>
 
           {/* Methane Card */}
 
-{device === "Device_0" ? 
-          <div
-            style={{
-              backgroundColor: "#f5f5f5",
-              borderRadius: "8px",
-              padding: "15px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
+          {device === "Device_0" ? (
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "10px",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+                padding: "15px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "12px" }}>
-                Avg: {liveAverages.Methane || 0}ppm
-              </div>
-            </div>
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: "-20px",
-                fontSize: "16px",
-              }}
-            >
-              <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
-                Methane
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "10px",
+                }}
+              >
+                <div style={{ fontWeight: "bold", fontSize: "12px" }}>
+                  Avg: {liveAverages.Methane || 0}ppm
+                </div>
               </div>
               <div
                 style={{
-                  fontSize: "26px",
-                  fontWeight: "bold",
-                  marginBottom: "5px",
+                  textAlign: "center",
+                  marginTop: "-20px",
+                  fontSize: "16px",
                 }}
               >
-                {Graphdata?.at(-1)?.Methane?? "--"}
-                ppm
+                <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                  Methane
+                </div>
+                <div
+                  style={{
+                    fontSize: "26px",
+                    fontWeight: "bold",
+                    marginBottom: "5px",
+                  }}
+                >
+                  {Graphdata?.at(-1)?.Methane ?? "--"}
+                  ppm
+                </div>
               </div>
             </div>
-          </div>
-: <></>}
-
+          ) : (
+            <></>
+          )}
         </div>
 
         {/* Version Info */}
