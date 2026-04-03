@@ -10,7 +10,7 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
-import Logo from "../../../public/Image/Logo.jpeg";
+import Logo from "../../../public/Image/Logo.png";
 import DateTimePicker from "react-datetime-picker";
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
