@@ -876,7 +876,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
               <p>Total Emission due to </p>
  {selectedOption &&  (
   <p>
-   Kg {input2} {selectedOption} is =
+    {input2} Kg {selectedOption} is =
   </p>
 )}
 
