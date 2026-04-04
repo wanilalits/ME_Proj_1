@@ -10,7 +10,7 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
-import Logo from "../../../public/Image/Logo.png";
+
 import DateTimePicker from "react-datetime-picker";
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
@@ -151,13 +151,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
           const updated = [...prev.slice(-14), result[0]];
 
           const averages = {
-            Ammonia: Number(
-              (
-                updated
-                  .map((item) => Number(item.Ammonia || 0))
-                  .reduce((a, b) => a + b, 0) / updated.length
-              ).toFixed(2),
-            ),
+            Ammonia: Number( ( updated.map((item) => Number(item.Ammonia || 0)) .reduce((a, b) => a + b, 0) / updated.length ).toFixed(2),),
             Co2: Number(
               (
                 updated
@@ -516,13 +510,13 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
             value={device} // 👈 bind state here
             onChange={(e) => setDevice(e.target.value)} // 👈 update state
           >
-            <option value="Device_0">Device_0</option>
-            <option value="Device_1">Device_1</option>
-            <option value="Device_2">Device_2</option>
-            <option value="Device_3">Device_3</option>
-            <option value="Device_4">Device_4</option>
-            <option value="Device_5">Device_5</option>
-            <option value="Device_6">Device_6</option>
+            <option value="Device_0">Greya Composter</option>
+            <option value="Device_1">PIT 1</option>
+            <option value="Device_2">PIT 2</option>
+            <option value="Device_3">PIT 3</option>
+            <option value="Device_4">PIT 4</option>
+            <option value="Device_5">PIT 5</option>
+            <option value="Device_6">PIT 6</option>
           </select>
           {device}
         </div>
@@ -801,13 +795,14 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
                 (setSelectedOption(e.target.value), setInput2(0), setOp(0));
               }}
               style={{
-                width: "80%",
+                width: "90%",
                 height: "35px",
                 marginBottom: "10px",
                 borderRadius: "8px",
                 border: "1px solid #ccc",
                 marginLeft: "14px",
                 marginTop: "20px",
+paddingLeft:"3px"
               }}
             >
         
@@ -820,7 +815,9 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
             {/* Input 2 */}
             <input
               type="text"
-              value={input2}
+              //value={input2}
+               readOnly
+              value={10}
               onChange={handleInput2Change}
               placeholder="Enter Your Value"
               style={{
@@ -842,20 +839,22 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
                 marginLeft: "14px",
               }}
             >
-              <p>Total Emission due to </p>
- {selectedOption &&  (
+              <p style={{ margin: 0 }}>Total Emission due to  </p>
+{/*  {selectedOption &&  (
   <p>
     {input2} Kg {selectedOption} is =
   </p>
-)}
-
+)} */}
+    <p >10Kg Wet Waste (Mixed Organic Waste) is</p>
               <p
                 style={{
                   fontWeight: "bold" /* makes text bold */,
                   fontSize: "20px",
+                 
                 }}
               >
-                {op.toFixed(1)} KG CO<sub>2</sub>e
+                {/* {op.toFixed(1)} KG CO<sub>2</sub>e */}
+                2KG CO<sub>2</sub>e
               </p>
             </div>
           </div>
