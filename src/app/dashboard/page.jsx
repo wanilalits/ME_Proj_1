@@ -42,6 +42,7 @@ function page() {
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
   const [device, setDevice] = useState("Device_0"); // default value
+  const [devicenickname, setDevicenickname] = useState("Greya Composter"); // default value
   const [highlight, setHighlight] = useState(false);
   const [src, setSrc] = useState("/Image/homee.png");
   const [rtkid, setRtkid] = useState(null);
@@ -256,24 +257,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
     }
   };
 
-  /*
-   * Simulates fetching the previous 15 temperature readings for the dashboard.
-   * Generates an array of mock data points with incrementally increasing temperatures
-   * (starting from 20°C) and timestamps spaced 1 minute apart going backwards from now.
-   * The generated data is then stored in the component state via setPreviousData.
-   * This effect runs once on component mount to initialize historical temperature data.
-   */
-  /* useEffect(() => {
-    // simulate fetching previous 15 values
-   
-    const simulatedData = Array.from({ length: 15 }, (_, i) => ({
-      _id: someId,
-      temperature: 20 + i,
-      time: new Date(Date.now() - (15 - i) * 60000).toISOString(),
-    }));
-    setPreviousData(simulatedData);
-  }, []); 
-  */
+
 
   const setThemeColor = (color) => {
     let meta = document.querySelector("meta[name='theme-color']");
@@ -506,9 +490,13 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
           </button>
 
           {/* Dropdown */}
-          <select
-            value={device} // 👈 bind state here
-            onChange={(e) => setDevice(e.target.value)} // 👈 update state
+          <select 
+           style={{ padding:"3px",
+            marginLeft:"5px"
+           }}
+          
+          value={device} // 👈 bind state here
+            onChange={(e) => {setDevice(e.target.value); setDevicenickname(e.target.options[e.target.selectedIndex].text);}} // 👈 update state
           >
             <option value="Device_0">Greya Composter</option>
             <option value="Device_1">PIT 1</option>
@@ -518,7 +506,14 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
             <option value="Device_5">PIT 5</option>
             <option value="Device_6">PIT 6</option>
           </select>
-          {device}
+          {/* {device} */}
+
+          <text
+           style={{ color:"black",
+            fontWeight: "bold"
+           }}
+          >{devicenickname}</text>
+        
         </div>
 
         {/* Graph Section */}
