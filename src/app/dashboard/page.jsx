@@ -817,7 +817,6 @@ paddingLeft:"3px"
                 width: "80%",
                 padding: "8px",
                 marginBottom: "10px",
-               
                 marginLeft: "14px",
            }}
           >10</text>
@@ -852,7 +851,7 @@ paddingLeft:"3px"
                 marginLeft: "14px",
               }}
             >
-              <p style={{ margin: 0 }}>Total Emission due to</p>
+              <p style={{ margin: 0 }}>Total Reduction in Emissions due</p>
 {/*  {selectedOption &&  (
   <p>
     {input2} Kg {selectedOption} is =
