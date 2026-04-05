@@ -801,14 +801,32 @@ paddingLeft:"3px"
               }}
             >
         
-       <option value="">Select</option>
+      
               <option value="Wet Waste (Mixed Organic Waste)">Wet Waste (Mixed Organic Waste)</option> 
               {/*  <option value="Food Waste">Food Waste</option> */}
               {/*  <option value="Garden Waste">Garden Waste</option> */}
             </select>
 
+
+   
+
+
+          <text
+           
+              style={{
+                width: "80%",
+                padding: "8px",
+                marginBottom: "10px",
+               
+                marginLeft: "14px",
+           }}
+          >10</text>
+
+
+
+
             {/* Input 2 */}
-            <input
+          {/*  <input
               type="text"
               //value={input2}
                readOnly
@@ -816,14 +834,14 @@ paddingLeft:"3px"
               onChange={handleInput2Change}
               placeholder="Enter Your Value"
               style={{
-                width: "8S0%",
+                width: "80%",
                 padding: "8px",
                 marginBottom: "10px",
                 borderRadius: "8px",
                 border: "1px solid #ccc",
                 marginLeft: "14px",
               }}
-            />
+            />  */}
 
             {/* Just to preview state values */}
             <div
@@ -834,13 +852,13 @@ paddingLeft:"3px"
                 marginLeft: "14px",
               }}
             >
-              <p style={{ margin: 0 }}>Total Emission due to  </p>
+              <p style={{ margin: 0 }}>Total Emission due to</p>
 {/*  {selectedOption &&  (
   <p>
     {input2} Kg {selectedOption} is =
   </p>
 )} */}
-    <p >10Kg Wet Waste (Mixed Organic Waste) is</p>
+    <p >10 Kg Wet Waste (Mixed Organic Waste) is</p>
               <p
                 style={{
                   fontWeight: "bold" /* makes text bold */,
@@ -849,7 +867,7 @@ paddingLeft:"3px"
                 }}
               >
                 {/* {op.toFixed(1)} KG CO<sub>2</sub>e */}
-                2KG CO<sub>2</sub>e
+                2 KG CO<sub>2</sub>e
               </p>
             </div>
           </div>
