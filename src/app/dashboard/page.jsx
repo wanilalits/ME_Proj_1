@@ -22,6 +22,8 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Tile from "../Components/Tile";
+import ReportDownload from "../Components/ReportDownload";
 function page() {
   const [graphselect, SetGraphselect] = useState({
     Humidity: "line",
@@ -37,7 +39,7 @@ function page() {
   const [nstartDate, setStartDaten] = useState(new Date());
   const [nendDate, setEndDaten] = useState(new Date());
   const [Graphdata, setGraphData] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("Wet Waste (Mixed Organic Waste)");
+
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
@@ -52,21 +54,7 @@ function page() {
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
 
-  // 🔹 Arrow function for Input2 onChange
-  const handleInput2Change = (e) => {
-    setInput2(e.target.value);
-if (selectedOption === "Wet Waste (Mixed Organic Waste)") 
-  {setOp(e.target.value * 0.2); }
 
-
-    if (selectedOption === "Food Waste") {
-      setOp(e.target.value * 8.8);
-    }
-
-    if (selectedOption === "Garden Waste") {
-      setOp(e.target.value * 1);
-    }
-  };
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
@@ -345,10 +333,7 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
           boxSizing: "border-box",
         }}
       >
-
-
 <HeaderBanner/>
-
 
         {/* Date Pickers and Generate Report */}
         <div
@@ -768,108 +753,8 @@ if (selectedOption === "Wet Waste (Mixed Organic Waste)")
             ) : (
               <>{null}</>
             ))}
-
-          <div
-            style={{
-              backgroundColor: "white",
-              marginLeft: "0px",
-              position: "relative",
-              height: "340px",
-              border: "3px solid #000",
-              borderRadius: "16px",
-              background: "#fff",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
-              width: "100%",
-              maxWidth: "360px",
-            }}
-          >
-            {/* Dropdown */}
-            <select
-              value={selectedOption}
-              onChange={(e) => {
-                (setSelectedOption(e.target.value), setInput2(0), setOp(0));
-              }}
-              style={{
-                width: "90%",
-                height: "35px",
-                marginBottom: "10px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
-                marginLeft: "14px",
-                marginTop: "20px",
-paddingLeft:"3px"
-              }}
-            >
-        
-      
-              <option value="Wet Waste (Mixed Organic Waste)">Wet Waste (Mixed Organic Waste)</option> 
-              {/*  <option value="Food Waste">Food Waste</option> */}
-              {/*  <option value="Garden Waste">Garden Waste</option> */}
-            </select>
-
-
-   
-
-
-          <text
-           
-              style={{
-                width: "80%",
-                padding: "8px",
-                marginBottom: "10px",
-                marginLeft: "14px",
-           }}
-          >10</text>
-
-
-
-
-            {/* Input 2 */}
-          {/*  <input
-              type="text"
-              //value={input2}
-               readOnly
-              value={10}
-              onChange={handleInput2Change}
-              placeholder="Enter Your Value"
-              style={{
-                width: "80%",
-                padding: "8px",
-                marginBottom: "10px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
-                marginLeft: "14px",
-              }}
-            />  */}
-
-            {/* Just to preview state values */}
-            <div
-              style={{
-                marginTop: "10px",
-                fontSize: "14px",
-                color: "#333",
-                marginLeft: "14px",
-              }}
-            >
-              <p style={{ margin: 0 }}>Total Reduction in Emissions due to</p>
-{/*  {selectedOption &&  (
-  <p>
-    {input2} Kg {selectedOption} is =
-  </p>
-)} */}
-    <p >10 Kg Wet Waste (Mixed Organic Waste) is</p>
-              <p
-                style={{
-                  fontWeight: "bold" /* makes text bold */,
-                  fontSize: "20px",
-                 
-                }}
-              >
-                {/* {op.toFixed(1)} KG CO<sub>2</sub>e */}
-                2 KG CO<sub>2</sub>e
-              </p>
-            </div>
-          </div>
+<Tile></Tile>
+      <ReportDownload>  </ReportDownload>    
         </div>
 
         {/* Dashboard Metrics */}
