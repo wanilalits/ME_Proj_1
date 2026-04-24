@@ -54,7 +54,6 @@ function page() {
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
 
-
   // 🔹 Arrow function to get last 15samples data
   const getFirstGraphdata = async () => {
     try {
@@ -140,7 +139,13 @@ function page() {
           const updated = [...prev.slice(-14), result[0]];
 
           const averages = {
-            Ammonia: Number( ( updated.map((item) => Number(item.Ammonia || 0)) .reduce((a, b) => a + b, 0) / updated.length ).toFixed(2),),
+            Ammonia: Number(
+              (
+                updated
+                  .map((item) => Number(item.Ammonia || 0))
+                  .reduce((a, b) => a + b, 0) / updated.length
+              ).toFixed(2),
+            ),
             Co2: Number(
               (
                 updated
@@ -215,7 +220,87 @@ function page() {
           device,
       );
       const exceldata = await res.json();
-      const worksheet = XLSX.utils.json_to_sheet(exceldata);
+      
+    // ✅ Step 1: Modify Data
+    const modifiedData = exceldata.map((item, index) => {
+      const utc = new Date(item.time);
+
+      // Convert UTC → IST (+5:30)
+      const ist = new Date(utc.getTime() + 0);
+const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
+  ist.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+
+      return {
+        "🔢 Sr.No": index + 1,
+        "💧 Humidity (%)": item.Humidity,
+        "🌡️ Temperature (°C)": item.Temperature,
+        "⚗️ pH": item.Ph,
+        "🧪 H2S (ppm)": item.H2s,
+        "🌫️ Ammonia (ppm)": item.Ammonia,
+        "🔥 Methane (ppm)": item.Methane,
+        "🌍 CO2 (ppm)": item.Co2,
+        "⏰ Time(IST)": time12hr.toLocaleString(),
+      };
+    });
+
+    // ✅ Step 2: Create Sheet
+    const worksheet = XLSX.utils.json_to_sheet(modifiedData);
+
+    // ✅ Step 3: Try to make header bold (may not work in free version)
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+
+      if (worksheet[cellAddress]) {
+        worksheet[cellAddress].s = {
+          font: { bold: true },
+        };
+      }
+    }
+
+    // ✅ Step 4: Column widths (improves look)
+    worksheet["!cols"] = [
+      { wch: 8.25 },
+      { wch: 13.25 },
+      { wch: 17.88 },
+      { wch: 5 },
+      { wch: 10.25 },
+      { wch: 16.88 },
+      { wch: 15.38 },
+      { wch: 11.5 },
+      { wch: 18.25 },
+    ];
+
+    // ✅ Step 5: Workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
+
+    // ✅ Step 6: Export
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(blob, "Sensors_Data_" + device + ".xlsx");
+  }
+  catch (error) {
+    console.error(error);
+  }finally {
+      setLoading(false);
+    }
+};
+
+
+     /*  const worksheet = XLSX.utils.json_to_sheet(exceldata);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
       const excelBuffer = XLSX.write(workbook, {
@@ -230,7 +315,7 @@ function page() {
     } finally {
       setLoading(false);
     }
-  };
+  }; */
 
   //Log Off
   const onLogoff = () => {
@@ -244,8 +329,6 @@ function page() {
       setLoading1(false);
     }
   };
-
-
 
   const setThemeColor = (color) => {
     let meta = document.querySelector("meta[name='theme-color']");
@@ -329,11 +412,10 @@ function page() {
           maxWidth: "1200px",
           margin: "0 auto",
           padding: "20px",
-
           boxSizing: "border-box",
         }}
       >
-<HeaderBanner/>
+        <HeaderBanner />
 
         {/* Date Pickers and Generate Report */}
         <div
@@ -341,18 +423,21 @@ function page() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "30px",
+            marginBottom: "5px",
             flexWrap: "wrap",
           }}
         >
+          
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "15px",
+              gap: "20px",
               flexWrap: "wrap",
+              marginBottom: "30px",
             }}
           >
+  {/* Start Date */}
             <div
               style={{
                 fontSize: "14px",
@@ -363,13 +448,17 @@ function page() {
               <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 Start Date:
               </label>
-              <DateTimePicker
-                onChange={setStartDaten}
-                value={nstartDate}
-                format="dd/MM/yyyy hh:mm a"
-                disableClock={true}
-              />
+
+             <div style={{ width: "280px"}}>
+  <DateTimePicker
+    onChange={setStartDaten}
+    value={nstartDate}
+    format="dd/MM/yyyy hh:mm a"
+    disableClock={true}
+  />
+</div>
             </div>
+ {/* End Date */}
             <div
               style={{
                 fontSize: "14px",
@@ -380,6 +469,8 @@ function page() {
               <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
                 End Date:
               </label>
+ <div style={{ width: "280px",
+ }}>
               <DateTimePicker
                 onChange={setEndDaten}
                 value={nendDate}
@@ -387,14 +478,21 @@ function page() {
                 disableClock={true}
                 minDate={nstartDate}
               />
+              </div>
             </div>
 
-            <div style={{ textAlign: "left" }}>
+
+
+ {/*last update + Button */}
+            <div style={{ 
+                display: "flex",
+                flexDirection: "column",
+              textAlign: "left" }}>
+              
               <button
                 style={{
                   backgroundColor: "#13A10E", // Updated to green
                   color: "#fff",
-
                   border: "none",
                   padding: "8px 20px",
                   borderRadius: "6px",
@@ -456,50 +554,71 @@ function page() {
                   : "Updating..."}
               </div>
             </div>
+  
+ {/* Report Button */}
+          <div
+            style={{
+              fontSize: "14px",
+               display: "flex",
+                flexDirection: "column",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#1BA94C",
+                color: "white",
+                border: "none",
+                padding: "8px 20px",
+                borderRadius: "4px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+              onClick={fetchDataAndCreateExcel}
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Generate Report"}
+            </button>
           </div>
 
-          <button
+ {/* Dropdown */}
+          <div
             style={{
-              backgroundColor: "#1BA94C",
-              color: "white",
-              border: "none",
-              padding: "8px 20px",
-              borderRadius: "4px",
-              fontWeight: "bold",
-              cursor: "pointer",
+              display: "flex",
+              display: "flex",
+              flexDirection: "column",
             }}
-            onClick={fetchDataAndCreateExcel}
-            disabled={loading}
           >
-            {loading ? "Generating..." : "Generate Report"}
-          </button>
+            {/* Dropdown */}
+            <select
+              style={{ padding: "3px", marginLeft: "0px" }}
+              value={device} // 👈 bind state here
+              onChange={(e) => {
+                setDevice(e.target.value);
+                setDevicenickname(
+                  e.target.options[e.target.selectedIndex].text,
+                );
+              }} // 👈 update state
+            >
+              <option value="Device_0">Greya Composter</option>
+              <option value="Device_1">PIT 1</option>
+              <option value="Device_2">PIT 2</option>
+              <option value="Device_3">PIT 3</option>
+              <option value="Device_4">PIT 4</option>
+              <option value="Device_5">PIT 5</option>
+              <option value="Device_6">PIT 6</option>
+            </select>
+            {/* {device} */}
 
-          {/* Dropdown */}
-          <select 
-           style={{ padding:"3px",
-            marginLeft:"5px"
-           }}
-          
-          value={device} // 👈 bind state here
-            onChange={(e) => {setDevice(e.target.value); setDevicenickname(e.target.options[e.target.selectedIndex].text);}} // 👈 update state
-          >
-            <option value="Device_0">Greya Composter</option>
-            <option value="Device_1">PIT 1</option>
-            <option value="Device_2">PIT 2</option>
-            <option value="Device_3">PIT 3</option>
-            <option value="Device_4">PIT 4</option>
-            <option value="Device_5">PIT 5</option>
-            <option value="Device_6">PIT 6</option>
-          </select>
-          {/* {device} */}
+            <text style={{ color: "black", fontWeight: "bold", marginLeft:"8px" }}>
+              {devicenickname}
+            </text>
+          </div>
 
-          <text
-           style={{ color:"black",
-            fontWeight: "bold"
-           }}
-          >{devicenickname}</text>
-        
+
+
+   </div>
         </div>
+
 
         {/* Graph Section */}
         <div
@@ -753,8 +872,8 @@ function page() {
             ) : (
               <>{null}</>
             ))}
-<Tile></Tile>
-      <ReportDownload>  </ReportDownload>    
+          <Tile key_1={device}  ></Tile>
+          <ReportDownload> </ReportDownload>
         </div>
 
         {/* Dashboard Metrics */}

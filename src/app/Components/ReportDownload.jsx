@@ -100,7 +100,7 @@ useEffect(() => {
           <span
             style={{
               position: "absolute",
-              right: "10px",
+              right: "18px",
               transform: open ? "rotate(180deg)" : "rotate(0deg)",
             }}
           >

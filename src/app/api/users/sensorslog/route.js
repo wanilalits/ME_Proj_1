@@ -11,8 +11,7 @@ import {
 } from "../../../../database/userSchema";
 import { NextResponse } from "next/server";
 import { time } from "console";
-const connectionStr =
-  "mongodb+srv://lalilswani:KrGXqcaDbahGMmaL@cluster0.ygf21f6.mongodb.net/projectOne?retryWrites=true&w=majority&appName=Cluster0";
+const connectionStr = "mongodb+srv://lalilswani:KrGXqcaDbahGMmaL@cluster0.ygf21f6.mongodb.net/projectOne?retryWrites=true&w=majority&appName=Cluster0";
 let all = "mg";
 
 export const GET = async (reqest) => {
@@ -25,6 +24,7 @@ export const GET = async (reqest) => {
   if (query === "all") {
     var data = await Sensor.find();
     return NextResponse.json(data);
+
   } else if (query === "filterbydate") {
     var query1 = await reqest.nextUrl.searchParams.get("s");
     var query2 = await reqest.nextUrl.searchParams.get("e");
@@ -32,13 +32,8 @@ export const GET = async (reqest) => {
     // console.log("payload", query1, query2, mydeviceid);
     query1 = new Date(query1);
     query2 = new Date(query2);
-    console.log(
-      query1,
-      "............... ",
-      query2,
-      "............... ",
-      mydeviceid,
-    );
+    console.log( query1, "............... ", query2, "............... ", mydeviceid,);
+    
     if (mydeviceid === "Device_0" || mydeviceid === null) {
       all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 } });
       //console.log("all", all);
@@ -58,7 +53,7 @@ export const GET = async (reqest) => {
     return NextResponse.json(all);
   } 
   
-  else if (query === "15" || query === "1") {
+  else if (query === "15" || query === "1" || query==="48") {
     if (deviceid === "Device_0") {
       var data = await Sensor.find().sort({ _id: -1 }).limit(+query);
     } else if (deviceid === "Device_1") {
@@ -84,8 +79,9 @@ export const GET = async (reqest) => {
 export const POST = async (reqest) => {
   let payload = await reqest.json();
   if (payload.tkn) {
-    // console.log("payload", payload);
-    payload.time = new Date();
+   //console.log("payload", payload);
+   checksensorLimits(payload);
+     payload.time = new Date();
     let status = await mongoose.connect(connectionStr);
     if (payload.tkn === "Sensor_0" || payload.tkn === "user") {
       status = new Sensor(payload);
@@ -133,6 +129,59 @@ export const DELETE = async (reqest) => {
   }
   return NextResponse.json({ sucess: true }, { status: 202 });
 };
+
+
+const checksensorLimits = (payload)=>{
+// Humidity (0 - 100)
+if (payload.Humidity > 100) {
+  payload.Humidity = 100;
+} else if (payload.Humidity < 0) {
+  payload.Humidity = 0;
+}
+
+// Temperature (20 - 70)
+if (payload.Temperature > 70) {
+  payload.Temperature = 70;
+} else if (payload.Temperature < 20) {
+  payload.Temperature = 20;
+}
+
+// Ph (0 - 14)
+if (payload.Ph > 14) {
+  payload.Ph = 14;
+} else if (payload.Ph < 0) {
+  payload.Ph = 0;
+}
+
+// H2s (0 - 500)
+if (payload.H2s > 500) {
+  payload.H2s = 500;
+} else if (payload.H2s < 0) {
+  payload.H2s = 0;
+}
+
+// Ammonia (0 - 1000)
+if (payload.Ammonia > 1000) {
+  payload.Ammonia = 1000;
+} else if (payload.Ammonia < 0) {
+  payload.Ammonia = 0;
+}
+
+// Methane (0 - 10000)
+if (payload.Methane > 10000) {
+  payload.Methane = 10000;
+} else if (payload.Methane < 0) {
+  payload.Methane = 0;
+}
+
+// Co2 (0 - 600)
+if (payload.Co2 > 600) {
+  payload.Co2 = 600;
+} else if (payload.Co2 < 0) {
+  payload.Co2 = 0;
+}
+}
+
 
 /* 
 http://localhost:3000/api/users/sensorslog
