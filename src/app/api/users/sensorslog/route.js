@@ -82,11 +82,11 @@ const today  = new Date();
 // Start of today: 12:00:00.000 AM UTC format
 const startOfDay = new Date(today);
 //startOfDay.setHours(0, 0, 0, 0);
-startOfDay.setHours(11, 0, 0, 0);
+startOfDay.setHours(10, 0, 0, 0);
 // End of today: 11:59:59.999 PM  UTC format UTC format
 const endOfDay = new Date(today);
 //endOfDay.setHours(23, 59, 59, 999);
-endOfDay.setHours(12, 0, 0, 0);
+endOfDay.setHours(11, 0, 0, 0);
 
 //const data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
 
