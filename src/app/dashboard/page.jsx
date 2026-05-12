@@ -299,24 +299,6 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
     }
 };
 
-
-     /*  const worksheet = XLSX.utils.json_to_sheet(exceldata);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      const blob = new Blob([excelBuffer], {
-        type: "application/octet-stream",
-      });
-      saveAs(blob, "Sensors_Data.xlsx");
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  }; */
-
   //Log Off
   const onLogoff = () => {
     setLoading1(true);
@@ -423,20 +405,11 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "5px",
+            marginBottom: "20px",
             flexWrap: "wrap",
           }}
         >
-          
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "20px",
-              flexWrap: "wrap",
-              marginBottom: "30px",
-            }}
-          >
+  
   {/* Start Date */}
             <div
               style={{
@@ -480,9 +453,6 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               />
               </div>
             </div>
-
-
-
  {/*last update + Button */}
             <div style={{ 
                 display: "flex",
@@ -555,31 +525,6 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               </div>
             </div>
   
- {/* Report Button */}
-          <div
-            style={{
-              fontSize: "14px",
-               display: "flex",
-                flexDirection: "column",
-            }}
-          >
-            <button
-              style={{
-                backgroundColor: "#1BA94C",
-                color: "white",
-                border: "none",
-                padding: "8px 20px",
-                borderRadius: "4px",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
-              onClick={fetchDataAndCreateExcel}
-              disabled={loading}
-            >
-              {loading ? "Generating..." : "Generate Report"}
-            </button>
-          </div>
-
  {/* Dropdown */}
           <div
             style={{
@@ -615,8 +560,53 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
           </div>
 
 
+          {/* Report and LogOut Button */}
+          <div
+            style={{
+              fontSize: "14px",
+               display: "flex",
+                flexDirection: "column",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#1BA94C",
+                color: "white",
+                border: "none",
+                padding: "8px 20px",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                marginBottom:"10px"
+              }}
+              onClick={fetchDataAndCreateExcel}
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Generate Report"}
+            </button>
 
-   </div>
+
+       
+            <button
+              style={{
+                backgroundColor: "#1BA94C",
+                color: "white",
+                border: "none",
+                padding: "8px 20px",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+              onClick={onLogoff}
+              disabled={loading}
+            >
+              {loading ? "loging Out..." : "Log Out"}
+            </button>
+
+          </div>
+
+
+
         </div>
 
 

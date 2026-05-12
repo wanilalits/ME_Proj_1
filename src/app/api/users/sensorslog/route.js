@@ -32,7 +32,7 @@ export const GET = async (reqest) => {
     // console.log("payload", query1, query2, mydeviceid);
     query1 = new Date(query1);
     query2 = new Date(query2);
-    console.log( query1, "............... ", query2, "............... ", mydeviceid,);
+    //console.log( query1, "............... ", query2, "............... ", mydeviceid,);
     
     if (mydeviceid === "Device_0" || mydeviceid === null) {
       all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 } });
@@ -74,6 +74,44 @@ export const GET = async (reqest) => {
     // console.log("data", data);
     return NextResponse.json(data);
   }
+
+  else if (query === "1day") {
+// Get today's start and end time
+const today  = new Date();
+
+// Start of today: 12:00:00.000 AM UTC format
+const startOfDay = new Date(today);
+//startOfDay.setHours(0, 0, 0, 0);
+startOfDay.setHours(16, 0, 0, 0);
+// End of today: 11:59:59.999 PM  UTC format UTC format
+const endOfDay = new Date(today);
+//endOfDay.setHours(23, 59, 59, 999);
+endOfDay.setHours(17, 0, 0, 0);
+
+//const data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+
+    if (deviceid === "Device_0") {
+      var data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_1") {
+      var data = await Sensor_1.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_2") {
+      var data = await Sensor_2.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_3") {
+      var data = await Sensor_3.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_4") {
+      var data = await Sensor_4.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_5") {
+      var data = await Sensor_5.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    } else if (deviceid === "Device_6") {
+      console.log(deviceid)
+      var data = await Sensor_6.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+    }
+    //console.log("data", data);
+    data = data.reverse();
+    // console.log("data", data);
+    return NextResponse.json(data);
+  }
+
 };
 
 export const POST = async (reqest) => {
