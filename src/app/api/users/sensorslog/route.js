@@ -77,16 +77,28 @@ export const GET = async (reqest) => {
 
   else if (query === "1day") {
 // Get today's start and end time
-const today  = new Date();
+// Full IST day range (00:00:00.000 to 23:59:59.999)
+// converted to UTC for MongoDB query
 
-// Start of today: 12:00:00.000 AM UTC format
-const startOfDay = new Date(today);
-//startOfDay.setHours(0, 0, 0, 0);
-startOfDay.setHours(10, 0, 0, 0);
-// End of today: 11:59:59.999 PM  UTC format UTC format
-const endOfDay = new Date(today);
-//endOfDay.setHours(23, 59, 59, 999);
-endOfDay.setHours(11, 0, 0, 0);
+const today = new Date();
+
+// Get today's date in IST
+const istDate = new Date(
+  today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+);
+
+const year = istDate.getFullYear();
+const month = istDate.getMonth(); // 0-based
+const day = istDate.getDate();
+
+// Start of IST day -> 00:00 IST = previous day 18:30 UTC
+const startOfDay = new Date(Date.UTC(year, month, day - 1, 18, 30, 0, 0));
+
+// End of IST day -> 23:59:59.999 IST = same day 18:29:59.999 UTC
+const endOfDay = new Date(Date.UTC(year, month, day, 18, 29, 59, 999));
+
+//console.log("IST Day Start (UTC):", startOfDay.toISOString());
+//console.log("IST Day End (UTC):", endOfDay.toISOString());
 
 //const data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
 
