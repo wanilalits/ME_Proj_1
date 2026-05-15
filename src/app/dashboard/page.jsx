@@ -358,7 +358,7 @@ function page() {
       getdata();
       setCurredate(new Date()); // Set current date and time on component mount
       runCycle(); // repeat cycle every 30 sec
-    }, 5000);
+    }, 30000);
     return () => clearInterval(intervalId); // ✅ cleanup old interval
   }, [device]);
 
