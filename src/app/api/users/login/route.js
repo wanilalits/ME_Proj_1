@@ -10,7 +10,7 @@ export const POST = async (reqest) => {
   let payload = await reqest.json();
 
   if (!payload.userID || !payload.password) {
-    //console.log('payload')
+    console.log('payload')
     return NextResponse.json("enter all data ", { status: 202 })
   }
   await mongoose.connect(connectionStr)

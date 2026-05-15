@@ -16,12 +16,8 @@ const DropdownWithDateTime = () => {
 const [open, setOpen] = useState(false);
 const [show, setShow] = useState(false);
 const [loading, setLoading] = useState(false);
-const [selectedLabel, setSelectedLabel] = useState(
-    Object.keys(ExcelReportData)[0]
-  );
-  const [selectedValue, setSelectedValue] = useState(
-ExcelReportData[selectedLabel]
-  );
+const [selectedLabel, setSelectedLabel] = useState( Object.keys(ExcelReportData)[0] );
+const [selectedValue, setSelectedValue] = useState(ExcelReportData[selectedLabel] );
 
   const [dateTime, setDateTime] = useState(new Date());
 
@@ -44,10 +40,10 @@ const getBackDate = () => {
 };
 
 useEffect(() => {
-   console.log(dateTime)
- console.log(selectedValue)
+  // console.log(dateTime)
+ //console.log(selectedValue)
  const backDate = getBackDate(dateTime, selectedValue);
- console.log(getBackDate())
+ //console.log(getBackDate())
 
   }, [selectedValue]); // 👈 dependency array
 
@@ -65,8 +61,6 @@ useEffect(() => {
         maxWidth: "360px",
       }}
     >
-   
-
       {/* ⏱ Date Time Picker */}
       <div style={{ marginTop: "20px", marginLeft:"20px", marginBottom:"10px" }}>
         <DateTimePicker
@@ -156,7 +150,6 @@ useEffect(() => {
               //minDate={nstartDate}
         />
       </div>
-
 )}
 
  <button

@@ -115,7 +115,6 @@ const endOfDay = new Date(Date.UTC(year, month, day, 18, 29, 59, 999));
     } else if (deviceid === "Device_5") {
       var data = await Sensor_5.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
     } else if (deviceid === "Device_6") {
-      console.log(deviceid)
       var data = await Sensor_6.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
     }
     //console.log("data", data);

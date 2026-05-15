@@ -1,178 +1,103 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
+  CategoryScale,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
   Legend,
-  TimeScale,
 } from "chart.js";
-import "chartjs-adapter-date-fns";
 import { updateUser } from "../redux/slice";
 import { useDispatch, useSelector } from "react-redux";
-
 ChartJS.register(
-  TimeScale,
+  CategoryScale,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const BarGraph = (props) => {
   const dispatch = useDispatch();
   const reduxData = useSelector((state) => state.userData.users);
-const startOfDay = new Date();
-startOfDay.setHours(0, 0, 0, 0); // 00:00:01.000 AM
-const endOfDay = new Date();
-endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
+
   const userDispatch = () => {
-    const id = props.id;
-    let name = reduxData[0].name;
+    var id = props.id;
+    var name = reduxData[0].name;
     name = { ...name, [props.mykey]: "pi" };
-    const nameArr = [{ id, name }];
+    var nameArr = [{ id, name }];
     dispatch(updateUser([props.id, nameArr]));
   };
 
   const [chartData, setChartData] = useState({
-    datasets: [],
+    labels: Array(15).fill("-"),
+    datasets: Array(15).fill(0),
   });
 
-  // Prepare chart data
-  useEffect(() => {
-    if (!props.liveData || props.liveData.length === 0) {
-      setChartData({ datasets: [] });
-      return;
-    }
-
-    const datasets = props.liveData
-      .filter((item) => {
-        const timeValue = item.createdAt || item.time;
-        return (
-          timeValue &&
-          !isNaN(new Date(timeValue).getTime()) &&
-          item[props.mykey] !== undefined &&
-          item[props.mykey] !== null &&
-          item[props.mykey] !== ""
-        );
-      })
-      .map((item) => ({
-        x: new Date(item.createdAt || item.time).getTime(),
-        y: Number(item[props.mykey]),
-      }))
-      .sort((a, b) => a.x - b.x);
-
-    setChartData({
-      datasets,
-    });
-  }, [props.liveData, props.mykey]);
+  
 
   const data = {
+    labels: chartData.labels,
     datasets: [
       {
         label: props.Label,
         data: chartData.datasets,
-        backgroundColor: "rgba(89, 153, 36, 0.8)",
-        borderColor: "#ffffff",
+        borderColor: props.bg,
+        backgroundColor: [
+          "rgb(89, 153, 36)",
+          "rgb(85, 151, 31)",
+          "rgb(41, 73, 14)",
+          "rgb(88, 168, 22)",
+          "rgb(85, 151, 31)",
+          "rgb(90, 192, 7)",
+          "rgb(130, 201, 72)",
+        ],
+        borderColor: ["rgb(255, 255, 255)"],
         borderWidth: 1,
-        barThickness: 5,
-        maxBarThickness: 5,
       },
     ],
   };
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false,
-
-    // Disable animation to prevent flicker/disappearing bars
-    animation: false,
-
-    // Smooth updates for real-time data
-    transitions: {
-      active: {
-        animation: {
-          duration: 0,
-        },
-      },
-    },
-
     plugins: {
       legend: false,
-      title: {
-        display: false,
-      },
-      tooltip: {
-        mode: "nearest",
-        intersect: false,
-      },
-    },
-
-    scales: {
-      
-      x: {
-        type: "time",
-                  // Fixed range: today from 00:00:01 to 23:59:59
-  min: startOfDay.getTime(),
-  max: endOfDay.getTime(),
-        offset: true,
-        time: {
-          unit: "minute",
-          displayFormats: {
-  second: "hh:mm:ss a",
-  minute: "hh:mm a",
-  hour: "hh:mm a",
-},
-          tooltipFormat: "dd-MMM-yyyy hh:mm:ss aaaa",
-        },
-        ticks: {
-          autoSkip: true,
-          maxTicksLimit: 12,
-          maxRotation: 45,
-          minRotation: 45,
-        },
-        /* grid: {
-          display: false,
-        }, */
-        title: {
-          display: true,
-          text: startOfDay.toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "2-digit",
-})  + "    Time in hh:mm AM/PM",
-        },
-      },
-
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: "rgba(0,0,0,0.08)",
-        }, 
-         title: {
-    display: true,
-    text: String(props.unit),
-    color: "black", // Title text color
-    font: {
-      size: 14,
-      weight: "bold",
-    },
-   
-  },
-      },
+      title: { display: false },
     },
   };
+
+ useEffect(() => {
+   if (!props.liveData || props.liveData.length === 0) return;
+ 
+   const datasets = props.liveData.map(item =>
+     Number(item[props.mykey] || 0)
+   );
+ 
+   const labels = props.liveData.map(item =>
+     new Date(item.time).getMinutes()
+   );
+ 
+   setChartData({
+  labels: labels,
+    datasets: datasets
+  });
+ 
+ }, [props.liveData, props.mykey]);
+
+
 
   return (
     <div
       style={{
         backgroundColor: props.bg,
+      
+      
+          
         position: "relative",
         height: "340px",
         border: "3px solid #000",
@@ -180,9 +105,10 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         background: "#fff",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
         padding: "10px",
-        width: "100%",
-        maxWidth: "360px",
-        boxSizing: "border-box",
+    width: "100%",
+    maxWidth: "360px",
+    boxSizing: "border-box"
+        
       }}
     >
       {/* Header */}
@@ -194,7 +120,6 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
           height={40}
           style={{ position: "absolute", top: "8px", right: "12px" }}
         />
-
         <div style={{ position: "absolute", top: "55px", left: "10px" }}>
           <button
             onClick={userDispatch}
@@ -209,9 +134,8 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
               fontSize: "16px",
               cursor: "pointer",
             }}
-          />
+          ></button>
         </div>
-
         <div
           style={{
             fontSize: "20px",
@@ -239,8 +163,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             animation: "blink 1.2s infinite",
           }}
         >
-         {props.liveData?.at(-1)?.[props.mykey] || ""} 
-        {/*  {isNaN(props.liveData) ? 0 : props.liveData} */}
+         {props.liveData?.at(-1)?.[props.mykey] || ""}
         </div>
 
         <div
@@ -269,8 +192,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             left: "10px",
           }}
         >
-          
-           {isNaN(props.liveAverages) ? 0 : props.liveAverages}
+          {props.liveAverages}
         </div>
 
         <div
@@ -290,11 +212,11 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
       {/* Chart */}
       <div
         style={{
-          marginTop: "10px",
+          marginTop: "20px",
           padding: "10px",
           backgroundColor: "#fff",
           border: "2px solid black",
-          height: "220px",
+          height: "180px",
           width: "100%",
           boxSizing: "border-box",
         }}

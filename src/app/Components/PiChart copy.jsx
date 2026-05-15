@@ -12,10 +12,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const PieChart = (props) => {
   const dispatch = useDispatch();
   const reduxData = useSelector((state) => state.userData.users);
-const startOfDay = new Date();
-startOfDay.setHours(0, 0, 0, 0); // 00:00:01.000 AM
-const endOfDay = new Date();
-endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
+
   const userDispatch = () => {
     const id = props.id;
     const name = { ...reduxData[0].name, [props.mykey]: "line" };
@@ -25,25 +22,21 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
   const [chartData, setChartData] = useState({
     labels: Array(15).fill("-"),
     datasets: Array(15).fill(0),
-    rawDates: [], // store original timestamps for tooltip
   });
 
-  // Generate green shades
+  
+
+  // ✅ Generate green shades and white border
   const generateGreenShade = (i) => {
-    const green = 120 + i * 5;
+    const green = 120 + i * 5; // controls green intensity
     const red = 50 + i * 2;
     const blue = 50 + i;
-
-    return `rgb(${Math.min(red, 140)}, ${Math.min(
-      green,
-      200
-    )}, ${Math.min(blue, 100)})`;
+    return `rgb(${Math.min(red, 140)}, ${Math.min(green, 200)}, ${Math.min(blue, 100)})`;
   };
 
   const backgroundColors = chartData.datasets.map((_, i) =>
-    generateGreenShade(i)
+    generateGreenShade(i),
   );
-
   const borderColors = chartData.datasets.map(() => "#ffffff");
 
   const data = {
@@ -54,94 +47,44 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         data: chartData.datasets,
         backgroundColor: backgroundColors,
         borderColor: borderColors,
-        borderWidth: 1.2,
-         
+        borderWidth: 1.2, // ✅ thin white border
       },
     ],
   };
 
   const options = {
     responsive: false,
-    maintainAspectRatio: false, // allow chart to use full container size
-  radius: "100%",             // fill maximum possible area
     plugins: {
       legend: false,
-      tooltip: {
-        callbacks: {
-          // Tooltip title = full date and time
-          title: function (context) {
-            const index = context[0].dataIndex;
-            const rawDate = chartData.rawDates[index];
-
-            if (!rawDate) return "";
-
-            const date = new Date(rawDate);
-
-            if (isNaN(date.getTime())) return "";
-
-            return date.toLocaleString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: true,
-            });
-            // Example:
-            // 15 May 2026, 02:35:48 PM
-          },
-
-          // Tooltip label = Parameter Name + Value
-          label: function (context) {
-            return `${props.Label}: ${context.raw}`;
-          },
-        },
-      },
     },
-
-
-
-
-
-
   };
 
-  useEffect(() => {
-    if (!props.liveData || props.liveData.length === 0) return;
+useEffect(() => {
+  if (!props.liveData || props.liveData.length === 0) return;
 
-    const datasets = props.liveData.map((item) =>
-      Number(item[props.mykey] || 0)
-    );
+  const datasets = props.liveData.map(item =>
+    Number(item[props.mykey] || 0)
+  );
 
-    // Labels shown on chart
-    const labels = props.liveData.map((item) => {
-      const date = new Date(item.createdAt || item.time);
+  const labels = props.liveData.map(item =>
+    new Date(item.time).getMinutes()
+  );
 
-      return date.toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-    });
+  setChartData({
+ labels: labels,
+   datasets: datasets
+ });
 
-    // Save original timestamps for tooltip title
-    const rawDates = props.liveData.map(
-      (item) => item.createdAt || item.time
-    );
-
-    setChartData({
-      labels,
-      datasets,
-      rawDates,
-    });
-  }, [props.liveData, props.mykey]);
+}, [props.liveData, props.mykey]);
+ 
 
   return (
     <div
       style={{
         backgroundColor: props.bg,
+        
+          
+
         position: "relative",
         height: "340px",
         border: "3px solid #000",
@@ -149,9 +92,9 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         background: "#fff",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
         padding: "10px",
-        width: "100%",
-        maxWidth: "360px",
-        boxSizing: "border-box",
+    width: "100%",
+    maxWidth: "360px",
+    boxSizing: "border-box"
       }}
     >
       {/* Header */}
@@ -207,7 +150,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             transform: "translateX(-50%)",
           }}
         >
-          {props.liveData?.at(-1)?.[props.mykey] || ""}
+           {props.liveData?.at(-1)?.[props.mykey] || ""}
         </div>
 
         <div
@@ -236,7 +179,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             left: "10px",
           }}
         >
-          {props.liveAverages}
+         {props.liveAverages}
         </div>
 
         <div
@@ -253,45 +196,19 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         </div>
       </div>
 
-
-
-  {/* X-axis title */}
-  <div
-    style={{
-      position: "absolute",
-      bottom: "22px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      
-      whiteSpace: "nowrap",
-      zIndex: 10,
-      fontSize: "12px",
-    }}
-  >
-    {startOfDay.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    Time in hh:mm AM/PM
-  </div>
-
-
       {/* Pie Chart */}
       <div
         style={{
-        
-          marginTop: "10px",
+          marginTop: "20px",
           padding: "10px",
           backgroundColor: "#fff",
           border: "2px solid black",
-          height: "220px",
+          height: "190px",
           width: "100%",
           boxSizing: "border-box",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-
         }}
       >
         <Pie data={data} options={options} />

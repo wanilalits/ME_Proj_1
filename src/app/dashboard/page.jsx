@@ -16,6 +16,7 @@ import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
 import HeaderBanner from "../Components/HeaderBanner";
 import BarGraph from "../Components/BarGraph";
+import Header from '../Components/Header'
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../redux/slice";
 import "react-datetime-picker/dist/DateTimePicker.css";
@@ -39,7 +40,6 @@ function page() {
   const [nstartDate, setStartDaten] = useState(new Date());
   const [nendDate, setEndDaten] = useState(new Date());
   const [Graphdata, setGraphData] = useState([]);
-
   const [input2, setInput2] = useState(0);
   const [op, setOp] = useState(0);
   const [liveAverages, setLiveAverages] = useState({});
@@ -53,15 +53,14 @@ function page() {
   const dispatch = useDispatch();
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
-
-  // 🔹 Arrow function to get last 15samples data
+  let key; //graph update due to this change
+  // 🔹 Arrow function to get last 1day samples data
   const getFirstGraphdata = async () => {
     try {
-      // console.log("Averages calculated:..................");
       const response = await fetch(
         // window.location.origin +"/api/users/sensorslog?purp=15&deviceid=Device_0",);
         window.location.origin +
-          "/api/users/sensorslog?purp=15&deviceid=" +
+          "/api/users/sensorslog?purp=1day&deviceid=" +
           device,
       );
       const updated = await response.json();
@@ -124,6 +123,11 @@ function page() {
 
   // 🔹 Arrow function to get new data
   const getdata = async () => {
+    if (Graphdata && Graphdata.length === 0) {
+      getFirstGraphdata();
+      return;
+    }
+      
     try {
       const response = await fetch(
         window.location.origin +
@@ -136,7 +140,7 @@ function page() {
           result?.length > 0 &&
           result[0]._id?.toString() !== prev?.at(-1)?._id?.toString()
         ) {
-          const updated = [...prev.slice(-14), result[0]];
+          const updated = [...prev, result[0]];
 
           const averages = {
             Ammonia: Number(
@@ -196,7 +200,8 @@ function page() {
         }
 
         return prev;
-      });
+      }
+    );
     } catch (error) {
       //   console.error(error);
     }
@@ -220,84 +225,85 @@ function page() {
           device,
       );
       const exceldata = await res.json();
-      
-    // ✅ Step 1: Modify Data
-    const modifiedData = exceldata.map((item, index) => {
-      const utc = new Date(item.time);
 
-      // Convert UTC → IST (+5:30)
-      const ist = new Date(utc.getTime() + 0);
-const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
-  ist.toLocaleTimeString('en-IN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
+      // ✅ Step 1: Modify Data
+      const modifiedData = exceldata.map((item, index) => {
+        const utc = new Date(item.time);
 
-      return {
-        "🔢 Sr.No": index + 1,
-        "💧 Humidity (%)": item.Humidity,
-        "🌡️ Temperature (°C)": item.Temperature,
-        "⚗️ pH": item.Ph,
-        "🧪 H2S (ppm)": item.H2s,
-        "🌫️ Ammonia (ppm)": item.Ammonia,
-        "🔥 Methane (ppm)": item.Methane,
-        "🌍 CO2 (ppm)": item.Co2,
-        "⏰ Time(IST)": time12hr.toLocaleString(),
-      };
-    });
+        // Convert UTC → IST (+5:30)
+        const ist = new Date(utc.getTime() + 0);
+        const time12hr =
+          ist.toLocaleDateString("en-GB") +
+          " " +
+          ist.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
 
-    // ✅ Step 2: Create Sheet
-    const worksheet = XLSX.utils.json_to_sheet(modifiedData);
-
-    // ✅ Step 3: Try to make header bold (may not work in free version)
-    const range = XLSX.utils.decode_range(worksheet["!ref"]);
-
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-
-      if (worksheet[cellAddress]) {
-        worksheet[cellAddress].s = {
-          font: { bold: true },
+        return {
+          "🔢 Sr.No": index + 1,
+          "💧 Humidity (%)": item.Humidity,
+          "🌡️ Temperature (°C)": item.Temperature,
+          "⚗️ pH": item.Ph,
+          "🧪 H2S (ppm)": item.H2s,
+          "🌫️ Ammonia (ppm)": item.Ammonia,
+          "🔥 Methane (ppm)": item.Methane,
+          "🌍 CO2 (ppm)": item.Co2,
+          "⏰ Time(IST)": time12hr.toLocaleString(),
         };
+      });
+
+      // ✅ Step 2: Create Sheet
+      const worksheet = XLSX.utils.json_to_sheet(modifiedData);
+
+      // ✅ Step 3: Try to make header bold (may not work in free version)
+      const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+
+        if (worksheet[cellAddress]) {
+          worksheet[cellAddress].s = {
+            font: { bold: true },
+          };
+        }
       }
-    }
 
-    // ✅ Step 4: Column widths (improves look)
-    worksheet["!cols"] = [
-      { wch: 8.25 },
-      { wch: 13.25 },
-      { wch: 17.88 },
-      { wch: 5 },
-      { wch: 10.25 },
-      { wch: 16.88 },
-      { wch: 15.38 },
-      { wch: 11.5 },
-      { wch: 18.25 },
-    ];
+      // ✅ Step 4: Column widths (improves look)
+      worksheet["!cols"] = [
+        { wch: 8.25 },
+        { wch: 13.25 },
+        { wch: 17.88 },
+        { wch: 5 },
+        { wch: 10.25 },
+        { wch: 16.88 },
+        { wch: 15.38 },
+        { wch: 11.5 },
+        { wch: 18.25 },
+      ];
 
-    // ✅ Step 5: Workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
+      // ✅ Step 5: Workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
 
-    // ✅ Step 6: Export
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+      // ✅ Step 6: Export
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
 
-    const blob = new Blob([excelBuffer], {
-      type: "application/octet-stream",
-    });
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
 
-    saveAs(blob, "Sensors_Data_" + device + ".xlsx");
-  }
-  catch (error) {
-    console.error(error);
-  }finally {
+      saveAs(blob, "Sensors_Data_" + device + ".xlsx");
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
     }
-};
+  };
 
   //Log Off
   const onLogoff = () => {
@@ -336,6 +342,13 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
     }, 2000);
   };
 
+
+  useEffect(() => {
+   //console.log(Graphdata)
+  }, [Graphdata]);
+
+
+  
   useEffect(() => {
     runCycle();
     getFirstGraphdata();
@@ -345,7 +358,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
       getdata();
       setCurredate(new Date()); // Set current date and time on component mount
       runCycle(); // repeat cycle every 30 sec
-    }, 30000);
+    }, 5000);
     return () => clearInterval(intervalId); // ✅ cleanup old interval
   }, [device]);
 
@@ -409,41 +422,39 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
             flexWrap: "wrap",
           }}
         >
-  
-  {/* Start Date */}
-            <div
-              style={{
-                fontSize: "14px",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
-                Start Date:
-              </label>
+          {/* Start Date */}
+          <div
+            style={{
+              fontSize: "14px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
+              Start Date:
+            </label>
 
-             <div style={{ width: "280px"}}>
-  <DateTimePicker
-    onChange={setStartDaten}
-    value={nstartDate}
-    format="dd/MM/yyyy hh:mm a"
-    disableClock={true}
-  />
-</div>
+            <div style={{ width: "280px" }}>
+              <DateTimePicker
+                onChange={setStartDaten}
+                value={nstartDate}
+                format="dd/MM/yyyy hh:mm a"
+                disableClock={true}
+              />
             </div>
- {/* End Date */}
-            <div
-              style={{
-                fontSize: "14px",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
-                End Date:
-              </label>
- <div style={{ width: "280px",
- }}>
+          </div>
+          {/* End Date */}
+          <div
+            style={{
+              fontSize: "14px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <label style={{ fontWeight: "bold", marginBottom: "5px" }}>
+              End Date:
+            </label>
+            <div style={{ width: "280px" }}>
               <DateTimePicker
                 onChange={setEndDaten}
                 value={nendDate}
@@ -451,41 +462,40 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 disableClock={true}
                 minDate={nstartDate}
               />
-              </div>
             </div>
- {/*last update + Button */}
-            <div style={{ 
-                display: "flex",
-                flexDirection: "column",
-              textAlign: "left" }}>
-              
-              <button
-                style={{
-                  backgroundColor: "#13A10E", // Updated to green
-                  color: "#fff",
-                  border: "none",
-                  padding: "8px 20px",
-                  borderRadius: "6px",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  transition: "background-color 0.3s ease",
-                }}
-                onClick={() => {
-                  runCycle(); // trigger title animation immediately
-                  getFirstGraphdata(); // Refresh graph data if needed
-                  getdata(); // Refresh latest sensor values
-                  setCurredate(new Date()); // Update current date and time
-                }}
-              >
-                ⟳ Last Update
-              </button>
-              <div
-                style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}
-              >
-                {Graphdata.at(-1)?.time &&
-                !isNaN(new Date(Graphdata.at(-1).time))
-                  ? `Last Updated: ${new Date(Graphdata.at(-1).time)
+          </div>
+          {/*last update + Button */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "left",
+            }}
+          >
+            <button
+              style={{
+                backgroundColor: "#13A10E", // Updated to green
+                color: "#fff",
+                border: "none",
+                padding: "8px 20px",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "background-color 0.3s ease",
+              }}
+              onClick={() => {
+                runCycle(); // trigger title animation immediately
+                getFirstGraphdata(); // Refresh graph data if needed
+                getdata(); // Refresh latest sensor values
+                setCurredate(new Date()); // Update current date and time
+              }}
+            >
+              ⟳ Last Update
+            </button>
+            <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+              { Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))?
+                 `Last Updated: ${new Date(Graphdata.at(-1).createdAt)
                       .toLocaleString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -497,35 +507,35 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                       })
                       .replace(",", " - ")}`
                   : "Updating..."}
-              </div>
+            </div>
 
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: highlight ? "#000" : "#666", // 👈 change color
-                  fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
-                  marginTop: "5px",
-                  transition: "all 1s ease", // 👈 smooth effect
-                }}
-              >
-                {curredate
-                  ? `Last checked: ${curredate
-                      .toLocaleString("en-GB", {
-                        timeZone: "Asia/Kolkata",
-                        day: "2-digit",
-                        month: "short",
-                        year: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                      })
-                      .replace(",", " - ")}`
-                  : "Updating..."}
-              </div>
+            <div
+              style={{
+                fontSize: "12px",
+                color: highlight ? "#000" : "#666", // 👈 change color
+                fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
+                marginTop: "5px",
+                transition: "all 1s ease", // 👈 smooth effect
+              }}
+            >
+              {curredate
+                ? `Last checked: ${curredate
+                    .toLocaleString("en-GB", {
+                      timeZone: "Asia/Kolkata",
+                      day: "2-digit",
+                      month: "short",
+                      year: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })
+                    .replace(",", " - ")}`
+                : "Updating..."}
             </div>
-  
- {/* Dropdown */}
+          </div>
+
+          {/* Dropdown */}
           <div
             style={{
               display: "flex",
@@ -538,6 +548,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               style={{ padding: "3px", marginLeft: "0px" }}
               value={device} // 👈 bind state here
               onChange={(e) => {
+                setGraphData([]);
                 setDevice(e.target.value);
                 setDevicenickname(
                   e.target.options[e.target.selectedIndex].text,
@@ -554,18 +565,19 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
             </select>
             {/* {device} */}
 
-            <text style={{ color: "black", fontWeight: "bold", marginLeft:"8px" }}>
+            <text
+              style={{ color: "black", fontWeight: "bold", marginLeft: "8px" }}
+            >
               {devicenickname}
             </text>
           </div>
-
 
           {/* Report and LogOut Button */}
           <div
             style={{
               fontSize: "14px",
-               display: "flex",
-                flexDirection: "column",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <button
@@ -577,7 +589,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 borderRadius: "6px",
                 fontWeight: "bold",
                 cursor: "pointer",
-                marginBottom:"10px"
+                marginBottom: "10px",
               }}
               onClick={fetchDataAndCreateExcel}
               disabled={loading}
@@ -585,8 +597,6 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               {loading ? "Generating..." : "Generate Report"}
             </button>
 
-
-       
             <button
               style={{
                 backgroundColor: "#1BA94C",
@@ -602,15 +612,10 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
             >
               {loading ? "loging Out..." : "Log Out"}
             </button>
-
           </div>
-
-
-
         </div>
-
-
-        {/* Graph Section */}
+{/* <Header></Header> */}
+        {/* Graph  */}
         <div
           style={{
             display: "flex",
@@ -627,6 +632,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
               mykey={"Humidity"}
+              key={devicenickname}
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
@@ -637,6 +643,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
               mykey={"Humidity"}
+              key={devicenickname}
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
@@ -647,6 +654,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Humidity}
               Label={"Humidity"}
               mykey={"Humidity"}
+              key={devicenickname}
               image={humidity}
               bg={"rgb(255, 255, 255)"}
               unit={"%"}
@@ -661,9 +669,10 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Temperature}
               Label={"Temperature"}
               mykey={"Temperature"}
+              key={`A-1-${devicenickname}`}
               image={temperature}
               bg={"rgb(255, 255, 255)"}
-              unit={<>&#176;C</>}
+              unit={"°C"}
             />
           ) : graphselect.Temperature == "bar" ? (
             <BarGraph
@@ -671,9 +680,10 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Temperature}
               Label={"Temperature"}
               mykey={"Temperature"}
+              key={`A-1-${devicenickname}`}
               image={temperature}
               bg={"rgb(255, 255, 255)"}
-              unit={<>&#176;C</>}
+              unit={"°C"}
             />
           ) : graphselect.Temperature == "pi" ? (
             <PiChart
@@ -681,9 +691,10 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Temperature}
               Label={"Temperature"}
               mykey={"Temperature"}
+              key={`A-1-${devicenickname}`}
               image={temperature}
               bg={"rgb(255, 255, 255)"}
-              unit={<>&#176;C</>}
+              unit={"°C"}
             />
           ) : (
             <>{null}</>
@@ -695,6 +706,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Ph}
               Label={"pH"}
               mykey={"Ph"}
+              key={`A-2-${devicenickname}`}
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
@@ -705,6 +717,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Ph}
               Label={"pH"}
               mykey={"Ph"}
+              key={`A-2-${devicenickname}`}
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
@@ -715,6 +728,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
               liveAverages={liveAverages.Ph}
               Label={"pH"}
               mykey={"Ph"}
+              key={`A-2-${devicenickname}`}
               image={ph}
               bg={"rgb(255, 255, 255)"}
               unit={"pH"}
@@ -730,6 +744,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.H2s}
                 Label={"H2S"}
                 mykey={"H2s"}
+                key={`A-3-${devicenickname}`}
                 image={H2S}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -740,6 +755,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.H2s}
                 Label={"H2S"}
                 mykey={"H2s"}
+                key={`A-3-${devicenickname}`}
                 image={H2S}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -750,6 +766,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.H2s}
                 Label={"H2S"}
                 mykey={"H2s"}
+                key={`A-3-${devicenickname}`}
                 image={H2S}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -765,6 +782,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Ammonia}
                 Label={"Ammonia"}
                 mykey={"Ammonia"}
+                key={`A-4-${devicenickname}`}
                 image={NH3}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -775,6 +793,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Ammonia}
                 Label={"Ammonia"}
                 mykey={"Ammonia"}
+                key={`A-4-${devicenickname}`}
                 image={NH3}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -785,6 +804,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Ammonia}
                 Label={"Ammonia"}
                 mykey={"Ammonia"}
+                key={`A-4-${devicenickname}`}
                 image={NH3}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -800,6 +820,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Methane}
                 Label={"Methane"}
                 mykey={"Methane"}
+                key={`A-5-${devicenickname}`}
                 image={CH4}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -810,6 +831,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Methane}
                 Label={"Methane"}
                 mykey={"Methane"}
+                key={`A-5-${devicenickname}`}
                 image={CH4}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -820,6 +842,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Methane}
                 Label={"Methane"}
                 mykey={"Methane"}
+                key={`A-5-${devicenickname}`}
                 image={CH4}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -835,6 +858,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Co2}
                 Label={"CO2"}
                 mykey={"Co2"}
+                key={`A-6-${devicenickname}`}
                 image={CO2}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -845,6 +869,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Co2}
                 Label={"CO2"}
                 mykey={"Co2"}
+                key={`A-6-${devicenickname}`}
                 image={CO2}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -855,6 +880,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
                 liveAverages={liveAverages.Co2}
                 Label={"CO2"}
                 mykey={"Co2"}
+                key={`A-6-${devicenickname}`}
                 image={CO2}
                 bg={"rgb(255, 255, 255)"}
                 unit={"ppm"}
@@ -862,7 +888,7 @@ const time12hr =  ist.toLocaleDateString('en-GB') + ' ' +
             ) : (
               <>{null}</>
             ))}
-          <Tile key_1={device}  ></Tile>
+          <Tile key_1={device}></Tile>
           <ReportDownload> </ReportDownload>
         </div>
 
