@@ -25,6 +25,7 @@ export const GET = async (reqest) => {
     var data = await Sensor.find();
     return NextResponse.json(data);
 
+  
   } else if (query === "filterbydate") {
     var query1 = await reqest.nextUrl.searchParams.get("s");
     var query2 = await reqest.nextUrl.searchParams.get("e");
@@ -36,7 +37,7 @@ export const GET = async (reqest) => {
     
     if (mydeviceid === "Device_0" || mydeviceid === null) {
       all = await Sensor.find({ createdAt: { $gte: query1, $lte: query2 } });
-      //console.log("all", all);
+      console.log("all", all);
     } else if (mydeviceid === "Device_1") {
       all = await Sensor_1.find({ createdAt: { $gte: query1, $lte: query2 } });
     } else if (mydeviceid === "Device_2") {
@@ -100,7 +101,7 @@ const endOfDay = new Date(Date.UTC(year, month, day, 18, 29, 59, 999));
 //console.log("IST Day Start (UTC):", startOfDay.toISOString());
 //console.log("IST Day End (UTC):", endOfDay.toISOString());
 
-//const data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
+
 
     if (deviceid === "Device_0") {
       var data = await Sensor.find({createdAt: { $gte: startOfDay, $lte: endOfDay, },}).sort({ _id: -1 });
@@ -245,3 +246,8 @@ http://localhost:3000/api/users/sensorslog
   "other": "other",
   "tkn": "user"/ "Sensor_0"/ "Sensor_1"/ "Sensor_2"/ "Sensor_3"/ "Sensor_4"/ "Sensor_5"/ "Sensor_6"
 } */
+
+  //i am gatting 
+//Sat May 30 2026 18:41:20 GMT+0530 (India Standard Time) in CycleDate usestate
+//and setCycleStatus("inactive"); ie in cycleStatus usestate
+

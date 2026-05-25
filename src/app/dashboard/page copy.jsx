@@ -39,13 +39,13 @@ function page() {
   const [rtkid, setRtkid] = useState(null);
   const [curredate, setCurredate] = useState(null);
   const [CycleEnd, setCycleEnd]=useState(null)
-  const [cycleStatus, setCycleStatus]=useState(null)
-  const [cycleEndDate, setCycleEndDate]=useState(null)
+   const [cycleStatus, setCycleStatus]=useState(null)
+
   const params = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
-
+  let key; //graph update due to this change
 
 
    const getFirstGraphdata = async () => {
@@ -54,12 +54,12 @@ function page() {
     let e;
     // IF inactive3
     if (cycleStatus === true) {
-     // console.log("come here..........");
+      console.log("come here..........");
    
 //this block from here is not running
       // Convert CycleDate to Date object
       const baseDate = new Date(CycleEnd);
-  // console.log("End here..........");
+   console.log("End here..........");
       // Start = 12:00:01 AM
       const inactiveStart = new Date(baseDate);
       inactiveStart.setHours(0, 0, 1, 0);
@@ -71,9 +71,9 @@ function page() {
       s = inactiveStart.toISOString();
       e = inactiveEnd.toISOString();
 
-    // console.log("Inactive Start:", s);
-     // console.log("Inactive End:", e);
-     //  console.log("End here..........");
+     console.log("Inactive Start:", s);
+      console.log("Inactive End:", e);
+       console.log("End here..........");
     }
 else
 {
@@ -94,10 +94,11 @@ else
     //console.log("Default End:", e);
 }
 
-//console.log(s, e)
+console.log(s, e)
     const res = await fetch(
       `${window.location.origin}/api/users/sensorslog?purp=filterbydate&deviceid=${device}&s=${s}&e=${e}`);
     const updated = await res.json();
+console.log (updated)
     setGraphData(updated);
       const averages = {
         Ammonia: Number((updated.map((item) => Number(item.Ammonia || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2)),
@@ -115,16 +116,15 @@ else
 
   // 🔹 Arrow function to get last new data
   const getdata = async () => {
-    if (!Graphdata ) {
+    if (Graphdata && Graphdata.length === 0) {
       getFirstGraphdata();
-      console.log("......");
       return;
     }
 
     try {
       const response = await fetch(window.location.origin + "/api/users/sensorslog?purp=1&deviceid=" + device);
       const result = await response.json();
-  
+     
       setGraphData((prev) => {
         if (result?.length > 0 && result[0]._id?.toString() !== prev?.at(-1)?._id?.toString()) {
           const updated = [...prev, result[0]];
@@ -162,7 +162,6 @@ else
       setLoading(false);
     }
   };
-
   // setThemeColor is a function that sets the theme color of the browser based on the cycle status (active/idle) to give a visual indication of data refresh cycle along with the title change done in runCycle function
   const setThemeColor = (color) => {
     let meta = document.querySelector("meta[name='theme-color']");
@@ -175,7 +174,6 @@ else
 
     meta.setAttribute("content", color);
   };
-
   //runCycle is a color and title animation that runs for 5 sec (green) and then turns to gray for 25 sec, repeating every 30 sec to indicate data refresh cycle
   const runCycle = () => {
     // 🟢 Active state (5 sec)
@@ -189,28 +187,32 @@ else
     }, 2000);
   };
 
+  useEffect(() => {
+   
+ console.log("-------------"+new Date(CycleEnd).toISOString())
+   console.log("........."+cycleStatus)
+  }, [CycleEnd, cycleStatus]);
+
   
 
   useEffect(() => {
-console.log (cycleStatus)
-  if (cycleStatus == null) return;
-//cycleEndDate
   
+  if (cycleStatus == null) return;
+
+  console.log("cycleStatus changed:", cycleStatus);
     runCycle(); //blinking animation cycle
       getFirstGraphdata();
       setCurredate(new Date()); // Set current date and time on component mount
 
-      if (cycleStatus ===false)
-      {
       const intervalId = setInterval(() => {
+     
         getdata();
         setCurredate(new Date()); // Set current date and time on component mount
         runCycle(); // repeat cycle every 30 sec
       }, 30000);
       return () => clearInterval(intervalId); // ✅ cleanup old interval
-}
 
-  }, [device, cycleEndDate]);
+  }, [device, cycleStatus]);
 
 //cycleStatus set by child component
 
@@ -270,7 +272,7 @@ console.log (cycleStatus)
     gap: "15px",
           }}
         >
-      <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate}></Header_1>
+      <Header_1 deviceid={device}  setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus}></Header_1>
           {/*Station Select*/}
             <div
                style={{

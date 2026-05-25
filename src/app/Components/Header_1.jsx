@@ -16,34 +16,16 @@ const ExcelReportData = {
 function Header(props) {
   let datetimepicker1 = false;
   const [showPopup, setShowPopup] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [enabledatepicker, setEnabledatepicker] = useState(false);
   const [tileControl, setTileControl] = useState({
     buttonText: "Add Cycle",
     bagroundColour: "white",
-    buttonColour: "#1BA94C",
     loadDBData: false,
+    cycleStatus: null,
+    cycleDaysremain:null
   });
   const [loading, setLoading] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState(Object.keys(ExcelReportData)[0]);
-  const [selectedValue, setSelectedValue] = useState(ExcelReportData[selectedLabel]);
   const [dateTime, setDateTime] = useState(null);
   const [dateTime2, setDateTime2] = useState(null);
-
-  /* const handleSelect = (label) => {
-    // console.log(label);
-    console.log(ExcelReportData[label]);
-    setSelectedLabel(label);
-    setSelectedValue(ExcelReportData[label]);
-    setDateTime2(new Date(dateTime.getTime() + Number(ExcelReportData[label]) * 24 * 60 * 60 * 1000));
-
-    if (ExcelReportData[label] === 1) {
-      
-    } else {
-   
-    }
-    setOpen(false);
-  }; */
 
   const fetchDataAndCreateExcel = async () => {
     setLoading(true);
@@ -126,7 +108,6 @@ function Header(props) {
   };
 
   const fetchCycleData = async () => {
-    console.log("result");
     try {
       const res = await fetch(`/api/users/cycles?deviceid=${encodeURIComponent(props.deviceid)}`);
       const result = await res.json();
@@ -134,22 +115,39 @@ function Header(props) {
       if (result.data) {
         setDateTime(new Date(result.data.Startdate));
         setDateTime2(new Date(result.data.enddate));
+        props.setCycleEndDate(new Date(result.data.enddate));
         setTileControl((prev) => ({ ...prev, bagroundColour: "#B6EAC8", loadDBData: true, buttonText: "Edit Cycle" }));
-       // setDatetimepicker2(true);
-       // props.setRemoteCycleDate(new Date(result.data.enddate));
 
+        // ✅ Check endDate status (past, current, or future)
         const endDate = new Date(result.data.enddate);
-        // TODAY
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+        
+        const timeDiff = endDate - today;
+        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    
+        if (daysDiff < 0) {
+          //console.log(`📅 PAST DATE: ${Math.abs(daysDiff)} days ago`);
+           setTileControl((prev) => ({ ...prev, cycleStatus: "Before cycle is completed", cycleDaysremain:Math.abs(daysDiff)}));
+         props.setCycleStatus(true)
 
-        // END DATE ONLY
-        const endDateOnly = new Date(endDate);
-        endDateOnly.setHours(0, 0, 0, 0);
+          } else if (daysDiff === 0) {
+         // console.log(`📅 CURRENT DATE: Today`);
+           setTileControl((prev) => ({ ...prev, cycleStatus: "Cycle is compleating Today", cycleDaysremain:(null)}));
+       props.setCycleStatus(false)
+          } else {
+          //console.log(`📅 FUTURE DATE: ${daysDiff} days in future`);
+           setTileControl((prev) => ({ ...prev, cycleStatus: "Remain to complete Cycle", cycleDaysremain:Math.abs(daysDiff)}));
+        props.setCycleStatus(false)
+          }
+        props.setCycleEnd(new Date(result.data.enddate));
+      
+
       }
       if (!res.ok) {
         //throw new Error(result.message || "Failed to fetch data");
-
+props.setCycleEndDate(null);
         setTileControl((prev) => ({
           ...prev,
           bagroundColour: "white",
@@ -170,10 +168,8 @@ function Header(props) {
   };
 
   useEffect(() => {
-    if (props.deviceid) {
       fetchCycleData();
-    }
-  }, [props.deviceid, showPopup]);
+  }, [props.deviceid]);
 
   return (
     <div
@@ -207,7 +203,6 @@ function Header(props) {
             onChange={(date) => {
               setDateTime(date);
               setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
-            
             }}
             placeholderText="__/__/____  __:__:__"
             selected={dateTime}
@@ -217,76 +212,10 @@ function Header(props) {
             timeFormat="hh:mm aa"
             dateFormat="dd/MM/yyyy hh:mm:ss aa"
             readOnly={false}
-            disabled={enabledatepicker}
             className="green-datepicker"
           />
         </div>
-        {/* 🔽 Dropdown  to select Device days*/}
-        {/* <div
-        style={{
-          position: "relative",
-          width: "100%",
 
-          marginBottom: "5px",
-          width: "100%",
-        }}
-      >
-        <div
-          onClick={() => setOpen(!open)}
-          style={{
-            height: "40px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            padding: "8px 35px 8px 10px",
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-            background: "#fff",
-          }}
-        >
-          {selectedLabel}
-
-          <span
-            style={{
-              position: "absolute",
-              right: "18px",
-              transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-          >
-            ▼
-          </span>
-        </div>
-
-        {open && (
-          <div
-            style={{
-              position: "absolute",
-              top: "45px",
-              width: "100%",
-              background: "#fff",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-              zIndex: 10,
-            }}
-          >
-            {Object.keys(ExcelReportData).map((label, i) => (
-              <div
-                key={i}
-                onClick={() => handleSelect(label)}
-                style={{
-                  padding: "10px",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => (e.target.style.background = "#f5f5f5")}
-                onMouseLeave={(e) => (e.target.style.background = "#fff")}
-              >
-                {label}
-              </div>
-            ))}
-          </div>
-        )}
-      </div> */}
         {/* ⏱ Date Time Picker_2 */}
         <div
           style={{
@@ -308,7 +237,6 @@ function Header(props) {
             timeIntervals={5}
             timeFormat="hh:mm aa"
             dateFormat="dd/MM/yyyy hh:mm:ss aa"
-     
             className="green-datepicker"
           />
         </div>
@@ -329,12 +257,9 @@ function Header(props) {
           fontWeight: "normal",
         }}
       >
-        {dateTime2 && dateTime ? (
+        {dateTime2 && dateTime && tileControl.cycleDaysremain ? (
           <>
-            {(() => {
-              const days = Math.round((dateTime2 - dateTime) / (1000 * 60 * 60 * 24));
-              return `${days + 1} ${days === 1 ? "day " : "days "}`;
-            })()}
+            {tileControl.cycleDaysremain} day&nbsp;
           </>
         ) : (
           ""
@@ -352,9 +277,9 @@ function Header(props) {
           fetchCycleData();
         }}
       >
-        { tileControl.loadDBData === true? (
+        {tileControl.loadDBData === true ? (
           <span className="cycle-running">
-            active Cycle is running
+          {tileControl.cycleStatus}
             <span className="dots"></span>
           </span>
         ) : tileControl.loadDBData === false ? (

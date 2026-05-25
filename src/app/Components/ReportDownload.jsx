@@ -18,11 +18,8 @@ const [show, setShow] = useState(false);
 const [loading, setLoading] = useState(false);
 const [selectedLabel, setSelectedLabel] = useState( Object.keys(ExcelReportData)[0] );
 const [selectedValue, setSelectedValue] = useState(ExcelReportData[selectedLabel] );
-
-  const [dateTime, setDateTime] = useState(new Date());
-
-  const handleSelect = (label) => {
-    
+const [dateTime, setDateTime] = useState(new Date());
+const handleSelect = (label) => {  
     setSelectedLabel(label);
     setSelectedValue(ExcelReportData[label]);
     setOpen(false);
