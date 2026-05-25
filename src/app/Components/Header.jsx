@@ -1,341 +1,499 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import DateTimePicker from "react-datetime-picker";
+import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
-//import DateTimePicker from "react-datetime-picker";
-import "react-datetime-picker/dist/DateTimePicker.css";
-import "react-calendar/dist/Calendar.css";
-import "react-clock/dist/Clock.css";
+import "react-datepicker/dist/react-datepicker.css";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+import CyclePopup from "./CyclePopup";
+
 const ExcelReportData = {
+  Custom: 1,
   "21 Days Cycle": 21,
   "30 Days Cycle": 30,
-  Custom: 0,
 };
 
-function Header() {
+function Header(props) {
+  let datetimepicker1 = false;
+  const [showPopup, setShowPopup] = useState(false);
   const [open, setOpen] = useState(false);
-  const [show, setShow] = useState(false);
+  const [enabledatepicker, setEnabledatepicker] = useState(false);
+  const [tileControl, setTileControl] = useState({
+    buttonText: "Add Cycle",
+    bagroundColour: "white",
+    buttonColour: "#1BA94C",
+    loadDBData: false,
+  });
   const [loading, setLoading] = useState(false);
-  const [selectedLabel, setSelectedLabel] = useState(
-    Object.keys(ExcelReportData)[0],
-  );
-  const [selectedValue, setSelectedValue] = useState(
-    ExcelReportData[selectedLabel],
-  );
-  const [dateTime, setDateTime] = useState(new Date());
+  const [selectedLabel, setSelectedLabel] = useState(Object.keys(ExcelReportData)[0]);
+  const [selectedValue, setSelectedValue] = useState(ExcelReportData[selectedLabel]);
+  const [dateTime, setDateTime] = useState(null);
+  const [dateTime2, setDateTime2] = useState(null);
 
-  const handleSelect = (label) => {
+  /* const handleSelect = (label) => {
+    // console.log(label);
+    console.log(ExcelReportData[label]);
     setSelectedLabel(label);
     setSelectedValue(ExcelReportData[label]);
+    setDateTime2(new Date(dateTime.getTime() + Number(ExcelReportData[label]) * 24 * 60 * 60 * 1000));
+
+    if (ExcelReportData[label] === 1) {
+      
+    } else {
+   
+    }
     setOpen(false);
+  }; */
+
+  const fetchDataAndCreateExcel = async () => {
+    setLoading(true);
+    let a = dateTime; //Start Day
+    let b = dateTime2; //End Date
+    a = new Date(a.getTime() - 5.5 * 60 * 60 * 1000);
+    b = new Date(b.getTime() - 5.5 * 60 * 60 * 1000);
+    try {
+      const res = await fetch(`${window.location.origin}/api/users/sensorslog?purp=filterbydate&s=${a}&e=${b}&deviceid=${props.deviceid}`);
+      const exceldata = await res.json();
+
+      // ✅ Step 1: Modify Data
+      const modifiedData = exceldata.map((item, index) => {
+        const utc = new Date(item.createdAt);
+
+        // Convert UTC → IST (+5:30)
+        const ist = new Date(utc.getTime() + 0);
+        const time12hr =
+          ist.toLocaleDateString("en-GB") +
+          " " +
+          ist.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          });
+
+        return {
+          "🔢 Sr.No": index + 1,
+          "💧 Humidity (%)": item.Humidity,
+          "🌡️ Temperature (°C)": item.Temperature,
+          "⚗️ pH": item.Ph,
+          "🧪 H2S (ppm)": item.H2s,
+          "🌫️ Ammonia (ppm)": item.Ammonia,
+          "🔥 Methane (ppm)": item.Methane,
+          "🌍 CO2 (ppm)": item.Co2,
+          "⏰ Time(IST)": time12hr.toLocaleString(),
+        };
+      });
+
+      // ✅ Step 2: Create Sheet
+      const worksheet = XLSX.utils.json_to_sheet(modifiedData);
+
+      // ✅ Step 3: Try to make header bold (may not work in free version)
+      const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+
+        if (worksheet[cellAddress]) {
+          worksheet[cellAddress].s = {
+            font: { bold: true },
+          };
+        }
+      }
+
+      // ✅ Step 4: Column widths (improves look)
+      worksheet["!cols"] = [{ wch: 8.25 }, { wch: 13.25 }, { wch: 17.88 }, { wch: 5 }, { wch: 10.25 }, { wch: 16.88 }, { wch: 15.38 }, { wch: 11.5 }, { wch: 18.25 }];
+
+      // ✅ Step 5: Workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sensor_Data");
+
+      // ✅ Step 6: Export
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      saveAs(blob, "Sensors_Data_" + props.deviceid + ".xlsx");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getBackDate = () => {
-    if (selectedValue === 0) {
-      setShow(true);
-      return;
+  const fetchCycleData = async () => {
+    console.log("result");
+    try {
+      const res = await fetch(`/api/users/cycles?deviceid=${encodeURIComponent(props.deviceid)}`);
+      const result = await res.json();
+      //   console.log(result);
+      if (result.data) {
+        setDateTime(new Date(result.data.Startdate));
+        setDateTime2(new Date(result.data.enddate));
+        setTileControl((prev) => ({ ...prev, bagroundColour: "#B6EAC8", loadDBData: true, buttonText: "Edit Cycle" }));
+       // setDatetimepicker2(true);
+       // props.setRemoteCycleDate(new Date(result.data.enddate));
+
+        const endDate = new Date(result.data.enddate);
+        // TODAY
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // END DATE ONLY
+        const endDateOnly = new Date(endDate);
+        endDateOnly.setHours(0, 0, 0, 0);
+      }
+      if (!res.ok) {
+        //throw new Error(result.message || "Failed to fetch data");
+
+        setTileControl((prev) => ({
+          ...prev,
+          bagroundColour: "white",
+          loadDBData: false,
+          buttonText: "Add Cycle",
+        }));
+        setDateTime(null);
+        setDateTime2(null);
+
+        return;
+      }
+
+      //   setCycleData(result.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
     }
-    const newDate = new Date(dateTime);
-    newDate.setDate(newDate.getDate() - selectedValue);
-    setShow(false);
-    return newDate;
   };
 
   useEffect(() => {
-    // console.log(dateTime)
-    //console.log(selectedValue)
-    const backDate = getBackDate(dateTime, selectedValue);
-    //console.log(getBackDate())
-  }, [selectedValue]); // 👈 dependency array
+    if (props.deviceid) {
+      fetchCycleData();
+    }
+  }, [props.deviceid, showPopup]);
 
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px",
-        flexWrap: "wrap",
-        backgroundColor: "pink",
+        border: "1.5px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
+        borderRadius: "8px",
+        padingTop: "10px",
+        paddingBottom: "10px",
+        paddingLeft: "10px",
       }}
     >
-      {/* ⏱ Date Time Picker + Dropdown + Button*/}
       <div
         style={{
-          fontSize: "14px",
           display: "flex",
-          flexDirection: "column",
-          backgroundColor: "red",
+          alignItems: "flex-start",
+          marginBottom: "0px",
+          gap: "8px",
+        }}
+      >
+        {/* ⏱ Date Time Picker_1 */}
+        <div
+          style={{
+            minWidth: "200px",
+            fontSize: "14px",
+          }}
+        >
+          {tileControl.loadDBData === true ? "Cycle start date:-" : "Start date:-"}
+          <br />
+          <DatePicker
+            onChange={(date) => {
+              setDateTime(date);
+              setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
+            
+            }}
+            placeholderText="__/__/____  __:__:__"
+            selected={dateTime}
+            format="dd/MM/yyyy hh:mm a"
+            showTimeInput
+            timeIntervals={1}
+            timeFormat="hh:mm aa"
+            dateFormat="dd/MM/yyyy hh:mm:ss aa"
+            readOnly={false}
+            disabled={enabledatepicker}
+            className="green-datepicker"
+          />
+        </div>
+        {/* 🔽 Dropdown  to select Device days*/}
+        {/* <div
+        style={{
+          position: "relative",
           width: "100%",
-          maxWidth: "280px",
+
+          marginBottom: "5px",
+          width: "100%",
         }}
       >
         <div
+          onClick={() => setOpen(!open)}
           style={{
-            marginTop: "20px",
-            marginLeft: "20px",
-            marginBottom: "10px",
+            height: "40px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "8px 35px 8px 10px",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            background: "#fff",
           }}
         >
-          <DateTimePicker
-            onChange={setDateTime}
-            value={dateTime}
-            clearIcon={null}
-            calendarIcon={<FaCalendarAlt color="green" />}
-            format="dd/MM/yyyy hh:mm a"
-            disableClock={true}
-            //minDate={nstartDate}
-          />
-        </div>
-        {/* 🔽 Dropdown */}
-        <div
-          style={{
-            position: "relative",
-            width: "85%",
-            marginTop: "0px",
-            marginLeft: "20px",
-            marginBottom: "15px",
-          }}
-        >
-          <div
-            onClick={() => setOpen(!open)}
+          {selectedLabel}
+
+          <span
             style={{
-              height: "40px",
+              position: "absolute",
+              right: "18px",
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          >
+            ▼
+          </span>
+        </div>
+
+        {open && (
+          <div
+            style={{
+              position: "absolute",
+              top: "45px",
+              width: "100%",
+              background: "#fff",
               border: "1px solid #ccc",
               borderRadius: "8px",
-              padding: "8px 35px 8px 10px",
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              background: "#fff",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+              zIndex: 10,
             }}
           >
-            {selectedLabel}
-
-            <span
-              style={{
-                position: "absolute",
-                right: "18px",
-                transform: open ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            >
-              ▼
-            </span>
-          </div>
-
-          {open && (
-            <div
-              style={{
-                position: "absolute",
-                top: "45px",
-                width: "100%",
-                background: "#fff",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                zIndex: 10,
-              }}
-            >
-              {Object.keys(ExcelReportData).map((label, i) => (
-                <div
-                  key={i}
-                  onClick={() => handleSelect(label)}
-                  style={{
-                    padding: "10px",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => (e.target.style.background = "#f5f5f5")}
-                  onMouseLeave={(e) => (e.target.style.background = "#fff")}
-                >
-                  {label}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* ⏱ Date Time Picker */}
-        {show && (
-          <div
-            style={{
-              marginTop: "0px",
-              marginLeft: "20px",
-              marginBottom: "10px",
-            }}
-          >
-            <DateTimePicker
-              onChange={setDateTime}
-              value={new Date(dateTime.getTime() - 24 * 60 * 60 * 1000)} // 1 day back
-              clearIcon={null}
-              calendarIcon={<FaCalendarAlt color="red" />}
-              format="dd/MM/yyyy hh:mm a"
-              disableClock={true}
-              //minDate={nstartDate}
-            />
+            {Object.keys(ExcelReportData).map((label, i) => (
+              <div
+                key={i}
+                onClick={() => handleSelect(label)}
+                style={{
+                  padding: "10px",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => (e.target.style.background = "#f5f5f5")}
+                onMouseLeave={(e) => (e.target.style.background = "#fff")}
+              >
+                {label}
+              </div>
+            ))}
           </div>
         )}
+      </div> */}
+        {/* ⏱ Date Time Picker_2 */}
+        <div
+          style={{
+            minWidth: "200px",
+            fontSize: "14px",
+          }}
+        >
+          {tileControl.loadDBData === true ? "Cycle end date:-" : "End date:-"}
+          <br />
+          <DatePicker
+            onChange={(date) => {
+              setDateTime2(date);
+              setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
+            }}
+            placeholderText="__/__/____  __:__:__"
+            selected={dateTime2}
+            readOnly={false}
+            showTimeInput
+            timeIntervals={5}
+            timeFormat="hh:mm aa"
+            dateFormat="dd/MM/yyyy hh:mm:ss aa"
+     
+            className="green-datepicker"
+          />
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          marginBottom: "0px",
+          gap: "0px",
+        }}
+      ></div>
+      <span
+        style={{
+          fontSize: "12px",
+          color: "#666",
+          fontWeight: "normal",
+        }}
+      >
+        {dateTime2 && dateTime ? (
+          <>
+            {(() => {
+              const days = Math.round((dateTime2 - dateTime) / (1000 * 60 * 60 * 24));
+              return `${days + 1} ${days === 1 ? "day " : "days "}`;
+            })()}
+          </>
+        ) : (
+          ""
+        )}
+      </span>
+
+      <span
+        style={{
+          fontSize: "12px",
+          color: "#666",
+          fontWeight: "normal",
+          cursor: "pointer", // shows hand cursor
+        }}
+        onClick={() => {
+          fetchCycleData();
+        }}
+      >
+        { tileControl.loadDBData === true? (
+          <span className="cycle-running">
+            active Cycle is running
+            <span className="dots"></span>
+          </span>
+        ) : tileControl.loadDBData === false ? (
+          <>Cycle not found... ↻ Refresh &nbsp;&nbsp;&nbsp;&nbsp; or click to Add Cycle buttom </>
+        ) : (
+          " ↻ Refresh"
+        )}
+      </span>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "5px", // space between buttons
+          flexWrap: "nowrap", // keep both buttons on the same line
+          width: "100%",
+        }}
+      >
+        <button
+          style={{
+            backgroundColor: "#1BA94C",
+            color: "white",
+            border: "none",
+            padding: "10px 10px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            width: "auto",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          onClick={() => {
+            fetchDataAndCreateExcel();
+          }}
+        >
+          {loading ? "Generating..." : "Generate Report"}
+        </button>
 
         <button
           style={{
             backgroundColor: "#1BA94C",
             color: "white",
             border: "none",
-            padding: "7px 20px",
+            padding: "10px 10px",
             borderRadius: "5px",
             fontWeight: "bold",
             cursor: "pointer",
-            marginLeft: "20px",
-            marginLeft: "20px",
-            marginRight: "20px",
-            marginBottom: "10px",
+            width: "auto",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
+          onClick={() => setShowPopup(true)}
         >
-onClick={() => {
-               // runCycle(); // trigger title animation immediately
-                //getFirstGraphdata(); // Refresh graph data if needed
-               // getdata(); // Refresh latest sensor values
-               // setCurredate(new Date()); // Update current date and time
-              }}
-
-          {loading ? "Generating..." : "Generate Report"}
+          {tileControl.loadDBData === false ? "Add Cycle" : "Edit Cycle"}
         </button>
       </div>
 
-      {/* new card */}
+      <CyclePopup showPopup={showPopup} setShowPopup={setShowPopup} deviceid={props.deviceid} fetchCycleData={fetchCycleData}></CyclePopup>
 
-      <div
-        style={{
-          fontSize: "14px",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "red",
-          width: "100%",
-          maxWidth: "280px",
-        }}
-      >
-        <button
-        /*  style={{
-                backgroundColor: "#13A10E", // Updated to green
-                color: "#fff",
-                border: "none",
-                padding: "8px 20px",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                fontSize: "14px",
-                cursor: "pointer",
-                transition: "background-color 0.3s ease",
-              }}
-              onClick={() => {
-                runCycle(); // trigger title animation immediately
-                getFirstGraphdata(); // Refresh graph data if needed
-                getdata(); // Refresh latest sensor values
-                setCurredate(new Date()); // Update current date and time
-              }} */
-        >
-          ⟳ Last Update
-        </button>
-        <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
-          {/* { Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))?
-                 `Last Updated: ${new Date(Graphdata.at(-1).createdAt)
-                      .toLocaleString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                      })
-                      .replace(",", " - ")}`
-                  : "Updating..."} */}
-          hhhhhh
-        </div>
-
-        <div
-          style={{
-            fontSize: "12px",
-            // color: highlight ? "#000" : "#666", // 👈 change color
-            //fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
-            marginTop: "5px",
-            transition: "all 1s ease", // 👈 smooth effect
-          }}
-        >
-          hhhhhh
-          {/*  {curredate
-                ? `Last checked: ${curredate
-                    .toLocaleString("en-GB", {
-                      timeZone: "Asia/Kolkata",
-                      day: "2-digit",
-                      month: "short",
-                      year: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                    })
-                    .replace(",", " - ")}`
-                : "Updating..."} */}
-        </div>
-      </div>
-
-      <div
-        style={{
-          fontSize: "14px",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "red",
-          width: "100%",
-          maxWidth: "280px",
-        }}
-      >
-        sgsd2
-      </div>
-
-      {/* 🔥 CSS FIX */}
-      <style>
+      <style jsx global>
         {`
-        .react-datetime-picker {
-          width: 100% !important;
-        }
+          .react-datepicker-wrapper {
+            height: "45px";
+          }
+          .react-datepicker__input-container input {
+            height: 40px;
+            width: 95%;
+            line-height: 20px;
+            font-size: 15px;
+            box-sizing: border-box;
 
-        .react-datetime-picker__wrapper {
-          width: 100% !important;
-          display: flex;
-          justify-content: space-between;
-          border-radius: 8px;
-          border: 1px solid #ccc;
-          padding: 6px 10px;
-          box-sizing: border-box;
-        }
+            border: 1px solid #ccc;
+            border-radius: 6px; /* Rounded corners */
+            padding-left: 12px;
+            padding-right: 0px;
+          }
 
-        .react-datetime-picker__inputGroup {
-          flex-grow: 1;
-          min-height: 28px;
-          display: flex;
-          align-items: center;
-        }
+          .react-datepicker__input-container input:focus {
+            border-color: #0070f3;
+          }
 
-        .react-calendar {
-          width: 280px !important;
-          max-width: 150%;
-          font-size: 12px;
-          border-radius: 10px;
-        }
+          /* Apply only to DatePicker having className="green-datepicker" */
+          .green-datepicker {
+            height: 40px;
+            line-height: 20px;
+            font-size: 15px;
+            box-sizing: border-box;
 
-        .react-clock {
-          width: 200px !important;
-          height: 200px !important;
-        }
+            border: 1px solid #ccc;
+            border-radius: 6px; /* Rounded corners */
+            background-color: ${tileControl.bagroundColour};
+          }
 
-        .react-datetime-picker__calendar {
-  position: absolute !important;
-  top: 110% !important;   /* 👇 move DOWN */
-  left: 10px !important; /* 👈 move LEFT */
-  z-index: 20;
-}
-        .react-datetime-picker__clock {
-          z-index: 20;
-        }
+          .green-datepicker:focus {
+            border-color: #0070f3;
+            outline: none;
+          }
+
+          .cycle-running {
+            font-weight: bold;
+            animation: blinkColor 4s infinite;
+          }
+
+          .dots::after {
+            content: "";
+            animation: dots 4s steps(4, end) infinite;
+          }
+
+          @keyframes blinkColor {
+            0% {
+              color: red;
+            }
+            50% {
+              color: black;
+            }
+            100% {
+              color: red;
+            }
+          }
+
+          @keyframes dots {
+            0% {
+              content: ".";
+            }
+            25% {
+              content: "..";
+            }
+            50% {
+              content: "...";
+            }
+            75% {
+              content: "....";
+            }
+            100% {
+              content: ".....";
+            }
+          }
         `}
       </style>
     </div>

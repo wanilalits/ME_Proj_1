@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Bar } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   LinearScale,
@@ -12,7 +13,9 @@ import {
   Legend,
   TimeScale,
 } from "chart.js";
+
 import "chartjs-adapter-date-fns";
+
 import { updateUser } from "../redux/slice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,74 +30,136 @@ ChartJS.register(
 
 const BarGraph = (props) => {
   const dispatch = useDispatch();
-  const reduxData = useSelector((state) => state.userData.users);
-const startOfDay = new Date();
-startOfDay.setHours(0, 0, 0, 0); // 00:00:01.000 AM
-const endOfDay = new Date();
-endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
+
+  const reduxData = useSelector(
+    (state) => state.userData.users
+  );
+
+  // =========================
+  // CHANGE GRAPH TYPE
+  // =========================
   const userDispatch = () => {
     const id = props.id;
-    let name = reduxData[0].name;
-    name = { ...name, [props.mykey]: "pi" };
+
+    let name = reduxData?.[0]?.name || {};
+
+    name = {
+      ...name,
+      [props.mykey]: "pi",
+    };
+
     const nameArr = [{ id, name }];
+
     dispatch(updateUser([props.id, nameArr]));
   };
 
-  const [chartData, setChartData] = useState({
-    datasets: [],
-  });
+  // =========================
+  // CHART DATA
+  // =========================
+  const [chartData, setChartData] = useState([]);
 
-  // Prepare chart data
+  // =========================
+  // PREPARE DATASET
+  // =========================
   useEffect(() => {
     if (!props.liveData || props.liveData.length === 0) {
-      setChartData({ datasets: [] });
+      setChartData([]);
       return;
     }
 
     const datasets = props.liveData
       .filter((item) => {
-        const timeValue = item.createdAt || item.time;
+        const timeValue =
+          item.createdAt || item.time;
+
         return (
           timeValue &&
           !isNaN(new Date(timeValue).getTime()) &&
-          item[props.mykey] !== undefined &&
-          item[props.mykey] !== null &&
-          item[props.mykey] !== ""
+          item?.[props.mykey] !== undefined &&
+          item?.[props.mykey] !== null &&
+          item?.[props.mykey] !== ""
         );
       })
       .map((item) => ({
-        x: new Date(item.createdAt || item.time).getTime(),
-        y: Number(item[props.mykey]),
+        x: new Date(
+          item.createdAt || item.time
+        ),
+
+        y: Number(item?.[props.mykey] || 0),
       }))
+      .filter(
+        (item) =>
+          item.x instanceof Date &&
+          !isNaN(item.x.getTime()) &&
+          !isNaN(item.y)
+      )
       .sort((a, b) => a.x - b.x);
 
-    setChartData({
-      datasets,
-    });
+    setChartData(datasets);
   }, [props.liveData, props.mykey]);
 
+  // =========================
+  // FIXED DATE RANGE
+  // =========================
+  const { startOfDay, endOfDay } =
+    useMemo(() => {
+      let start = new Date();
+      let end = new Date();
+
+      // IMPORTANT FIX
+      // use first graph point date
+      if (
+        chartData.length > 0 &&
+        chartData[0]?.x
+      ) {
+        start = new Date(chartData[0].x);
+        end = new Date(chartData[0].x);
+      }
+
+      start.setHours(0, 0, 0, 0);
+
+      end.setHours(23, 59, 59, 999);
+
+      return {
+        startOfDay: start,
+        endOfDay: end,
+      };
+    }, [chartData]);
+
+  // =========================
+  // CHART DATA OBJECT
+  // =========================
   const data = {
     datasets: [
       {
         label: props.Label,
-        data: chartData.datasets,
-        backgroundColor: "rgba(89, 153, 36, 0.8)",
+
+        data: chartData,
+
+        backgroundColor:
+          "rgba(89, 153, 36, 0.8)",
+
         borderColor: "#ffffff",
+
         borderWidth: 1,
+
         barThickness: 5,
+
         maxBarThickness: 5,
       },
     ],
   };
 
+  // =========================
+  // CHART OPTIONS
+  // =========================
   const options = {
     responsive: true,
+
     maintainAspectRatio: false,
 
-    // Disable animation to prevent flicker/disappearing bars
     animation: false,
 
-    // Smooth updates for real-time data
     transitions: {
       active: {
         animation: {
@@ -105,9 +170,11 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
 
     plugins: {
       legend: false,
+
       title: {
         display: false,
       },
+
       tooltip: {
         mode: "nearest",
         intersect: false,
@@ -115,171 +182,290 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
     },
 
     scales: {
-      
       x: {
         type: "time",
-                  // Fixed range: today from 00:00:01 to 23:59:59
-  min: startOfDay.getTime(),
-  max: endOfDay.getTime(),
+
+        // IMPORTANT FIX
+        min: startOfDay.getTime(),
+
+        max: endOfDay.getTime(),
+
         offset: true,
+
         time: {
           unit: "minute",
+
           displayFormats: {
-  second: "hh:mm:ss a",
-  minute: "hh:mm a",
-  hour: "hh:mm a",
-},
-          tooltipFormat: "dd-MMM-yyyy hh:mm:ss aaaa",
+            second: "hh:mm:ss a",
+
+            minute: "hh:mm a",
+
+            hour: "hh:mm a",
+
+            day: "dd MMM",
+          },
+
+          tooltipFormat:
+            "dd-MMM-yyyy hh:mm:ss a",
         },
+
         ticks: {
           autoSkip: true,
+
           maxTicksLimit: 12,
+
           maxRotation: 45,
+
           minRotation: 45,
+
+          color: "black",
         },
-        /* grid: {
-          display: false,
-        }, */
+
+        grid: {
+          color: "rgba(0,0,0,0.08)",
+        },
+
         title: {
           display: true,
-          text: startOfDay.toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "2-digit",
-})  + "    Time in hh:mm AM/PM",
+
+          text:
+            startOfDay.toLocaleDateString(
+              "en-GB",
+              {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+              }
+            ) + "   Time",
+
+          color: "black",
+
+          font: {
+            size: 12,
+            weight: "bold",
+          },
         },
       },
 
       y: {
         beginAtZero: true,
+
         grid: {
           color: "rgba(0,0,0,0.08)",
-        }, 
-         title: {
-    display: true,
-    text: String(props.unit),
-    color: "black", // Title text color
-    font: {
-      size: 14,
-      weight: "bold",
-    },
-   
-  },
+        },
+
+        ticks: {
+          color: "black",
+        },
+
+        title: {
+          display: true,
+
+          text: String(props.unit || ""),
+
+          color: "black",
+
+          font: {
+            size: 14,
+            weight: "bold",
+          },
+        },
       },
     },
   };
 
+ 
+
+  // =========================
+  // UI
+  // =========================
   return (
     <div
       style={{
         backgroundColor: props.bg,
+
         position: "relative",
+
         height: "340px",
-        border: "3px solid #000",
-        borderRadius: "16px",
+
+        border:
+          "1.5px solid rgba(0,0,0,0.15)",
+
+        boxShadow:
+          "0 3px 8px rgba(0,0,0,0.12)",
+
+        borderRadius: "8px",
+
         background: "#fff",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+
         padding: "10px",
+
         width: "100%",
+
         maxWidth: "360px",
+
         boxSizing: "border-box",
       }}
     >
-      {/* Header */}
-      <div style={{ height: "80px", position: "relative" }}>
+      {/* ================= HEADER ================= */}
+      <div
+        style={{
+          height: "80px",
+          position: "relative",
+        }}
+      >
         <Image
           src={props.image}
           alt=""
           width={40}
           height={40}
-          style={{ position: "absolute", top: "8px", right: "12px" }}
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "12px",
+          }}
         />
 
-        <div style={{ position: "absolute", top: "55px", left: "10px" }}>
+        {/* GRAPH SWITCH BUTTON */}
+        <div
+          style={{
+            position: "absolute",
+            top: "60px",
+            left: "10px",
+          }}
+        >
           <button
             onClick={userDispatch}
             style={{
               backgroundColor: "#066b14",
+
               width: "30px",
               height: "30px",
+
               border: "none",
-              clipPath: "polygon(0 0, 0 100%, 100% 50%)",
-              boxShadow: "0 4px #024d0e, 0 6px 20px rgba(0, 0, 0, 0.19)",
+
+              clipPath:
+                "polygon(0 0, 0 100%, 100% 50%)",
+
+              boxShadow:
+                "0 4px #024d0e, 0 6px 20px rgba(0, 0, 0, 0.19)",
+
               color: "white",
+
               fontSize: "16px",
+
               cursor: "pointer",
             }}
           />
         </div>
 
+        {/* TITLE */}
         <div
           style={{
             fontSize: "20px",
+
             fontWeight: "600",
+
             color: "#2f8b0b",
+
             fontFamily: "Roboto, sans-serif",
+
             position: "absolute",
+
             top: "4px",
+
             left: "50%",
+
             transform: "translateX(-50%)",
           }}
         >
           {props.Label}
         </div>
 
+        {/* LIVE VALUE */}
         <div
           style={{
             fontSize: "38px",
+
             color: "#096d12",
+
             fontFamily: "Futura, sans-serif",
+
             position: "absolute",
+
             top: "30px",
+
             left: "50%",
+
             transform: "translateX(-50%)",
+
             animation: "blink 1.2s infinite",
           }}
         >
-         {props.liveData?.at(-1)?.[props.mykey] || ""} 
-        {/*  {isNaN(props.liveData) ? 0 : props.liveData} */}
+          {props.liveData?.at(-1)?.[
+            props.mykey
+          ] ?? "--"}
         </div>
 
+        {/* AVG TITLE */}
         <div
           style={{
             fontSize: "14px",
+
             fontWeight: "500",
+
             color: "#2da733",
+
             position: "absolute",
+
             top: "4px",
+
             left: "10px",
           }}
         >
           Average
         </div>
 
+        {/* AVG VALUE */}
         <div
           style={{
             fontSize: "16px",
+
             fontWeight: "600",
+
             backgroundColor: "#2da733",
+
             color: "white",
+
             padding: "4px 10px",
+
             borderRadius: "8px",
+
             position: "absolute",
+
             top: "25px",
+
             left: "10px",
           }}
         >
-          
-           {isNaN(props.liveAverages) ? 0 : props.liveAverages}
+          {isNaN(props.liveAverages)
+            ? 0
+            : props.liveAverages}
         </div>
 
+        {/* UNIT */}
         <div
           style={{
             position: "absolute",
+
             fontSize: "20px",
+
             fontWeight: "bold",
+
             color: "#08642b",
-            top: "40px",
+
+            top: "45px",
+
             right: "12px",
           }}
         >
@@ -287,19 +473,24 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         </div>
       </div>
 
-      {/* Chart */}
+      {/* ================= CHART ================= */}
       <div
         style={{
-          marginTop: "10px",
-          padding: "10px",
-          backgroundColor: "#fff",
-          border: "2px solid black",
+          marginTop: "0px",
+
+          padding: "5px",
+
           height: "220px",
+
           width: "100%",
+
           boxSizing: "border-box",
         }}
       >
-        <Bar data={data} options={options} />
+        <Bar
+          data={data}
+          options={options}
+        />
       </div>
     </div>
   );

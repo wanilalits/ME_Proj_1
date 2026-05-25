@@ -144,10 +144,10 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
         backgroundColor: props.bg,
         position: "relative",
         height: "340px",
-        border: "3px solid #000",
-        borderRadius: "16px",
+         border: "1.5px solid rgba(0,0,0,0.15)",
+    boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
+    borderRadius: "8px",
         background: "#fff",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
         padding: "10px",
         width: "100%",
         maxWidth: "360px",
@@ -164,7 +164,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
           style={{ position: "absolute", top: "8px", right: "12px" }}
         />
 
-        <div style={{ position: "absolute", top: "55px", left: "10px" }}>
+        <div style={{ position: "absolute", top: "60px", left: "10px" }}>
           <button
             onClick={userDispatch}
             style={{
@@ -236,7 +236,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             left: "10px",
           }}
         >
-          {props.liveAverages}
+          {isNaN(props.liveAverages) ? 0 : props.liveAverages}
         </div>
 
         <div
@@ -245,7 +245,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             fontSize: "20px",
             fontWeight: "bold",
             color: "#08642b",
-            top: "40px",
+            top: "45px",
             right: "12px",
           }}
         >
@@ -262,7 +262,6 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
       bottom: "22px",
       left: "50%",
       transform: "translateX(-50%)",
-      
       whiteSpace: "nowrap",
       zIndex: 10,
       fontSize: "12px",
@@ -272,7 +271,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
-    })}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    })}&nbsp;&nbsp;&nbsp;
     Time in hh:mm AM/PM
   </div>
 
@@ -281,13 +280,13 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
       <div
         style={{
         
-          marginTop: "10px",
-          padding: "10px",
+          marginTop: "0px",
+          padding: "5px",
           backgroundColor: "#fff",
-          border: "2px solid black",
+          
           height: "220px",
           width: "100%",
-          boxSizing: "border-box",
+          
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

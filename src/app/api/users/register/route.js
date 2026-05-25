@@ -54,7 +54,6 @@ export const POST = async (reqest) => {
 
 
 
-
 //mongodb+srv://wanilalits:<db_password>@cluster0.eyv6m.mongodb.net/
 //wanilalits
 //SIWZKSIArUfhOV4V
