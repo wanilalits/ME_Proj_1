@@ -329,9 +329,10 @@ function page() {
                 ⟳ Last Update
               </button>
 
-              <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+              <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
+                Last Updated: 
                 {Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
-                  ? `Last Updated: ${new Date(Graphdata.at(-1).createdAt)
+                  ? `${new Date(Graphdata.at(-1).createdAt)
                       .toLocaleString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -342,7 +343,7 @@ function page() {
                         hour12: true,
                       })
                       .replace(",", " - ")}`
-                  : "Updating..."}
+                  : " Updating..."}
               </div>
             </div>
             <div
