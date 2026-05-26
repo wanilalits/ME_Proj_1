@@ -33,11 +33,11 @@ const Logout = () => {
           >
             <button
               style={{
-                backgroundColor: "rgba(27, 169, 76, 0.2)",
+                backgroundColor: "rgba(27, 169, 76, 1)",
                 color: "white",
                 border: "none",
-                padding: "8px 20px",
-                borderRadius: "6px",
+                padding: "8px 8px",
+                borderRadius: "12px",
                 fontWeight: "bold",
                 cursor: "pointer",
   transition: "0.3s",
