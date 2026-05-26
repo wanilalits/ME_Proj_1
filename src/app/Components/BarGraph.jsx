@@ -236,7 +236,7 @@ const BarGraph = (props) => {
                 month: "2-digit",
                 year: "2-digit",
               }
-            ) + "   Time",
+            ) + "   Time in hh:mm AM/PM",
 
           color: "black",
 
@@ -283,27 +283,15 @@ const BarGraph = (props) => {
     <div
       style={{
         backgroundColor: props.bg,
-
         position: "relative",
-
         height: "340px",
-
-        border:
-          "1.5px solid rgba(0,0,0,0.15)",
-
-        boxShadow:
-          "0 3px 8px rgba(0,0,0,0.12)",
-
+        border:"1.5px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
         borderRadius: "8px",
-
         background: "#fff",
-
         padding: "10px",
-
         width: "100%",
-
         maxWidth: "360px",
-
         boxSizing: "border-box",
       }}
     >
@@ -464,7 +452,7 @@ const BarGraph = (props) => {
 
             color: "#08642b",
 
-            top: "45px",
+            top: "50px",
 
             right: "12px",
           }}
@@ -480,7 +468,7 @@ const BarGraph = (props) => {
 
           padding: "5px",
 
-          height: "220px",
+          height: "240px",
 
           width: "100%",
 

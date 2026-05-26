@@ -198,7 +198,7 @@ const LineGraph = (props) => {
               day: "2-digit",
               month: "2-digit",
               year: "2-digit",
-            }) + "   Time",
+            }) + "   Time in hh:mm AM/PM",
 
           color: "black",
 
@@ -412,7 +412,7 @@ const LineGraph = (props) => {
 
             color: "#08642b",
 
-            top: "45px",
+            top: "50px",
 
             right: "12px",
           }}
@@ -428,7 +428,7 @@ const LineGraph = (props) => {
 
           padding: "5px",
 
-          height: "220px",
+          height: "240px",
 
           width: "100%",
 

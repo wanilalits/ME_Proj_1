@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+//import { useRouter, useParams } from "next/navigation";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import humidity from "../../../public/Image/humidity.png";
@@ -31,74 +31,69 @@ function page() {
     Co2: "bar",
   });
   const [loading, setLoading] = useState(false);
-  const [Graphdata, setGraphData] = useState([]);;
+  const [Graphdata, setGraphData] = useState([]);
   const [liveAverages, setLiveAverages] = useState({});
   const [device, setDevice] = useState("Device_0"); // default value
   const [devicenickname, setDevicenickname] = useState("Greya Composter"); // default value
   const [highlight, setHighlight] = useState(false);
   const [rtkid, setRtkid] = useState(null);
   const [curredate, setCurredate] = useState(null);
-  const [CycleEnd, setCycleEnd]=useState(null)
-  const [cycleStatus, setCycleStatus]=useState(null)
-  const [cycleEndDate, setCycleEndDate]=useState(null)
-  const params = useParams();
+  const [CycleEnd, setCycleEnd] = useState(null);
+  const [cycleStatus, setCycleStatus] = useState(null);
+  const [cycleEndDate, setCycleEndDate] = useState(null);
+  //const params = useParams();
   const dispatch = useDispatch();
-  const router = useRouter();
+  //const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
 
+  const getFirstGraphdata = async () => {
+    try {
+      let s;
+      let e;
+      // IF inactive3
+      if (cycleStatus === true) {
+        // console.log("come here..........");
 
+        //this block from here is not running
+        // Convert CycleDate to Date object
+        const baseDate = new Date(CycleEnd);
+        // console.log("End here..........");
+        // Start = 12:00:01 AM
+        const inactiveStart = new Date(baseDate);
+        inactiveStart.setHours(0, 0, 1, 0);
 
-   const getFirstGraphdata = async () => {
-  try {
-    let s;
-    let e;
-    // IF inactive3
-    if (cycleStatus === true) {
-     // console.log("come here..........");
-   
-//this block from here is not running
-      // Convert CycleDate to Date object
-      const baseDate = new Date(CycleEnd);
-  // console.log("End here..........");
-      // Start = 12:00:01 AM
-      const inactiveStart = new Date(baseDate);
-      inactiveStart.setHours(0, 0, 1, 0);
+        // End = 11:59:59 PM
+        const inactiveEnd = new Date(baseDate);
+        inactiveEnd.setHours(23, 59, 59, 999);
 
-      // End = 11:59:59 PM
-      const inactiveEnd = new Date(baseDate);
-      inactiveEnd.setHours(23, 59, 59, 999);
+        s = inactiveStart.toISOString();
+        e = inactiveEnd.toISOString();
 
-      s = inactiveStart.toISOString();
-      e = inactiveEnd.toISOString();
+        // console.log("Inactive Start:", s);
+        // console.log("Inactive End:", e);
+        //  console.log("End here..........");
+      } else {
+        // DEFAULT CASE
+        const now = new Date();
 
-    // console.log("Inactive Start:", s);
-     // console.log("Inactive End:", e);
-     //  console.log("End here..........");
-    }
-else
-{
- // DEFAULT CASE
-    const now = new Date();
+        // Start = today 12:00:01 AM
+        const startDate = new Date();
+        startDate.setHours(0, 0, 1, 0);
 
-    // Start = today 12:00:01 AM
-    const startDate = new Date();
-    startDate.setHours(0, 0, 1, 0);
+        // End = current time + 30 min
+        const endDate = new Date(now.getTime() + 30 * 60 * 1000);
 
-    // End = current time + 30 min
-    const endDate = new Date(now.getTime() + 30 * 60 * 1000);
+        s = startDate.toISOString();
+        e = endDate.toISOString();
 
-    s = startDate.toISOString();
-    e = endDate.toISOString();
+        //console.log("Default Start:", s);
+        //console.log("Default End:", e);
+      }
 
-    //console.log("Default Start:", s);
-    //console.log("Default End:", e);
-}
-
-//console.log(s, e)
-    const res = await fetch(
-      `${window.location.origin}/api/users/sensorslog?purp=filterbydate&deviceid=${device}&s=${s}&e=${e}`);
-    const updated = await res.json();
-    setGraphData(updated);
+      //console.log(s, e)
+      const res = await fetch(`${window.location.origin}/api/users/sensorslog?purp=filterbydate&deviceid=${device}&s=${s}&e=${e}`);
+      const updated = await res.json();
+      setGraphData(updated);
       const averages = {
         Ammonia: Number((updated.map((item) => Number(item.Ammonia || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2)),
         Co2: Number((updated.map((item) => Number(item.Co2 || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2)),
@@ -115,20 +110,20 @@ else
 
   // 🔹 Arrow function to get last new data
   const getdata = async () => {
-    if (!Graphdata ) {
+    if (Graphdata == null || Graphdata.length === 0) {
       getFirstGraphdata();
-      console.log("......");
       return;
     }
 
     try {
+     
       const response = await fetch(window.location.origin + "/api/users/sensorslog?purp=1&deviceid=" + device);
       const result = await response.json();
-  
+
       setGraphData((prev) => {
         if (result?.length > 0 && result[0]._id?.toString() !== prev?.at(-1)?._id?.toString()) {
           const updated = [...prev, result[0]];
-          
+
           const averages = {
             Ammonia: Number((updated.map((item) => Number(item.Ammonia || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2)),
             Co2: Number((updated.map((item) => Number(item.Co2 || 0)).reduce((a, b) => a + b, 0) / updated.length).toFixed(2)),
@@ -147,21 +142,11 @@ else
       });
     } catch (error) {
       //   console.error(error);
+      setGraphData([])
     }
   };
 
-  //Log Off
-  const onLogoff = () => {
-    setLoading(true);
-    try {
-      fetch(window.location.origin + "/api/users/logoff")
-        .then((response) => response.json())
-        .then(() => router.push("./login"))
-        .catch((error) => {});
-    } catch {
-      setLoading(false);
-    }
-  };
+
 
   // setThemeColor is a function that sets the theme color of the browser based on the cycle status (active/idle) to give a visual indication of data refresh cycle along with the title change done in runCycle function
   const setThemeColor = (color) => {
@@ -189,46 +174,36 @@ else
     }, 2000);
   };
 
-  
-
   useEffect(() => {
-console.log (cycleStatus)
-  if (cycleStatus == null) return;
-//cycleEndDate
-  
+    console.log(cycleStatus);
+    if (cycleStatus == null) return;
     runCycle(); //blinking animation cycle
-      getFirstGraphdata();
-      setCurredate(new Date()); // Set current date and time on component mount
+    getFirstGraphdata();
+    setCurredate(new Date()); // Set current date and time on component mount
 
-      if (cycleStatus ===false)
-      {
+    if (cycleStatus === false) {
+    console.log ("come here")
       const intervalId = setInterval(() => {
         getdata();
         setCurredate(new Date()); // Set current date and time on component mount
         runCycle(); // repeat cycle every 30 sec
       }, 30000);
       return () => clearInterval(intervalId); // ✅ cleanup old interval
-}
-
+    }
   }, [device, cycleEndDate]);
 
-//cycleStatus set by child component
-
-
+  useEffect(() => {
+  console.log(cycleStatus )
+  }, [cycleStatus]);
 
   useEffect(() => {
     if (!curredate) return;
-
     setHighlight(true); // turn ON highlight
-
     const timer = setTimeout(() => {
       setHighlight(false); // turn OFF after 2 sec
     }, 1000);
-
     return () => clearTimeout(timer);
   }, [curredate]);
-
- 
 
   useEffect(() => {
     dispatch(addUser([graphselect]));
@@ -250,7 +225,6 @@ console.log (cycleStatus)
           margin: "0 auto",
           padding: "10px",
           boxSizing: "border-box",
-          
         }}
       >
         <HeaderBanner />
@@ -263,127 +237,102 @@ console.log (cycleStatus)
             alignItems: "flex-start",
             marginBottom: "10px",
             flexWrap: "wrap",
-             border: "1px solid rgba(0,0,0,0.15)",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-    borderRadius: "8px",
-    padding: "10px",
-    gap: "15px",
+            border: "1px solid rgba(0,0,0,0.15)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+            borderRadius: "8px",
+            padding: "10px",
+            gap: "15px",
           }}
         >
-      <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate}></Header_1>
+          <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate}></Header_1>
+         
+         
           {/*Station Select*/}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "10px",
+
+              border: "1px solid rgba(0,0,0,0.15)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              borderRadius: "8px",
+              padding: "10px",
+              paddingTop: "1px",
+              marginBottom: "0px",
+            }}
+          >
+            <div style={{ color: "black", fontWeight: "normal", fontSize: "14px",  width:"100%", textAlign:'center' }}>Select Station</div>
+            {/* Dropdown to delect Device */}
+            <select
+              style={{ marginLeft: "0px", height: "40px", border: "1px solid #ccc", borderRadius: "8px", padding: "8px 35px 8px 10px", marginTop: "-5px" }}
+              value={device} // 👈 bind state here
+              onChange={(e) => {
+                setGraphData([]);
+                setDevice(e.target.value);
+                setDevicenickname(e.target.options[e.target.selectedIndex].text);
+              }} // 👈 update state
+            >
+              <option value="Device_0">Greya Composter</option>
+              <option value="Device_1">PIT 1</option>
+              <option value="Device_2">PIT 2</option>
+              <option value="Device_3">PIT 3</option>
+              <option value="Device_4">PIT 4</option>
+              <option value="Device_5">PIT 5</option>
+              <option value="Device_6">PIT 6</option>
+            </select>
+            {/* device Name*/}
+            <div style={{ color: "black", fontWeight: "normal", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>Station Seleced:-</div>
+            <div style={{ color: "black", fontWeight: "bold", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>{devicenickname} </div>
+          </div>
+          {/*Last Update*/}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "10px",
+              border: "1px solid rgba(0,0,0,0.15)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              borderRadius: "8px",
+              padding: "10px",
+              marginBottom: "0px",
+              paddingTop: "1px",
+            }}
+          >
             <div
-               style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "10px",
-
-    border: "1px solid rgba(0,0,0,0.15)",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-    borderRadius: "8px",
-    padding: "10px",
-    paddingTop:"1px",
-    marginBottom: "0px",
-  }}
- >
-   <div style={{ color: "black", fontWeight: "normal", fontSize: "14px" }}>Select Station</div>
-        {/* Dropdown to delect Device */}
-              <select
-                style={{  marginLeft: "0px", height: "40px", border: "1px solid #ccc", borderRadius: "8px", padding: "8px 35px 8px 10px", marginTop:"-5px" }}
-                value={device} // 👈 bind state here
-                onChange={(e) => {
-                  setGraphData([]);
-                  setDevice(e.target.value);
-                  setDevicenickname(e.target.options[e.target.selectedIndex].text);
-                }} // 👈 update state
-              >
-                <option value="Device_0">Greya Composter</option>
-                <option value="Device_1">PIT 1</option>
-                <option value="Device_2">PIT 2</option>
-                <option value="Device_3">PIT 3</option>
-                <option value="Device_4">PIT 4</option>
-                <option value="Device_5">PIT 5</option>
-                <option value="Device_6">PIT 6</option>
-              </select>
-              {/* device Name*/}
-              <div style={{ color: "black", fontWeight: "normal", marginLeft: "8px", fontSize: "14px", margin : "0px", padding : "0px" }}>Station Seleced:-</div>
-              <div style={{ color: "black", fontWeight: "bold", marginLeft: "8px", fontSize: "14px", margin : "0px", padding : "0px" }}>{devicenickname} </div>
-            </div>
-     {/*Last Update*/}      
-<div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "10px",
-    border: "1px solid rgba(0,0,0,0.15)",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-    borderRadius: "8px",
-    padding: "10px",
-    marginBottom: "0px",
-    paddingTop:"1px"
-  }}
-
-
->
-<div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <button
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
+                  backgroundColor: "#1BA94C",
+                  color: "#fff",
+                  border: "none",
+                  padding: "8px 20px",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  transition: "background-color 0.3s ease",
+                }}
+                onClick={() => {
+                  runCycle(); // trigger title animation immediately
+                  getFirstGraphdata(); // Refresh graph data if needed
+                  getdata(); // Refresh latest sensor values
+                  setCurredate(new Date()); // Update current date and time
                 }}
               >
-                <button
-                  style={{
-                    backgroundColor: "#1BA94C",
-                    color: "#fff",
-                    border: "none",
-                    padding: "8px 20px",
-                    borderRadius: "6px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease",
-                  }}
-                  onClick={() => {
-                    runCycle(); // trigger title animation immediately
-                    getFirstGraphdata(); // Refresh graph data if needed
-                    getdata(); // Refresh latest sensor values
-                    setCurredate(new Date()); // Update current date and time
-                  }}
-                >
-                  ⟳ Last Update
-                </button>
+                ⟳ Last Update
+              </button>
 
-                <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
-                  {Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
-                    ? `Last Updated: ${new Date(Graphdata.at(-1).createdAt)
-                        .toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          hour12: true,
-                        })
-                        .replace(",", " - ")}`
-                    : "Updating..."}
-                </div>
-              </div>
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: highlight ? "#000" : "#666", // 👈 change color
-                  fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
-                  marginTop: "5px",
-                  transition: "all 1s ease", // 👈 smooth effect
-                }}
-              >
-                {curredate
-                  ? `Last checked: ${curredate
+              <div style={{ fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                {Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
+                  ? `Last Updated: ${new Date(Graphdata.at(-1).createdAt)
                       .toLocaleString("en-GB", {
-                        timeZone: "Asia/Kolkata",
                         day: "2-digit",
                         month: "short",
                         year: "2-digit",
@@ -395,55 +344,46 @@ console.log (cycleStatus)
                       .replace(",", " - ")}`
                   : "Updating..."}
               </div>
-        
-</div>
-{/* Logout*/}
-<div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "10px",
-
-    border: "1px solid rgba(0,0,0,0.15)",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-    borderRadius: "8px",
-    padding: "10px",
-    marginBottom: "0px",
-  }}
->
-    
-            <button
+            </div>
+            <div
               style={{
-                backgroundColor: "#1BA94C",
-                color: "white",
-                border: "none",
-                padding: "8px 20px",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
+                fontSize: "12px",
+                color: highlight ? "#000" : "#666", // 👈 change color
+                fontWeight: highlight ? "semi-bold" : "normal", // 👈 bold effect
+                marginTop: "5px",
+                transition: "all 1s ease", // 👈 smooth effect
               }}
-              onClick={onLogoff}
-              disabled={loading}
             >
-              {loading ? "loging Out..." : "Log Out"}
-            </button>
+              {curredate
+                ? `Last checked: ${curredate
+                    .toLocaleString("en-GB", {
+                      timeZone: "Asia/Kolkata",
+                      day: "2-digit",
+                      month: "short",
+                      year: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })
+                    .replace(",", " - ")}`
+                : "Updating..."}
+            </div>
+          </div>
         
-</div>
-
-
+       
         </div>
-<hr></hr>
+        <hr></hr>
         {/* Graph  */}
         <div
           style={{
-             display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: "20px",
-    marginBottom: "30px",
-    width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "20px",
+            marginBottom: "30px",
+            width: "100%",
           }}
         >
           {graphselect.Humidity == "line" ? (
@@ -565,7 +505,7 @@ console.log (cycleStatus)
               <>{null}</>
             ))}
           <Tile key_1={device}></Tile>
-          <ReportDownload> </ReportDownload>
+        
         </div>
 
         {/* Dashboard Metrics */}

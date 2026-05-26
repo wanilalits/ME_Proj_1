@@ -45,12 +45,18 @@ const Tile = () => {
     <div
       style={{
         backgroundColor: "white",
+
+        paddind:'10px',
+         position: "relative",
         height: "340px",
-        border: "3px solid #000",
-        borderRadius: "16px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+        border:"1.5px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
+        borderRadius: "8px",
+        background: "#fff",
+        padding: "10px",
         width: "100%",
         maxWidth: "360px",
+        boxSizing: "border-box",
       }}
     >
       {/* 🔥 Custom Dropdown */}
@@ -132,14 +138,16 @@ const Tile = () => {
         value={input2}
         onChange={handleInput2Change}
         style={{
-          width: "80%",
+          width: "85%",
           height: "35px",
-          padding: "8px",
+          padding: "7px",
           marginTop: "10px",
           marginBottom: "10px",
           borderRadius: "8px",
           border: "1px solid #ccc",
           marginLeft: "14px",
+          fontSize: "16px",
+          paddingLeft:"10px"
         }}
       />
 

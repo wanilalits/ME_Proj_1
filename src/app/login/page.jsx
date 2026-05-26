@@ -64,7 +64,7 @@ export default function Page() {
         padding: '40px',
         borderRadius: '12px',
         boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-        width: '100%',
+        width: '90%',
         maxWidth: '400px'
       }}>
         <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#1A5D1A' }}>Login</h2>
@@ -95,7 +95,7 @@ export default function Page() {
             onChange={handleInputChange}
             style={{
               width: '100%',
-              padding: '10px 40px 10px 10px',
+              padding: '10px',
               borderRadius: '6px',
               border: '1px solid #ccc'
             }}

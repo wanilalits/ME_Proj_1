@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Logo from "../../../public/Image/Logo.png";
+import Logout from "./Logout";
 const HeaderBanner = () => {
   const [width, setWidth] = useState(0); // no window here
 
@@ -173,10 +174,30 @@ const HeaderBanner = () => {
             >
               A Smart IoT-Enabled Device for On-Site Wet Waste Processing
             </p>
+      
+
+
+
+
           </div>
 
           {/* RIGHT: EMPTY (same width as left) */}
+         {/* Logout Button*/}
           <div />
+<div  style={{
+            position: "absolute",
+            right: "90px",
+            top: "12%",
+            transform: "translateY(-50%)",
+            height: "clamp(77px, 10vw, 90px)",
+            width: "auto",
+          }}>
+<Logout ></Logout>
+
+          </div>
+
+
+ 
         </div>
       </>
     );

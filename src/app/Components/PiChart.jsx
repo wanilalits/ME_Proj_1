@@ -207,7 +207,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             transform: "translateX(-50%)",
           }}
         >
-          {props.liveData?.at(-1)?.[props.mykey] || ""}
+          {props.liveData?.at(-1)?.[props.mykey] || "--"}
         </div>
 
         <div
@@ -245,7 +245,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
             fontSize: "20px",
             fontWeight: "bold",
             color: "#08642b",
-            top: "45px",
+            top: "50px",
             right: "12px",
           }}
         >
@@ -259,12 +259,13 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
   <div
     style={{
       position: "absolute",
-      bottom: "22px",
+      bottom: "19px",
       left: "50%",
       transform: "translateX(-50%)",
       whiteSpace: "nowrap",
       zIndex: 10,
-      fontSize: "12px",
+    fontSize: "12px",
+fontWeight: "bold",
     }}
   >
     {startOfDay.toLocaleDateString("en-GB", {

@@ -21,7 +21,7 @@ function Header(props) {
     bagroundColour: "white",
     loadDBData: false,
     cycleStatus: null,
-    cycleDaysremain:null
+    cycleDaysremain: null,
   });
   const [loading, setLoading] = useState(false);
   const [dateTime, setDateTime] = useState(null);
@@ -123,31 +123,28 @@ function Header(props) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         endDate.setHours(0, 0, 0, 0);
-        
+
         const timeDiff = endDate - today;
         const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    
+
         if (daysDiff < 0) {
           //console.log(`📅 PAST DATE: ${Math.abs(daysDiff)} days ago`);
-           setTileControl((prev) => ({ ...prev, cycleStatus: "Before cycle is completed", cycleDaysremain:Math.abs(daysDiff)}));
-         props.setCycleStatus(true)
-
-          } else if (daysDiff === 0) {
-         // console.log(`📅 CURRENT DATE: Today`);
-           setTileControl((prev) => ({ ...prev, cycleStatus: "Cycle is compleating Today", cycleDaysremain:(null)}));
-       props.setCycleStatus(false)
-          } else {
+          setTileControl((prev) => ({ ...prev, cycleStatus: "before the cycle is completed", cycleDaysremain: Math.abs(daysDiff) }));
+          props.setCycleStatus(true);
+        } else if (daysDiff === 0) {
+          // console.log(`📅 CURRENT DATE: Today`);
+          setTileControl((prev) => ({ ...prev, cycleStatus: "cycle is being completed today", cycleDaysremain: null }));
+          props.setCycleStatus(false);
+        } else {
           //console.log(`📅 FUTURE DATE: ${daysDiff} days in future`);
-           setTileControl((prev) => ({ ...prev, cycleStatus: "Remain to complete Cycle", cycleDaysremain:Math.abs(daysDiff)}));
-        props.setCycleStatus(false)
-          }
+          setTileControl((prev) => ({ ...prev, cycleStatus: "remaining to complete the cycle", cycleDaysremain: Math.abs(daysDiff) }));
+          props.setCycleStatus(false);
+        }
         props.setCycleEnd(new Date(result.data.enddate));
-      
-
       }
       if (!res.ok) {
         //throw new Error(result.message || "Failed to fetch data");
-props.setCycleEndDate(null);
+        props.setCycleEndDate(null);
         setTileControl((prev) => ({
           ...prev,
           bagroundColour: "white",
@@ -168,79 +165,97 @@ props.setCycleEndDate(null);
   };
 
   useEffect(() => {
-      fetchCycleData();
+    fetchCycleData();
   }, [props.deviceid]);
 
   return (
     <div
       style={{
-        border: "1.5px solid rgba(0,0,0,0.15)",
-        boxShadow: "0 3px 8px rgba(0,0,0,0.12)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: "5px",
+        border: "1px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
         borderRadius: "8px",
-        padingTop: "10px",
-        paddingBottom: "10px",
-        paddingLeft: "10px",
+        padding: "10px",
+        paddingTop: "1px",
+        minWidth: "245px",
       }}
     >
+
+
+<div
+  style={{
+    display: "flex",
+    gap: "15px",
+    flexWrap: "wrap",
+  }}
+>
+      {/* ⏱ Date Time Picker_1 */}
       <div
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          marginBottom: "0px",
-          gap: "8px",
+          minWidth: "200px",
+          fontSize: "14px",
         }}
       >
-        {/* ⏱ Date Time Picker_1 */}
         <div
           style={{
-            minWidth: "200px",
+            marginBottom: "5px",
             fontSize: "14px",
           }}
         >
           {tileControl.loadDBData === true && tileControl.bagroundColour === "#B6EAC8" ? "Cycle start date:-" : "Start date:-"}
-          <br />
-          <DatePicker
-            onChange={(date) => {
-              setDateTime(date);
-              setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
-            }}
-            placeholderText="__/__/____  __:__:__"
-            selected={dateTime}
-            format="dd/MM/yyyy hh:mm a"
-            showTimeInput
-            timeIntervals={1}
-            timeFormat="hh:mm aa"
-            dateFormat="dd/MM/yyyy hh:mm:ss aa"
-            readOnly={false}
-            className="green-datepicker"
-          />
         </div>
+        <DatePicker
+          onChange={(date) => {
+            setDateTime(date);
+            setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
+          }}
+          placeholderText="__/__/____  __:__:__"
+          selected={dateTime}
+          format="dd/MM/yyyy hh:mm a"
+          showTimeInput
+          timeIntervals={1}
+          timeFormat="hh:mm aa"
+          dateFormat="dd/MM/yyyy hh:mm:ss aa"
+          readOnly={false}
+          className="green-datepicker"
+        />
+      </div>
 
-        {/* ⏱ Date Time Picker_2 */}
+      {/* ⏱ Date Time Picker_2 */}
+      <div
+        style={{
+          minWidth: "200px",
+        }}
+      >
         <div
           style={{
-            minWidth: "200px",
+            marginBottom: "5px",
             fontSize: "14px",
           }}
         >
-          {tileControl.loadDBData === true && tileControl.bagroundColour === "#B6EAC8"  ? "Cycle end date:-" : "End date:-"}
-          <br />
-          <DatePicker
-            onChange={(date) => {
-              setDateTime2(date);
-              setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
-            }}
-            placeholderText="__/__/____  __:__:__"
-            selected={dateTime2}
-            readOnly={false}
-            showTimeInput
-            timeIntervals={5}
-            timeFormat="hh:mm aa"
-            dateFormat="dd/MM/yyyy hh:mm:ss aa"
-            className="green-datepicker"
-          />
+          {tileControl.loadDBData === true && tileControl.bagroundColour === "#B6EAC8" ? "Cycle end date:-" : "End date:-"}
         </div>
+
+        <DatePicker
+          onChange={(date) => {
+            setDateTime2(date);
+            setTileControl((prev) => ({ ...prev, bagroundColour: "white" }));
+          }}
+          placeholderText="__/__/____  __:__:__"
+          selected={dateTime2}
+          readOnly={false}
+          showTimeInput
+          timeIntervals={5}
+          timeFormat="hh:mm aa"
+          dateFormat="dd/MM/yyyy hh:mm:ss aa"
+          className="green-datepicker"
+        />
       </div>
+</div>
+
 
       <div
         style={{
@@ -250,41 +265,55 @@ props.setCycleEndDate(null);
           gap: "0px",
         }}
       ></div>
-      <span
+
+      <div
         style={{
-          fontSize: "12px",
-          color: "#666",
-          fontWeight: "normal",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        {dateTime2 && dateTime && tileControl.cycleDaysremain && tileControl.bagroundColour === "#B6EAC8" ? (
-          <>
-            {tileControl.cycleDaysremain} day&nbsp;
-          </>
-        ) : (
-          ""
-        )}
-      </span>
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#666",
+            fontWeight: "normal",
+          }}
+        >
+          {dateTime2 && dateTime && tileControl.cycleDaysremain && tileControl.bagroundColour === "#B6EAC8" ? (
+            <>
+              {tileControl.cycleDaysremain}
+              {tileControl.cycleDaysremain === 1 || tileControl.cycleDaysremain === -1 ? <>day</> : <>days</>}&nbsp;
+            </>
+          ) : (
+            ""
+          )}
+        </span>
 
-      <span
-        style={{
-          fontSize: "12px",
-          color: "#666",
-          fontWeight: "normal",
-          cursor: "pointer", // shows hand cursor
-        }}
-        onClick={() => { fetchCycleData(); }}>
-        {tileControl.loadDBData === true && tileControl.bagroundColour === "#B6EAC8" ? (
-          <span className="cycle-running">
-          {tileControl.cycleStatus}
-            <span className="dots"></span>
-          </span>) 
-          : tileControl.loadDBData === true && tileControl.bagroundColour === "white"? 
-          (<> Generate report or ↻ Refresh here to load Cycle Data </>) 
-           : tileControl.loadDBData ===false? (
-          <>Cycle not found... ↻ Refresh &nbsp;&nbsp;&nbsp;&nbsp; or click to Add Cycle buttom </>) 
-          : ( "↻ Refresh")}
-      </span>
+        <span
+          style={{
+            fontSize: "12px",
+            color: "#666",
+            fontWeight: "normal",
+            cursor: "pointer", // shows hand cursor
+          }}
+          onClick={() => {
+            fetchCycleData();
+          }}
+        >
+          {tileControl.loadDBData === true && tileControl.bagroundColour === "#B6EAC8" ? (
+            <span className="cycle-running">
+              {tileControl.cycleStatus}
+              <span className="dots"></span>
+            </span>
+          ) : tileControl.loadDBData === true && tileControl.bagroundColour === "white" ? (
+            <> Generate report or ↻ Refresh here to load Cycle Data </>
+          ) : tileControl.loadDBData === false ? (
+            <>Cycle not found... ↻ Refresh &nbsp;&nbsp;&nbsp;&nbsp; or click to Add Cycle buttom </>
+          ) : (
+            "↻ Refresh"
+          )}
+        </span>
+      </div>
 
       <div
         style={{
@@ -343,6 +372,14 @@ props.setCycleEndDate(null);
           .react-datepicker-wrapper {
             height: "45px";
           }
+          .react-datepicker-popper {
+            z-index: 99999 !important;
+          }
+
+          .react-datepicker {
+            font-size: 0.9rem;
+          }
+
           .react-datepicker__input-container input {
             height: 40px;
             width: 95%;
