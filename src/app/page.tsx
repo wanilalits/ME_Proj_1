@@ -1,8 +1,8 @@
 'use client';
-import Image from "next/image";
-//import styles from "./page.module.css";
+//import Image from "next/image";
+import styles from "./page.module.css";
 import React, { useState } from "react";
-import  "bootstrap/dist/css/bootstrap.min.css"
+//import  "bootstrap/dist/css/bootstrap.min.css"
 export default function Home() {
   const [data, setData] = useState<number>(10);
 

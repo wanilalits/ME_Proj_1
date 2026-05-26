@@ -52,25 +52,29 @@ export default function Page() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      height: '100dvh',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#f4f6f8',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
+  margin: 0,
+    boxSizing: "border-box",
+    overflow: "hidden",
     }}>
       <div style={{
         backgroundColor: '#ffffff',
-        padding: '40px',
+        padding: '30px',
         borderRadius: '12px',
         boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
         width: '90%',
-        maxWidth: '400px'
+        maxWidth: '300px',
+        maxHeight: '400px',
       }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#1A5D1A' }}>Login</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#1A5D1A' }}>Login</h2>
 
         {/* User ID */}
-        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>User ID</label>
+        <label style={{ fontWeight: 'bold', marginBottom: '0px', display: 'block' }}>User ID</label>
         <input
           type="text"
           name="userID"
@@ -81,12 +85,18 @@ export default function Page() {
             padding: '10px',
             marginBottom: '20px',
             borderRadius: '6px',
-            border: '1px solid #ccc'
+            border: '1px solid #ccc',
+             height: "35px",
+            padding: "5px",
+          marginTop: "7px",
+          fontSize: "16px",
+          paddingLeft:"10px"
+
           }}
         />
 
         {/* Password */}
-        <label style={{ fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>Password</label>
+        <label style={{ fontWeight: 'bold', marginBottom: '0px', display: 'block' }}>Password</label>
         <div style={{ position: 'relative', marginBottom: '20px' }}>
           <input
             type={show ? 'text' : 'password'}
@@ -95,9 +105,13 @@ export default function Page() {
             onChange={handleInputChange}
             style={{
               width: '100%',
-              padding: '10px',
               borderRadius: '6px',
-              border: '1px solid #ccc'
+              border: '1px solid #ccc',
+             height: "35px",
+            padding: "5px",
+          marginTop: "7px",
+          fontSize: "16px",
+          paddingLeft:"10px"
             }}
           />
           <div
@@ -106,7 +120,7 @@ export default function Page() {
               position: 'absolute',
               right: '10px',
               top: '50%',
-              transform: 'translateY(-50%)',
+              transform: 'translateY(-25%)',
               cursor: 'pointer'
             }}
           >
@@ -135,7 +149,10 @@ export default function Page() {
             border: 'none',
             borderRadius: '6px',
             cursor: 'pointer',
-            marginBottom: '20px'
+            marginBottom: '20px',
+          height: "40px",
+     fontSize:'17px',
+         
           }}
         >
           Login

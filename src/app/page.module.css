@@ -167,3 +167,8 @@ a.secondary {
     filter: invert();
   }
 }
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
