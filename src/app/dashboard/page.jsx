@@ -254,7 +254,6 @@ function page() {
               flexDirection: "column",
               alignItems: "flex-start",
               gap: "10px",
-
               border: "1px solid rgba(0,0,0,0.15)",
               boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
               borderRadius: "8px",
@@ -264,8 +263,10 @@ function page() {
             }}
           >
             <div style={{ color: "black", fontWeight: "normal", fontSize: "14px",  width:"100%", textAlign:'center' }}>Select Station</div>
+            
+            
             {/* Dropdown to delect Device */}
-            <select
+         {/*    <select
               style={{ marginLeft: "0px", height: "40px", border: "1px solid #ccc", borderRadius: "8px", padding: "8px 35px 8px 10px", marginTop: "-5px" }}
               value={device} // 👈 bind state here
               onChange={(e) => {
@@ -273,7 +274,11 @@ function page() {
                 setDevice(e.target.value);
                 setDevicenickname(e.target.options[e.target.selectedIndex].text);
               }} // 👈 update state
-            >
+          
+          
+          >
+
+              
               <option value="Device_0">Greya Composter</option>
               <option value="Device_1">PIT 1</option>
               <option value="Device_2">PIT 2</option>
@@ -281,7 +286,71 @@ function page() {
               <option value="Device_4">PIT 4</option>
               <option value="Device_5">PIT 5</option>
               <option value="Device_6">PIT 6</option>
-            </select>
+            </select> */}
+
+<div
+  style={{
+    position: "relative",
+    width: "200px",
+  }}
+>
+  <select
+    value={device}
+    onChange={(e) => {
+      setGraphData([]);
+      setDevice(e.target.value);
+      setDevicenickname(
+        e.target.options[e.target.selectedIndex].text
+      );
+    }}
+    style={{
+      width: "100%",
+      height: "40px",
+      border: "1px solid #ccc",
+      borderRadius: "8px",
+      padding: "8px 35px 8px 10px",
+      background: "#fff",
+      cursor: "pointer",
+
+      appearance: "none",
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+
+      fontSize: "14px",
+      outline: "none",
+    }}
+  >
+    <option value="Device_0">Greya Composter</option>
+    <option value="Device_1">PIT 1</option>
+    <option value="Device_2">PIT 2</option>
+    <option value="Device_3">PIT 3</option>
+    <option value="Device_4">PIT 4</option>
+    <option value="Device_5">PIT 5</option>
+    <option value="Device_6">PIT 6</option>
+  </select>
+
+  {/* Custom Arrow */}
+  <span
+    style={{
+      position: "absolute",
+      right: "12px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      pointerEvents: "none",
+      fontSize: "12px",
+      color: "#555",
+    }}
+  >
+    ▼
+  </span>
+</div>
+
+
+
+
+
+
+
             {/* device Name*/}
             <div style={{ color: "black", fontWeight: "normal", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>Station Seleced:-</div>
             <div style={{ color: "black", fontWeight: "bold", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>{devicenickname} </div>
