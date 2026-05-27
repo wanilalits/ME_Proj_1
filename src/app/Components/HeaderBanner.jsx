@@ -20,8 +20,7 @@ const HeaderBanner = () => {
  /*very small Less than 300 pixel*/
   if (width <= 350) {
     content = (
-      <>
-      {width}
+    
         <div
           style={{
             background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
@@ -74,7 +73,7 @@ const HeaderBanner = () => {
   <Logout />
 </div>
         </div>
-      </>
+    
     );
   } 
   
