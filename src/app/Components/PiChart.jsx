@@ -260,7 +260,7 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
     style={{
       position: "absolute",
       bottom: "19px",
-      left: "50%",
+      left: "58%",
       transform: "translateX(-50%)",
       whiteSpace: "nowrap",
       zIndex: 10,
