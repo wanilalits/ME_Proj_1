@@ -43,10 +43,10 @@ const Logout = () => {
   transition: "0.3s",
 }}
 onMouseEnter={(e) => {
-  e.currentTarget.style.backgroundColor = "rgba(27, 169, 76, 0.9)";
+  e.currentTarget.style.backgroundColor = "rgba(27, 109, 76, 0.5)";
 }}
 onMouseLeave={(e) => {
-  e.currentTarget.style.backgroundColor = "rgba(27, 169, 76, 0.2)";
+  e.currentTarget.style.backgroundColor = "rgba(27, 169, 76, 1)";
 }}
               onClick={onLogoff}
               disabled={loading}

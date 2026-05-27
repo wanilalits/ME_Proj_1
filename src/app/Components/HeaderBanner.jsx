@@ -78,7 +78,7 @@ const HeaderBanner = () => {
   
 /*mobile very 650 pixel*/
   else if (width <= 650) {
-    content = <><div
+    content = <div
         style={{
           background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
           color: "white",
@@ -91,21 +91,6 @@ const HeaderBanner = () => {
           position: "relative", // IMPORTANT
         }}
       >
- {/* Logout Button*/}
-       <div
-  style={{
-    position: "absolute",
-    right: "0px",
-    top: "0%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <Logout />
-</div>
-
-
         {/* LOGO - LEFT SIDE */}
         <img
           src={Logo.src || Logo}
@@ -150,8 +135,20 @@ const HeaderBanner = () => {
           </p>
         </div>
         <div />
-
-</div></>;
+ {/* Logout Button*/}
+       <div
+  style={{
+    position: "absolute",
+    right: "10px",
+    top: "10%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <Logout />
+</div>
+</div>;
 } 
   
  else if (width <= 950) {
