@@ -8,16 +8,79 @@ const HeaderBanner = () => {
     const handleResize = () => {
       setWidth(window.innerWidth);
     };
-
     handleResize(); // set initial width
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
- {/* mobile normal view OK*/}
-  const GreyaHeader = () => {
-    return (
-      <div
+
+ 
+ 
+
+  let content;
+ /*very small Less than 300 pixel*/
+  if (width <= 350) {
+    content = (
+      <>
+      {width}
+        <div
+          style={{
+            background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
+            color: "white",
+          padding: "0.8rem 1rem 1rem 1.5rem",
+            textAlign: "center",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            position: "relative", // 🔥 important
+            marginBottom: "15px",
+          }}
+        >
+         
+          {/* no Logo */}
+
+          {/* Center text (unchanged) */}
+          <h1
+            style={{
+              fontSize: "clamp(2rem, 2vw, 3rem)",
+              fontWeight: "800",
+              letterSpacing: "0px",
+              margin: 0,
+                  lineHeight: "0.95",
+            }}
+          >
+            Greya Smart Composter
+          </h1>
+          <p
+            style={{
+              marginTop: "1rem",
+              fontSize: "clamp(0.8rem, 2vw, 1rem)",
+              fontWeight: "400",
+          
+            }}
+          >
+            A Smart IoT-Enabled Device for On-Site Wet Waste Processing
+          </p>
+
+    {/* Logout Button*/}
+       <div
+  style={{
+    position: "absolute",
+    right: "-4px",
+    bottom: "-5px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <Logout />
+</div>
+        </div>
+      </>
+    );
+  } 
+  
+/*mobile very 650 pixel*/
+  else if (width <= 650) {
+    content = <><div
         style={{
           background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
           color: "white",
@@ -87,77 +150,24 @@ const HeaderBanner = () => {
           >
             A Smart IoT-Enabled Device for On-Site Wet Waste Processing
           </p>
-          {width}__1
         </div>
         <div />
 
-       
-      </div>
-    );
- };
-
-  let content;
-  if (width < 300) {
-    content = (
-      <>
-        {" "}
-        <div
-          style={{
-            background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
-            color: "white",
-            padding: "1.5rem 1rem",
-            textAlign: "center",
-            borderRadius: "16px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            position: "relative", // 🔥 important
-            marginBottom: "30px",
-          }}
-        >
-         
-          {/* Logo */}
-
-          {/* Center text (unchanged) */}
-          <h1
-            style={{
-              fontSize: "clamp(3rem, 6vw, 4rem)",
-              fontWeight: "800",
-              letterSpacing: "1px",
-              margin: 0,
-            }}
-          >
-            Greya Smart Composter
-          </h1>
-{width}
-          <p
-            style={{
-              marginTop: "1rem",
-              fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
-              fontWeight: "500",
-            }}
-          >
-            A Smart IoT-Enabled Device for On-Site Wet Waste Processing
-          </p>
-
-          {/* Logout Button*/}
-        </div>
-      </>
-    );
-  } else if (width <= 650) {
-    content = <>{GreyaHeader()}</>;
-  } 
+</div></>;
+} 
   
  else if (width <= 950) {
     content = (
-      <>
-        {" "}
+/* {width}__more 650 */
         <div
           style={{
+             position: "relative",
             background: "linear-gradient(90deg, #66BB6A, #2E7D32)",
             color: "white",
-            padding: "1.5rem 1rem",
+            padding: "0.8rem 1rem",
             borderRadius: "16px",
             boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            marginBottom: "30px",
+            marginBottom: "15px",
             display: "grid",
             gridTemplateColumns: "1fr 2fr 1fr", // ✅ equal balance
             alignItems: "center",
@@ -191,7 +201,7 @@ const HeaderBanner = () => {
             >
               Greya Smart Composter
             </h1>
-{width}__more 650
+
             <p
               style={{
                 marginTop: "0.8rem",
@@ -200,42 +210,40 @@ const HeaderBanner = () => {
             >
               A Smart IoT-Enabled Device for On-Site Wet Waste Processing
             </p>
-            {/* Logout Button*/}
+         
             <div />
     
           </div>
-  {/* RIGHT - Logout */}
+   {/* Logout Button*/}
   <div
     style={{
-      position: "relative",
-    top: "60px",
-    right:"70px",
+    position: "absolute",
+    right:"5px",
+    bottom: "5px",
     display: "flex",
     justifyContent: "flex-end",
     minWidth:"120px",
-
     padding:"0px"
   }}
   >
     <Logout /> </div>
           {/* RIGHT: EMPTY (same width as left) */}
         </div>
-      </>
+  
+  
     );
   }
-
+/*Laptop Desk view more than 950 pixel*/
   else  {
     content = (
-      <>
-        {" "}
         <div
           style={{
             background: "linear-gradient(90deg, #66BB6A, #2E7D32)",
             color: "white",
-            padding: "1.5rem 1rem",
+            padding: "0.8rem 1rem",
             borderRadius: "16px",
             boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            marginBottom: "30px",
+            marginBottom: "15px",
             display: "grid",
             gridTemplateColumns: "1fr 2fr 1fr", // ✅ equal balance
             alignItems: "center",
@@ -267,9 +275,8 @@ const HeaderBanner = () => {
                 whiteSpace: "nowrap", // 🔥 IMPORTANT
               }}
             >
-              Greya Smart Composter hh
+              Greya Smart Composter
             </h1>
-{width}__3
             <p
               style={{
                 marginTop: "0.8rem",
@@ -281,13 +288,13 @@ const HeaderBanner = () => {
             {/* Logout Button*/}
             <div />
     
-          </div>
+          </div>  
   {/* RIGHT - Logout */}
   <div
     style={{
       position: "relative",
-    top: "-80px",
-    left:"-40px",
+    top: "-65px",
+    left:"10px",
     display: "flex",
     justifyContent: "flex-end",
      minWidth:"120px"
@@ -296,9 +303,11 @@ const HeaderBanner = () => {
     <Logout /> </div>
           {/* RIGHT: EMPTY (same width as left) */}
         </div>
-      </>
+    
     );
   }
+
+
 
   return <>{content}</>;
 };
