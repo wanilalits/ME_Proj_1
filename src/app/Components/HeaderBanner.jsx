@@ -139,8 +139,8 @@ const HeaderBanner = () => {
        <div
   style={{
     position: "absolute",
-    right: "10px",
-    top: "10%",
+    right: "0px",
+    top: "0%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

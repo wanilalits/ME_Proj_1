@@ -51,7 +51,7 @@ onMouseLeave={(e) => {
               onClick={onLogoff}
               disabled={loading}
             >
-              {loading ? "loging Out..." : "Log Out"}
+              {loading ? "Log Out" : "Log Out"}
             </button>
           </div>
 
