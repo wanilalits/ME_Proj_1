@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-//import { useRouter, useParams } from "next/navigation";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import humidity from "../../../public/Image/humidity.png";
@@ -10,7 +9,6 @@ import H2S from "../../../public/Image/H2S.png";
 import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
-
 import LineGraph from "../Components/LineGraph";
 import PiChart from "../Components/PiChart";
 import HeaderBanner from "../Components/HeaderBanner";
@@ -41,9 +39,7 @@ function page() {
   const [CycleEnd, setCycleEnd] = useState(null);
   const [cycleStatus, setCycleStatus] = useState(null);
   const [cycleEndDate, setCycleEndDate] = useState(null);
-  //const params = useParams();
   const dispatch = useDispatch();
-  //const router = useRouter();
   const reduxData = useSelector((state) => state.userData.users);
 
   const getFirstGraphdata = async () => {
@@ -53,29 +49,19 @@ function page() {
       // IF inactive3
       if (cycleStatus === true) {
         // console.log("come here..........");
-
-        //this block from here is not running
         // Convert CycleDate to Date object
         const baseDate = new Date(CycleEnd);
         // console.log("End here..........");
         // Start = 12:00:01 AM
         const inactiveStart = new Date(baseDate);
         inactiveStart.setHours(0, 0, 1, 0);
-
-        // End = 11:59:59 PM
         const inactiveEnd = new Date(baseDate);
         inactiveEnd.setHours(23, 59, 59, 999);
-
         s = inactiveStart.toISOString();
         e = inactiveEnd.toISOString();
-
-        // console.log("Inactive Start:", s);
-        // console.log("Inactive End:", e);
-        //  console.log("End here..........");
       } else {
-        // DEFAULT CASE
+   
         const now = new Date();
-
         // Start = today 12:00:01 AM
         const startDate = new Date();
         startDate.setHours(0, 0, 1, 0);
@@ -85,9 +71,6 @@ function page() {
 
         s = startDate.toISOString();
         e = endDate.toISOString();
-
-        //console.log("Default Start:", s);
-        //console.log("Default End:", e);
       }
 
       //console.log(s, e)
@@ -116,7 +99,6 @@ function page() {
     }
 
     try {
-     
       const response = await fetch(window.location.origin + "/api/users/sensorslog?purp=1&deviceid=" + device);
       const result = await response.json();
 
@@ -142,11 +124,9 @@ function page() {
       });
     } catch (error) {
       //   console.error(error);
-      setGraphData([])
+      setGraphData([]);
     }
   };
-
-
 
   // setThemeColor is a function that sets the theme color of the browser based on the cycle status (active/idle) to give a visual indication of data refresh cycle along with the title change done in runCycle function
   const setThemeColor = (color) => {
@@ -175,14 +155,13 @@ function page() {
   };
 
   useEffect(() => {
-    console.log(cycleStatus);
+   // console.log(cycleStatus);
     if (cycleStatus == null) return;
     runCycle(); //blinking animation cycle
     getFirstGraphdata();
     setCurredate(new Date()); // Set current date and time on component mount
-
     if (cycleStatus === false) {
-    console.log ("come here")
+      console.log("come here");
       const intervalId = setInterval(() => {
         getdata();
         setCurredate(new Date()); // Set current date and time on component mount
@@ -193,7 +172,7 @@ function page() {
   }, [device, cycleEndDate]);
 
   useEffect(() => {
-  console.log(cycleStatus )
+    console.log(cycleStatus);
   }, [cycleStatus]);
 
   useEffect(() => {
@@ -216,6 +195,13 @@ function page() {
     }
     // console.log("reduxData in useEffect:", reduxData);
   }, [reduxData]);
+  
+ useEffect(() => {
+   console.log("cycleStatus:", cycleStatus);
+  }, [cycleStatus]);
+  
+
+
   return (
     <>
       <div
@@ -245,8 +231,7 @@ function page() {
           }}
         >
           <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate}></Header_1>
-         
-         
+
           {/*Station Select*/}
           <div
             style={{
@@ -260,13 +245,13 @@ function page() {
               padding: "10px",
               paddingTop: "1px",
               marginBottom: "0px",
+              
             }}
           >
-            <div style={{ color: "black", fontWeight: "normal", fontSize: "14px",  width:"100%", textAlign:'center' }}>Select Station</div>
-            
-            
+            <div style={{ color: "black", fontWeight: "normal", fontSize: "14px", width: "100%", textAlign: "center" }}>Select Station</div>
+
             {/* Dropdown to delect Device */}
-         {/*    <select
+            {/*    <select
               style={{ marginLeft: "0px", height: "40px", border: "1px solid #ccc", borderRadius: "8px", padding: "8px 35px 8px 10px", marginTop: "-5px" }}
               value={device} // 👈 bind state here
               onChange={(e) => {
@@ -288,73 +273,66 @@ function page() {
               <option value="Device_6">PIT 6</option>
             </select> */}
 
-<div
-  style={{
-    position: "relative",
-    width: "200px",
-  }}
->
-  <select
-    value={device}
-    onChange={(e) => {
-      setGraphData([]);
-      setDevice(e.target.value);
-      setDevicenickname(
-        e.target.options[e.target.selectedIndex].text
-      );
-    }}
-    style={{
-      width: "100%",
-      height: "40px",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      padding: "8px 35px 8px 10px",
-      background: "#fff",
-      cursor: "pointer",
+            <div
+              style={{
+                position: "relative",
+                width: "200px",
+              }}
+            >
+               <select
+                value={device}
+                onChange={(e) => {
+                  setGraphData([]);
+                  setDevice(e.target.value);
+                  setDevicenickname(e.target.options[e.target.selectedIndex].text);
+                }}
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "8px 35px 8px 10px",
+                  background: "#fff",
+                  cursor: "pointer",
 
-      appearance: "none",
-      WebkitAppearance: "none",
-      MozAppearance: "none",
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
 
-      fontSize: "14px",
-      outline: "none",
-    }}
-  >
-    <option value="Device_0">Greya Composter</option>
-    <option value="Device_1">PIT 1</option>
-    <option value="Device_2">PIT 2</option>
-    <option value="Device_3">PIT 3</option>
-    <option value="Device_4">PIT 4</option>
-    <option value="Device_5">PIT 5</option>
-    <option value="Device_6">PIT 6</option>
-  </select>
+                  fontSize: "14px",
+                  outline: "none",
+                }}
+              >
+                <option value="Device_0">Greya Composter</option>
+                <option value="Device_1">PIT 1</option>
+                <option value="Device_2">PIT 2</option>
+                <option value="Device_3">PIT 3</option>
+                <option value="Device_4">PIT 4</option>
+                <option value="Device_5">PIT 5</option>
+                <option value="Device_6">PIT 6</option>
+              </select> 
 
-  {/* Custom Arrow */}
-  <span
-    style={{
-      position: "absolute",
-      right: "12px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      pointerEvents: "none",
-      fontSize: "12px",
-      color: "#555",
-    }}
-  >
-    ▼
-  </span>
-</div>
-
-
-
-
-
-
+              {/* Custom Arrow */}
+              <span
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  fontSize: "12px",
+                  color: "#555",
+                }}
+              >
+                ▼
+              </span>
+            </div>
 
             {/* device Name*/}
             <div style={{ color: "black", fontWeight: "normal", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>Station Seleced:-</div>
             <div style={{ color: "black", fontWeight: "bold", marginLeft: "8px", fontSize: "14px", margin: "0px", padding: "0px" }}>{devicenickname} </div>
           </div>
+         
           {/*Last Update*/}
           <div
             style={{
@@ -368,14 +346,67 @@ function page() {
               padding: "10px",
               marginBottom: "0px",
               paddingTop: "1px",
+              
             }}
           >
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
+              
               }}
             >
+
+
+ <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: '5px',
+                flexWrap:'nowrap'
+              }}
+            >
+
+<button
+  disabled={loading}
+  style={{
+    backgroundColor: loading ? "#8bc79f" : "#1BA94C",
+    color: "#fff",
+    border: "none",
+    padding: "8px 20px",
+    borderRadius: "6px",
+    fontWeight: "bold",
+    fontSize: "14px",
+    cursor: loading ? "not-allowed" : "pointer",
+    transition: "background-color 0.3s ease",
+    opacity: loading ? 0.7 : 1,
+    minWidth: '150px',
+    maxwidth:'150px'
+  }}
+  onClick={() => {
+    if (loading) return;
+
+    setLoading(true);
+ // unlock after 10 seconds
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    runCycle();
+
+    if (cycleStatus === false) {
+      getdata();
+    }
+
+   
+  }}
+>
+  {!loading ? "⟳ Last Update" : "Updating..."}
+</button>
+
+
+
+
+{/* 
               <button
                 style={{
                   backgroundColor: "#1BA94C",
@@ -389,30 +420,85 @@ function page() {
                   transition: "background-color 0.3s ease",
                 }}
                 onClick={() => {
+                  setLoading(true)
                   runCycle(); // trigger title animation immediately
-                  getFirstGraphdata(); // Refresh graph data if needed
-                  getdata(); // Refresh latest sensor values
-                  setCurredate(new Date()); // Update current date and time
+                 if (cycleStatus === false){
+                 getdata(); // Refresh latest sensor values
+                 }
+                 setLoading(false)   //  const [loading, setLoading] = useState(false);
                 }}
               >
-                ⟳ Last Update
+            {!loading ?"⟳ Last Update":'...'}   
               </button>
+ */}
+   <button
+                style={{
+               backgroundColor: loading ? "#8bc79f" : "#1BA94C",
+    color: "#fff",
+    border: "none",
+    padding: "8px 20px",
+    borderRadius: "6px",
+    fontWeight: "bold",
+    fontSize: "14px",
+    cursor: loading ? "not-allowed" : "pointer",
+    transition: "background-color 0.3s ease",
+    opacity: loading ? 0.7 : 1,
+    minWidth: '100px',
+    maxwidth:'100px'
+                }}
+                onClick={() => {
+ if (loading) return;
+
+    setLoading(true);
+    const confirmReset = window.confirm(
+      "While refreshing/resetting all data, data cost may be required on client side.\n\nDo you want to continue?"
+    );
+    if (!confirmReset) return;
+   
+ setTimeout(() => {
+      setLoading(false);
+    }, 15000);
+     // Reset states
+    setGraphData([]);
+    setLiveAverages({});
+    // Run functions
+    runCycle();
+    getFirstGraphdata();
+   if (cycleStatus === false){
+                 getdata(); // Refresh latest sensor values
+                 }
+
+           // unlock after 10 seconds
+   
+  }}
+>
+  {!loading ? "⟳ Big Data" : "........."}
+                
+              </button> 
+
+
+</div>
+
 
               <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
-                Last Updated: 
-                {Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
+                Last Updated:
+                
+                {cycleStatus===true? 'Cycle is completed':  
+                Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
                   ? `${new Date(Graphdata.at(-1).createdAt)
                       .toLocaleString("en-GB", {
                         day: "2-digit",
                         month: "short",
-                        year: "2-digit",
+                        year: "numeric",
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
                         hour12: true,
                       })
-                      .replace(",", " - ")}`
+                      .replace(",", "  ")}`
                   : " Updating..."}
+
+
               </div>
             </div>
             <div
@@ -430,18 +516,16 @@ function page() {
                       timeZone: "Asia/Kolkata",
                       day: "2-digit",
                       month: "short",
-                      year: "2-digit",
+                      year: "numeric",
                       hour: "2-digit",
                       minute: "2-digit",
                       second: "2-digit",
                       hour12: true,
                     })
-                    .replace(",", " - ")}`
+                    .replace(",", "  ")}`
                 : "Updating..."}
             </div>
           </div>
-        
-       
         </div>
         <hr></hr>
         {/* Graph  */}
@@ -575,7 +659,6 @@ function page() {
               <>{null}</>
             ))}
           <Tile key_1={device}></Tile>
-        
         </div>
 
         {/* Dashboard Metrics */}

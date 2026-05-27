@@ -259,8 +259,8 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
   <div
     style={{
       position: "absolute",
-      bottom: "19px",
-      left: "58%",
+      top: "306px",
+      left: "57.5%",
       transform: "translateX(-50%)",
       whiteSpace: "nowrap",
       zIndex: 10,
@@ -268,12 +268,8 @@ endOfDay.setHours(23, 59, 59, 999); // 11:59:59.999 PM
 fontWeight: "bold",
     }}
   >
-    {startOfDay.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })}&nbsp;&nbsp;&nbsp;
-    Time in hh:mm AM/PM
+    {startOfDay.toLocaleDateString("en-GB", {day: "2-digit",month: "2-digit",year: "2-digit",
+    })}&nbsp;&nbsp;&nbsp;Time in hh:mm AM/PM
   </div>
 
 

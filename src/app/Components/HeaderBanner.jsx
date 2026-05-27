@@ -20,7 +20,6 @@ const HeaderBanner = () => {
  /*very small Less than 300 pixel*/
   if (width <= 350) {
     content = (
-    
         <div
           style={{
             background: "linear-gradient(90deg,  #66BB6A, #2E7D32 )",
@@ -157,7 +156,7 @@ const HeaderBanner = () => {
   
  else if (width <= 950) {
     content = (
-/* {width}__more 650 */
+
         <div
           style={{
              position: "relative",
@@ -232,6 +231,7 @@ const HeaderBanner = () => {
   
     );
   }
+
 /*Laptop Desk view more than 950 pixel*/
   else  {
     content = (
