@@ -353,7 +353,6 @@ function page() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-              
               }}
             >
 
@@ -483,7 +482,7 @@ function page() {
               <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
                 Last Updated:
                 
-                {cycleStatus===true? 'Cycle is completed':  
+                {cycleStatus===true? ' Cycle is completed (no data to read)':  
                 Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
                   ? `${new Date(Graphdata.at(-1).createdAt)
                       .toLocaleString("en-GB", {
