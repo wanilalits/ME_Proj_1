@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import CyclePopup from "./CyclePopup";
+import DataAnilizerPopUp from "./DataAnilizerPopUp";
 
 const ExcelReportData = {
   Custom: 1,
@@ -16,6 +17,7 @@ const ExcelReportData = {
 function Header(props) {
   let datetimepicker1 = false;
   const [showPopup, setShowPopup] = useState(false);
+    const [showDataAnilizerPopup, setShowDataAnilizerPopup] = useState(false);
   const [tileControl, setTileControl] = useState({
     buttonText: "Add Cycle",
     bagroundColour: "white",
@@ -345,7 +347,24 @@ function Header(props) {
           {loading ? "Generating..." : "Generate Report"}
         </button>
 
-        <button
+        
+   <button
+          style={{
+            backgroundColor: "#1BA94C",
+            color: "white",
+            border: "none",
+            padding: "10px 10px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            width: "auto",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }} onClick={() => setShowDataAnilizerPopup(true)}>Analyze Data
+    </button>
+
+<button
           style={{
             backgroundColor: "#1BA94C",
             color: "white",
@@ -363,9 +382,11 @@ function Header(props) {
         >
           {tileControl.loadDBData === false ? "Add Cycle" : "Edit Cycle"}
         </button>
+        
+        <DataAnilizerPopUp showDataAnilizerPopup={showDataAnilizerPopup} setShowDataAnilizerPopup={setShowDataAnilizerPopup} deviceid={props.deviceid}></DataAnilizerPopUp>
       </div>
 
-      <CyclePopup showPopup={showPopup} setShowPopup={setShowPopup} deviceid={props.deviceid} fetchCycleData={fetchCycleData}></CyclePopup>
+      <CyclePopup showPopup={showPopup} setShowPopup={setShowPopup} deviceid={props.deviceid} devicenickname={props.devicenickname} fetchCycleData={fetchCycleData}></CyclePopup>
 
       <style jsx global>
         {`

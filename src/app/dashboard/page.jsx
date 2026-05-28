@@ -230,7 +230,7 @@ function page() {
             gap: "15px",
           }}
         >
-          <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate}></Header_1>
+          <Header_1 deviceid={device} key={device} setCycleEnd={setCycleEnd} setCycleStatus={setCycleStatus} setCycleEndDate={setCycleEndDate} devicenickname={devicenickname}></Header_1>
 
           {/*Station Select*/}
           <div
@@ -471,14 +471,12 @@ function page() {
    
   }}
 >
-  {!loading ? "⟳ Big Data" : "........."}
+  {!loading ? "⟳ Refresh" : "⟳........"}
                 
               </button> 
 
 
 </div>
-
-
               <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
                 Last Updated:
                 

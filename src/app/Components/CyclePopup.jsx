@@ -19,6 +19,7 @@ function CyclePopup(props) {
         setRecordExists(result.data);
         setDateTime(new Date(result.data.Startdate));
         setDateTime2(new Date(result.data.enddate));
+        console.log(result.data.enddate);
       } else {
         setRecordExists(null);
       }
@@ -39,7 +40,6 @@ function CyclePopup(props) {
   const saveCycleIndb = async () => {
     try {
       setLoading(true);
-
       const res = await fetch("/api/users/cycles", {
         method: "POST",
         headers: {
@@ -92,6 +92,7 @@ function CyclePopup(props) {
       props.setShowPopup(false);
     }
   };
+
   useEffect(() => {
     if (props.showPopup ===true) {
      fetchCycleData();
@@ -152,7 +153,7 @@ function CyclePopup(props) {
             <h2>New Cycle</h2>
 
             <p>
-              <strong>Device ID:</strong> {props.deviceid}
+              <strong>Device ID:</strong> {props.devicenickname}
             </p>
 
             {/* START DATE */}
@@ -229,7 +230,7 @@ function CyclePopup(props) {
             <h2>Edit Cycle</h2>
 
             <p>
-              <strong>Device ID:</strong> {props.deviceid}
+              <strong>Device ID:</strong> {props.devicenickname}
             </p>
 
             {/* START DATE */}
