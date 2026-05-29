@@ -476,7 +476,7 @@ function page() {
 
 </div>
               <div style={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
-                Last Updated:
+                Last Updated:-
                 
                 {cycleStatus===true? ' Cycle is completed (no data to read)':  
                 Graphdata.at(-1)?.createdAt && !isNaN(new Date(Graphdata.at(-1).createdAt))
@@ -506,7 +506,7 @@ function page() {
               }}
             >
               {curredate
-                ? `Last checked: ${curredate
+                ? `Last checked:- ${curredate
                     .toLocaleString("en-GB", {
                       timeZone: "Asia/Kolkata",
                       day: "2-digit",
