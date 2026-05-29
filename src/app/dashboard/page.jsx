@@ -60,7 +60,6 @@ function page() {
         s = inactiveStart.toISOString();
         e = inactiveEnd.toISOString();
       } else {
-   
         const now = new Date();
         // Start = today 12:00:01 AM
         const startDate = new Date();
@@ -157,10 +156,11 @@ function page() {
   useEffect(() => {
    // console.log(cycleStatus);
     if (cycleStatus == null) return;
+
     runCycle(); //blinking animation cycle
     getFirstGraphdata();
     setCurredate(new Date()); // Set current date and time on component mount
-    if (cycleStatus === false) {
+    if (cycleStatus === false ) {
       console.log("come here");
       const intervalId = setInterval(() => {
         getdata();
@@ -172,8 +172,12 @@ function page() {
   }, [device, cycleEndDate]);
 
   useEffect(() => {
-    console.log(cycleStatus);
+  console.log("cycleStatus:", cycleStatus);
   }, [cycleStatus]);
+
+  useEffect(() => {
+  console.log("Graphdata.length:", Graphdata.length);
+  }, [Graphdata]);
 
   useEffect(() => {
     if (!curredate) return;
@@ -195,12 +199,6 @@ function page() {
     }
     // console.log("reduxData in useEffect:", reduxData);
   }, [reduxData]);
-  
- useEffect(() => {
-   console.log("cycleStatus:", cycleStatus);
-  }, [cycleStatus]);
-  
-
 
   return (
     <>

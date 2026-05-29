@@ -27,18 +27,32 @@ export const GET = async (reqest) => {
   const dateParam = await reqest.nextUrl.searchParams.get("date");
   const mydeviceid = await reqest.nextUrl.searchParams.get("deviceid");
 
-  const targetDate = new Date(dateParam);
+  //const targetDate = new Date(dateParam);
 
-  // START OF DAY
-  const start = new Date(targetDate);
-  start.setHours(0, 0, 0, 0);
-
+  
+const selected = new Date(dateParam);
+const start = new Date(
+  `${selected.toLocaleDateString("en-CA")}T00:00:00+05:30`
+);
   // END OF DAY
-  const end = new Date(targetDate);
-  end.setHours(23, 59, 59, 999);
+const end = new Date(
+  `${selected.toLocaleDateString("en-CA")}T23:59:59.999+05:30`
+);
+
+
+
+ // const start = new Date(targetDate);
+ // start.setHours(0, 0, 0, 0);
+ // const end = new Date(targetDate);
+ // end.setHours(23, 59, 59, 999);
+// START OF DAY
+
+
+
+
+
 
   let Model = Sensor;
-
   if (mydeviceid === "Device_1") {
     Model = Sensor_1;
   } else if (mydeviceid === "Device_2") {
