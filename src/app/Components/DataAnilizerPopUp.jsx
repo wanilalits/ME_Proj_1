@@ -285,16 +285,16 @@ if (data.nextDate===null)
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "1px" }}>
                     <span style={{ fontSize: "18px" }}>✅</span>
-                    <span> : Process Completed,</span>
+                    <span> : Process Completed</span>
                     &nbsp;&nbsp;&nbsp;
                     <span style={{ fontSize: "18px" }}>◌</span>
-                    <span> : Upcoming Process ,</span>
+                    <span> : Upcoming Process</span>
                     &nbsp;&nbsp;&nbsp;
                     <span style={{ fontSize: "18px" }}>⏳</span>
                     <span> : Cycle Completing Today</span>
                     &nbsp;&nbsp;&nbsp;
                     <span style={{ fontSize: "18px" }}>🚫</span>
-                    <span> : No Data Found,</span>
+                    <span> : No Data Found</span>
                   </div>
                 </div>
               </div>
