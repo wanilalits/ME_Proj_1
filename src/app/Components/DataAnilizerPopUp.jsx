@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { getDateAnalysis } from "../lib/api/dateAnalysis";
-
+import styles from "./DataAnilizerPopUp.module.css";
 const DataAnilizerPopUp = (props) => {
   const [data, setData] = useState({});
- const [loading_1, setLoading_1] = useState(false);
+  const [loading_1, setLoading_1] = useState(false);
   const handleClick = async () => {
- setLoading_1(true);
+    if (loading_1) return;
+    setLoading_1(true);
     const res = await getDateAnalysis(props.deviceid);
     //console.log(res);
     setData(res);
- setLoading_1(false);
+    setLoading_1(false);
   };
 
   useEffect(() => {
@@ -79,25 +80,25 @@ const DataAnilizerPopUp = (props) => {
                     color: "#000",
                     fontSize: "14px",
                     fontWeight: "500",
+                    cursor: loading_1 ? "not-allowed" : "pointer",
                   }}
                 >
                   Do not forget to click on{" "}
                   <button
                     onClick={handleClick}
-                     disabled={loading_1}
+                    disabled={loading_1}
                     style={{
                       margin: "0 4px",
                       padding: "4px 8px",
                       backgroundColor: "white",
                       border: "none",
-                      color: "#fff", cursor: loading_1 ? "not-allowed" : "pointer",
                       cursor: "pointer",
                       fontSize: "14px",
-                         opacity: loading_1 ? 0.6 : 1,
-    transition: "all 0.3s ease",
+                      opacity: loading_1 ? 0.6 : 1,
+                      transition: "all 0.3s ease",
                     }}
                   >
-                      {loading_1 ? "⏳" : "🔄️"}
+                    <span className={loading_1 ? styles.spin : ""}>↻</span>
                   </button>
                   to analyze fresh data.
                 </div>
@@ -139,11 +140,8 @@ const DataAnilizerPopUp = (props) => {
 
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>{data.previousDateCount} Records Found</td>
 
-
                       <td style={{ padding: "2px", textAlign: "center" }}>
                         {(() => {
-                         
-
                           const today = new Date();
                           const previousDate = new Date(data.previousDate);
 
@@ -160,8 +158,7 @@ const DataAnilizerPopUp = (props) => {
                           }
                         })()}
                       </td>
- <td style={{ padding: "2px", textAlign: "center" }}>{data.previousDateCount===0 &&  "🚫" }</td>
-
+                      <td style={{ padding: "2px", textAlign: "center" }}>{data.previousDateCount === 0 && "🚫"}</td>
                     </tr>
 
                     <tr>
@@ -178,13 +175,8 @@ const DataAnilizerPopUp = (props) => {
 
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>{data.selectedDateCount} Records Found</td>
 
-
-
                       <td style={{ padding: "10px", textAlign: "center" }}>
                         {(() => {
-                          
-                          
-
                           const today = new Date();
                           const selected = new Date(data.selectedDate);
 
@@ -193,7 +185,7 @@ const DataAnilizerPopUp = (props) => {
                           selected.setHours(0, 0, 0, 0);
 
                           if (selected.getTime() === today.getTime()) {
-                            return "⏳"; // Today
+                            return <div className={styles.slowspin}>⏳</div>; // Today
                           } else if (selected < today) {
                             return "✅"; // Past date
                           } else {
@@ -201,50 +193,35 @@ const DataAnilizerPopUp = (props) => {
                           }
                         })()}
                       </td>
-                       <td style={{ padding: "2px", textAlign: "center" }}>{data.selectedDateCount===0 &&  "🚫" }</td>
+                      <td style={{ padding: "2px", textAlign: "center" }}>{data.selectedDateCount === 0 && "🚫"}</td>
                     </tr>
 
                     <tr>
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>Next Data After Cycle End When Records Found</td>
 
-                      <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                        {/* {new Date(data.nextDate).toLocaleDateString("en-IN", {
-            timeZone: "Asia/Kolkata",
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })} */}
-                        {data.nextDate ? `${new Date(data.nextDate).toLocaleDateString("en-IN")}` : "No Data Found"}
-                      </td>
+                      <td style={{ padding: "10px", border: "1px solid #ddd" }}>{data.nextDate ? `${new Date(data.nextDate).toLocaleDateString("en-IN")}` : "No Data Found"}</td>
 
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>{data.nextDateCount} Records Found</td>
 
-
-
-                      <td style={{ padding: "2px", textAlign: "center" }}>
+                      <td style={{ padding: "10px", textAlign: "center" }}>
                         {(() => {
-                          
-
                           const today = new Date();
                           const nextDate = new Date(data.nextDate);
-                          const cycledate= new Date (data.selectedDate)
-    
+                          const cycledate = new Date(data.selectedDate);
+
                           // Remove time part
                           today.setHours(0, 0, 0, 0);
                           nextDate.setHours(0, 0, 0, 0);
-if (data.nextDate===null)
-  return "◌"; // Future date
+                          if (data.nextDate === null)
+                            return "◌"; // Future date
                           else if (nextDate.getTime() === today.getTime()) {
-                            return "⏳"; // Today
+                            return <div className={styles.slowspin}>⏳</div>; // Today
                           } else if (nextDate < today) {
                             return "✅ "; // Past date
-                          } else 
-                          
-                            return "◌"; // Future date
-                          
+                          } else return "◌"; // Future date
                         })()}
                       </td>
-                      <td style={{ padding: "2px", textAlign: "center" }}>{data.nextDateCount===0 &&  "🚫" }</td>
+                      <td style={{ padding: "2px", textAlign: "center" }}>{data.nextDateCount === 0 && "🚫"}</td>
                     </tr>
 
                     <tr>
@@ -260,10 +237,8 @@ if (data.nextDate===null)
                       </td>
 
                       <td style={{ padding: "10px", border: "1px solid #ddd" }}>{data.todayCount} Records Found</td>
-
-
-                      <td style={{ padding: "2px" }}>⏳</td>
-                      <td style={{ padding: "2px", textAlign: "center" }}>{data.todayCount===0 &&  "🚫" }</td>
+                      <td style={{ padding: "2px" }}><div className={styles.slowspin}>⏳</div></td>
+                      <td style={{ padding: "2px", textAlign: "center" }}>{data.todayCount === 0 && "🚫"}</td>
                     </tr>
                   </tbody>
                 </table>
