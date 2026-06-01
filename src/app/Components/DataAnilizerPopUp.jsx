@@ -8,7 +8,7 @@ const DataAnilizerPopUp = (props) => {
 
   const handleClick = async () => {
     const res = await getDateAnalysis(props.deviceid);
-    console.log(res);
+    //console.log(res);
     setData(res);
   };
 

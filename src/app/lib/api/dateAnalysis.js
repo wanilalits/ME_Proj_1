@@ -12,11 +12,13 @@ export const getDateAnalysis = async (deviceid) => {
 
     // 2. Get enddate
     const enddate = cycleResult.data.enddate;
-    console.log("End Date:", enddate);
+    //console.log("End Date:", enddate);
 
     // 3. Call second API
     const res = await fetch(`/api/dateanalysis?purp=dateanalysis&deviceid=${encodeURIComponent(deviceid)}&date=${encodeURIComponent(enddate)}`);
     const result = await res.json();
+    console.log(result);
+
     // return data
     return result;
   } catch (err) {
