@@ -895,7 +895,7 @@ function page() {
         </div>
 
         {/* Version Info */}
-        <div style={{ textAlign: "right", fontSize: "12px", color: "#888" }}>v0.0.36_1</div>
+        <div style={{ textAlign: "right", fontSize: "12px", color: "#888" }}>v0.0.36</div>
       </div>
     </>
   );
