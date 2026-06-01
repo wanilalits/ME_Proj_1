@@ -16,6 +16,7 @@ export const getDateAnalysis = async (deviceid) => {
 
     // 3. Call second API
     const res = await fetch(`/api/dateanalysis?purp=dateanalysis&deviceid=${encodeURIComponent(deviceid)}&date=${encodeURIComponent(enddate)}`);
+    
     const result = await res.json();
     console.log(result);
 

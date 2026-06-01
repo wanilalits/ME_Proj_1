@@ -5,11 +5,13 @@ import { getDateAnalysis } from "../lib/api/dateAnalysis";
 
 const DataAnilizerPopUp = (props) => {
   const [data, setData] = useState({});
-
+ const [loading_1, setLoading_1] = useState(false);
   const handleClick = async () => {
+ setLoading_1(true);
     const res = await getDateAnalysis(props.deviceid);
     //console.log(res);
     setData(res);
+ setLoading_1(false);
   };
 
   useEffect(() => {
@@ -82,17 +84,20 @@ const DataAnilizerPopUp = (props) => {
                   Do not forget to click on{" "}
                   <button
                     onClick={handleClick}
+                     disabled={loading_1}
                     style={{
                       margin: "0 4px",
                       padding: "4px 8px",
                       backgroundColor: "white",
                       border: "none",
-                      color: "#fff",
+                      color: "#fff", cursor: loading_1 ? "not-allowed" : "pointer",
                       cursor: "pointer",
                       fontSize: "14px",
+                         opacity: loading_1 ? 0.6 : 1,
+    transition: "all 0.3s ease",
                     }}
                   >
-                    🔄️
+                      {loading_1 ? "⏳" : "🔄️"}
                   </button>
                   to analyze fresh data.
                 </div>
