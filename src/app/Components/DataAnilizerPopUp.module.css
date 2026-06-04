@@ -14,11 +14,9 @@
   }
 }
 
-
 .slowspin {
   display: inline-block;
   animation: spinPause 6s linear infinite;
-  color: black;
 }
 
 @keyframes spinPause {

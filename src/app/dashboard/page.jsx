@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { saveAs } from "file-saver";
-import * as XLSX from "xlsx";
+//import { saveAs } from "file-saver";
+//import * as XLSX from "xlsx";
 import humidity from "../../../public/Image/humidity.png";
 import temperature from "../../../public/Image/temperature.png";
 import ph from "../../../public/Image/ph.png";
@@ -10,8 +10,8 @@ import CO2 from "../../../public/Image/CO2.png";
 import NH3 from "../../../public/Image/NH3.png";
 import CH4 from "../../../public/Image/CH4.png";
 import LineGraph from "../Components/LineGraph";
-import PiChart from "../Components/PiChart";
 import HeaderBanner from "../Components/HeaderBanner";
+import PiChart from "../Components/PiChart";
 import BarGraph from "../Components/BarGraph";
 import Header_1 from "../Components/Header_1";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,15 +19,7 @@ import { addUser } from "../redux/slice";
 import Tile from "../Components/Tile";
 import ReportDownload from "../Components/ReportDownload";
 function page() {
-  const [graphselect, SetGraphselect] = useState({
-    Humidity: "line",
-    Temperature: "bar",
-    Ph: "pi",
-    H2s: "line",
-    Ammonia: "line",
-    Methane: "line",
-    Co2: "bar",
-  });
+  const [graphselect, SetGraphselect] = useState({Humidity: "line",  Temperature: "bar",  Ph: "pi",  H2s: "line",  Ammonia: "line",Methane: "line", Co2: "bar", });
   const [loading, setLoading] = useState(false);
   const [Graphdata, setGraphData] = useState([]);
   const [liveAverages, setLiveAverages] = useState({});

@@ -1,12 +1,12 @@
 'use client';
+
 //import Image from "next/image";
 import styles from "./page.module.css";
 import React, { useState } from "react";
 //import  "bootstrap/dist/css/bootstrap.min.css"
+
 export default function Home() {
   const [data, setData] = useState<number>(10);
-
-
   const [employee, setEmployee] = useState<{ name: string; salary?: number}>({name: '5'});
   const onchangevalue = (e:React.ChangeEvent<HTMLInputElement>) => {
     setData(parseInt(e.target.value) );
