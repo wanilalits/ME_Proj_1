@@ -52,24 +52,22 @@ export default function Page() {
 
   return (
     <div style={{
-      height: '100dvh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#f4f6f8',
-      fontFamily: 'Arial, sans-serif',
-  margin: 0,
+         minHeight: "100dvh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
     boxSizing: "border-box",
-    overflow: "hidden",
+    backgroundColor: "#f4f6f8",
     }}>
       <div style={{
-        backgroundColor: '#ffffff',
-        padding: '30px',
-        borderRadius: '12px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-        width: '90%',
-        maxWidth: '300px',
-        maxHeight: '400px',
+          width: "100%",
+      maxWidth: "330px",
+      backgroundColor: "#fff",
+      padding: "20px",
+      borderRadius: "12px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+      boxSizing: "border-box",
       }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#1A5D1A' }}>Login</h2>
 
@@ -82,19 +80,17 @@ export default function Page() {
           onChange={handleInputChange}
           style={{
             width: '100%',
-            padding: '10px',
-            marginBottom: '20px',
-            borderRadius: '6px',
+              boxSizing: "border-box",
+              height: "40px",
+              padding: "5px 5px 5px 10px",
+              marginTop: "7px",
+              fontSize: "18px",
+              borderRadius: "6px",  
             border: '1px solid #ccc',
-             height: "35px",
-            padding: "5px",
-          marginTop: "7px",
-          fontSize: "16px",
-          paddingLeft:"10px"
-
+            
           }}
         />
-
+<br/> <br/>
         {/* Password */}
         <label style={{ fontWeight: 'bold', marginBottom: '0px', display: 'block' }}>Password</label>
         <div style={{ position: 'relative', marginBottom: '20px' }}>
@@ -105,13 +101,13 @@ export default function Page() {
             onChange={handleInputChange}
             style={{
               width: '100%',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-             height: "35px",
-            padding: "5px",
-          marginTop: "7px",
-          fontSize: "16px",
-          paddingLeft:"10px"
+           boxSizing: "border-box",
+    height: "40px",
+    padding: "5px 5px 5px 10px",
+    marginTop: "7px",
+    fontSize: "18px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
             }}
           />
           <div

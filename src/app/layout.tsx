@@ -13,16 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Greya Smart Composter",
-  description: "A Smart IoT-Enabled Device for On-Site Wet Waste Processing and Home Composting",
-  keywords: [
-    "Greya Smart Composter",
-    "Smart Composter",
-    "Organic Waste Composting",
-    "Food Waste Composting",
-  ],
-};
+
 
 export default function RootLayout({
   children,
